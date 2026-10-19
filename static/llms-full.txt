@@ -5,7 +5,7 @@
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/BATTLE_NAVIGATION.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `b2c8fd4d480e54b6f9ce5e9efaed5d37f2d7b17d5094c5683b794d95c1854318`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/BATTLE_NAVIGATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `b2c8fd4d480e54b6f9ce5e9efaed5d37f2d7b17d5094c5683b794d95c1854318`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -111,7 +111,7 @@ native phase/score/lifecycle state remain necessary.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/BATTLE_RECOVERY.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `c035f5ede272d905c8f5accf7d2e32918b0332affa8e171a79774a2474a9cee7`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/BATTLE_RECOVERY.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `ce9afc5eaa41741468d49541594c4ef92439116ef63b7a09f43b2141be332bea`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -546,7 +546,7 @@ The following requirements remain pending until a named live run proves them.
 | Pending check | Evidence needed |
 | --- | --- |
 | Additional original-reference coverage | Additional pitch/camera angles and direct original-hardware comparisons beyond the recorded vanilla run. |
-| Reload in a real match | First shot, held input through expiry, release, second press; matching native state/deadline and visible second shot. |
+| Additional real-match angle/impact coverage | The dedicated reload journey below verifies held/release/repress; additional named pitch/camera/impact cases still need live evidence. |
 | Collision, blast and ownership | Native impact/detonation path; correct attacker and victim; score changes consistent with the hit. |
 | Complete mixed match with course routing | Two humans plus two bots through five net kills and results with the final course policy; the earlier direct-pursuit Anoka run reached this threshold. |
 | Recovery and respawn | Observed wall recovery and native respawn transforms on the actual track; no invented world-origin circle or unsupported time guarantee. |
@@ -564,11 +564,18 @@ The bounded next weapon journey is authored as:
 tools/test_battle.sh "$DISC" weapon work/battle-weapon-reload 7000 Dennison
 ```
 
-It uses original two-human Battle with bots/enhancements off, holds human 0's
+The completed `weapon-reload` run (7,000 vblanks, exit 0, native
+`Dennison.trk`, flags `0x09`) uses original two-human Battle with
+bots/enhancements off, holds human 0's
 L2 from vblank 5200 through 5549, releases at 5550 and presses again at 5580.
-Human 1 remains neutral. Input-state checks establish the intended timeline;
-real reload, visible flight/impact and score evidence remain pending until this
-journey is actually inspected. `BATTLE_BLAST` records the native detonation
+Human 1 remains neutral. Both input-state checks and rendered/native trace inspection establish the
+journey. The first shot is sampled at native t=10.344 (state 0, flight 1);
+state 1 appears at t=13.347 while L2 remains held. Release re-arms state 2 at
+t=16.183; repress launches again at t=16.683 (state 0, fresh muzzle position
+and launch velocity). Captures show native chickens and Arming/Press L2 UI.
+Human 1 stays neutral. The in-flight marker stays one between these shots:
+this confirms that native in-flight status is separate from trigger readiness.
+No native blast was observed, so this journey does not prove victim/kill credit. `BATTLE_BLAST` records the native detonation
 entry's attacker index, position, radius and force when tracing is enabled;
 it does not itself prove which car was hit or why a later score changed.
 
@@ -576,7 +583,18 @@ Use an explicitly named `Anoka` mixed run for the next full-match/lifecycle
 journey; the harness supports its ten RIGHT taps and requires `Anoka.trk`.
 Control post-match input separately: demonstrate rank/results, select restart,
 observe a fresh countdown/score reset, return to the menu and exit. Existing
-fixed smoke scripts do not certify those post-match choices.
+fixed smoke scripts do not certify those post-match choices. For an explicit
+post-match probe, `EOD_BATTLE_POST_SCRIPT` supplies native frame:hex-mask input,
+replacing later gameplay stimuli and making both pads neutral except for the
+specified pad-0 sequence. The exact resulting timelines are saved as usual:
+
+```sh
+EOD_BATTLE_POST_SCRIPT='16500:0008,16510:0000' \
+  tools/test_battle.sh "$DISC" mixed work/battle-anoka-lifecycle 18000 Anoka
+```
+
+Here `0x0008` is START; this is a probe, not a claim that START selects restart.
+Inspect the native result/menu before authoring the next confirmed selection.
 
 The major unresolved implementation gap is obstacle-aware pursuit: the current
 reader only supplies primary-course segments, and no safe native wall/clearance
@@ -593,7 +611,7 @@ on Home/Woodly and full mixed/solo matches after such a change.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/DETAIL_PRESETS.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `d975750da76c55fc7f71684d29e5ea2a106060d3b6b5b7845a2f3ebfe09b4e75`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/DETAIL_PRESETS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `d975750da76c55fc7f71684d29e5ea2a106060d3b6b5b7845a2f3ebfe09b4e75`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -693,7 +711,7 @@ hardware/player acceptance is implied by CPU contracts or one scripted scene.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/GS_ALPHA_ORDER.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `5cbd14a2ce484f633fb78ffbefae74815159a14ada1e33ca57a793645d5a41a4`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/GS_ALPHA_ORDER.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `5cbd14a2ce484f633fb78ffbefae74815159a14ada1e33ca57a793645d5a41a4`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -847,7 +865,7 @@ input cannot establish visible control latency or original-reference fidelity.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/GS_COLD_PACKET_REPLAY.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `d381d54bc4a73be2f54e60a628d98e88adb88dde6eb98eb055c2c388de217aee`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/GS_COLD_PACKET_REPLAY.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `d381d54bc4a73be2f54e60a628d98e88adb88dde6eb98eb055c2c388de217aee`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -975,7 +993,7 @@ behavior. No such assumption has been made for EOD.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/GS_CPU_WRITE_PRESERVATION.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `6bd890197ca5ff79be32c95fc606e8f9e886b386f6a8b421678a10d95adf1476`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/GS_CPU_WRITE_PRESERVATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `6bd890197ca5ff79be32c95fc606e8f9e886b386f6a8b421678a10d95adf1476`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -1156,7 +1174,7 @@ this unsuccessful prototype.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/HUD_EDGE_ANCHORS.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `ce1dabd4b1c1452e28dbf648c7627280a83046bf744660e352644ebc7e16e729`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/HUD_EDGE_ANCHORS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `ce1dabd4b1c1452e28dbf648c7627280a83046bf744660e352644ebc7e16e729`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -1287,7 +1305,7 @@ be investigated from real traces if they carry visible edge panels.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/INPUT_CONTINUATION.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `e592610298880c51f9c03c9be47e0cf78d60785cf52bb6d6aa16f4f4dc776daa`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/INPUT_CONTINUATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `e592610298880c51f9c03c9be47e0cf78d60785cf52bb6d6aa16f4f4dc776daa`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -1389,7 +1407,7 @@ controls or rumble. Identical controllers without device identity remain limited
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/KEYBOARD_CONTEXT.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `45f219d5aee2a77c8677b6010fb8cba2440a591d269e011f337749c0235c3515`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/KEYBOARD_CONTEXT.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `45f219d5aee2a77c8677b6010fb8cba2440a591d269e011f337749c0235c3515`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -1477,7 +1495,7 @@ half-second input-to-image delay is fully resolved.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/LOD_CULLING_INVESTIGATION.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `2f8c470f7c44eb07ad2ef858f5dde9217d72f19202c2b770d66f5c4f85961134`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/LOD_CULLING_INVESTIGATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `2f8c470f7c44eb07ad2ef858f5dde9217d72f19202c2b770d66f5c4f85961134`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -1725,7 +1743,7 @@ zero pop-in remains unproven.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/LOD_RUNTIME.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `e9abdf8bf6335b07fa2f774afc76ba8aef11b7e77c67fb5c01fdb610570c1863`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/LOD_RUNTIME.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `e9abdf8bf6335b07fa2f774afc76ba8aef11b7e77c67fb5c01fdb610570c1863`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -1886,7 +1904,7 @@ force index zero.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/MACOS.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `98e02311ce43b10d8dd853ff54249129ed6386bf874b0416a961ad02b08fb915`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/MACOS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `98e02311ce43b10d8dd853ff54249129ed6386bf874b0416a961ad02b08fb915`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -2299,7 +2317,7 @@ for tests, performance, comparison images and the limits of the tested scene.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/MANUAL_RECOVERY.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `1dc3bb47fd8feb8672e260f660f863c7008027161cc742fbd0eebe8d6b478531`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/MANUAL_RECOVERY.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `1dc3bb47fd8feb8672e260f660f863c7008027161cc742fbd0eebe8d6b478531`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -2404,7 +2422,7 @@ been tested locally.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/MODDING_SCOPE.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `ccf449cc8ed3dbe165494d00f7e6f166a505f58a0c80f65e876fe78fc1b94385`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/MODDING_SCOPE.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `ccf449cc8ed3dbe165494d00f7e6f166a505f58a0c80f65e876fe78fc1b94385`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -3100,7 +3118,7 @@ port. (General guidance, not legal advice.)
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/NATIVE_CAMERA_ASPECT.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `51b9c2b40d6497f30352a5b07d919fe5bf52afa8e3c620a3efceb3131679a792`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/NATIVE_CAMERA_ASPECT.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `51b9c2b40d6497f30352a5b07d919fe5bf52afa8e3c620a3efceb3131679a792`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -3268,7 +3286,7 @@ comparison, rather than this FOV value alone, supports the proportion result.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/RECOMP_RENDERER_RECON.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `93cf1760e8e6af14a0474dd783288ff17f81eca1b46831b8b59f97c3d03e8faf`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/RECOMP_RENDERER_RECON.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `93cf1760e8e6af14a0474dd783288ff17f81eca1b46831b8b59f97c3d03e8faf`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -3342,7 +3360,7 @@ Recommended next narrow step: compare EOD's partial/masked uploads and deferred 
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/RENDERER_REFERENCES.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `3d57b9e61cd4c8a5a587360dc7d31c88dae29ce3c877e0a42b66870ef6ff0e42`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/RENDERER_REFERENCES.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `3d57b9e61cd4c8a5a587360dc7d31c88dae29ce3c877e0a42b66870ef6ff0e42`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -3539,7 +3557,7 @@ Ruled out with measurements on the race capture (same binary, alternating):
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/TIMING_TRACE.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `5a611823d71b98c248131e0fd17ab8ebebf4dc8106064f37164ef2f2ab7955da`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/TIMING_TRACE.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `5a611823d71b98c248131e0fd17ab8ebebf4dc8106064f37164ef2f2ab7955da`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -3612,7 +3630,7 @@ real-race experiment; title/boot success alone does not qualify a replacement.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/VULKAN_SYNC_DIAGNOSTICS.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `c8994884f0cd3b8be4d7a475324f65c0c311f639c8c9ab9e712d16cb02d53210`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/VULKAN_SYNC_DIAGNOSTICS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `c8994884f0cd3b8be4d7a475324f65c0c311f639c8c9ab9e712d16cb02d53210`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -3718,7 +3736,7 @@ above remains separate and still needs actual-write preservation.
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/WORKER_SHUTDOWN.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `b77f64a5a2614babacda9044b457ca2c8cf64a5dcc28c381dcc4563e3c624a61`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/WORKER_SHUTDOWN.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `b77f64a5a2614babacda9044b457ca2c8cf64a5dcc28c381dcc4563e3c624a61`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
