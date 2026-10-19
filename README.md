@@ -1,0 +1,38 @@
+# Test Drive: Eve of Destruction Wiki
+
+Default Docusaurus **2.4.3** documentation site. No custom theme or styling.
+
+Site: https://catsandsoup.github.io/testdriveeveofdestructionwiki/
+
+## Develop and verify
+
+Use Node 22 (`nvm use`), then:
+
+```sh
+npm ci
+npm start
+npm run build
+npm run serve
+```
+
+The production build rejects broken site/Markdown links. Dependencies are locked with `package-lock.json`. Webpack is pinned to 5.97.1 because later 5.x releases removed an internal API used by Docusaurus 2; Cheerio uses the compatible 1.0.0 release candidate. Docusaurus 2 uses the older React 17 / MDX 1 stack; upgrades to a later major are deliberately outside this setup.
+
+## Refresh source knowledge
+
+```sh
+npm run sync:knowledge
+# Or supply other local checkouts:
+python3 scripts/import-knowledge.py --ps2 /path/to/eod-recomp --research '/path/to/TDEOD RECOMP' --session /path/to/investigation-session
+npm run build
+git add docs knowledge-manifest.json
+git commit -m 'Refresh technical knowledge snapshot'
+git push origin main
+```
+
+The importer copies Markdown only, retains source text except MDX escaping and local-link handling, and attaches provenance (path, repository HEAD, dirty flag, SHA-256). `knowledge-manifest.json` is the machine-readable inventory. Local links to omitted source files remain literal paths. Source content is a snapshot; the PS2 current Battle recovery chapter supersedes historical conflicting claims. Research pages must not be mistaken for verified implementation.
+
+## Deploy
+
+`.github/workflows/pages.yml` builds pull requests and deploys successful `main` builds using GitHub Pages Actions. Repository Settings → Pages must use **GitHub Actions**. No personal token is needed by the workflow.
+
+Framework references: [Docusaurus 2 installation](https://docusaurus.io/docs/2.x/installation), [Docusaurus 2 deployment](https://docusaurus.io/docs/2.x/deployment).

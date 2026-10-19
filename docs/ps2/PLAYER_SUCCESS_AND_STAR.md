@@ -1,0 +1,129 @@
+# Player success and STAR handoff
+
+
+:::note Source and evidence
+PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+
+Source: `docs/PLAYER_SUCCESS_AND_STAR.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `317e02467193cb87b20352da9935f19c1568fad8f0c0d70e0ec8f98ba88b3a69`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+:::
+
+
+Define success **before** creating or starting each issue, project or task.
+Write what the player can observe, how acceptance will be demonstrated, and what
+the evidence cannot establish. Carry those criteria into the final handoff.
+
+## Success for the current native baseline
+
+“I open the app with my own installed disc, reach a race without terminal setup,
+and play alone or with a local second player. At native 1x PS2 resolution and
+original 4:3, heavy carnage stays at the game's original timing and full speed,
+without frame skipping. Steering and braking respond promptly; physics, damage,
+camera, world and HUD behave faithfully.”
+
+| Player acceptance | Required evidence and limits |
+| --- | --- |
+| Open the installed app and return to play | First-launch/import and returning-launch journeys on the current packaged app; build success does not prove native dialogs or startup experience. |
+| Heavy races remain at original speed | Reproducible solo and local multiplayer runs at 1x/4:3, FrameSkip=0, enhancements off; record game timing, frame cadence, drawn frames and stalls. Verify the original game's cadence for the tested mode against a reference; do not assume every PS2 mode draws at 60 FPS. |
+| Controls feel immediate and simulation stays faithful | Hands-on keyboard/pad driving compared with the original reference, including heavy carnage, physics and damage. Headless input tests do not establish visible latency or driving feel. |
+| Rendering and presentation match the original | Reference comparisons of representative world/HUD scenes, including split screen and known thin black lines; a byte-exact optimization comparison proves only equivalence for its tested input. |
+
+## STAR handoff — native speed investigation, 2026-10-16
+
+**Situation — what the player experiences.** The Mac port reaches races, but
+native full-speed acceptance remains unmet. All source is consolidated on `main`;
+`origin/main` is the maintained remote branch. Upstream review is draft
+[PR #2](https://github.com/pareidolico/eod-recomp/pull/2). Read
+`DEVELOPER_HANDOFF.md` for reproduction details and current implementation state.
+
+**Task — what success requires.** Establish the native player experience above
+before expanding quality. Priority is native accuracy/full speed, then LOD/draw
+distance and proper widescreen, then 2x/4x/6x resolution, then higher FPS. DLSS is
+last. Keep original simulation timing and disable enhancements for the baseline.
+
+**Action — what has been done.** Conservative alpha-test all-pass/all-fail
+proofs reduced the fixed five-frame native race replay from 143,373 to 102,931
+draws, and warm median time from 230.4 to 184.3 ms (20.0%) in its controlled
+comparison. A second change now avoids redundant Vulkan pipeline, dynamic-state
+and texture/sampler descriptor commands, following Granite's existing pattern.
+Its separate same-binary comparison, with alpha proofs enabled in both modes,
+measured 180.8 to 152.2 ms (15.8% lower), with unchanged draw count. Both changes
+retain byte-identical race/font displayed images and full 4-MiB VRAM at 1x and
+6x. These independent comparisons must not be presented as one matched combined
+full-game speedup. Cache reuse resets on every new command buffer; the new
+procedural differential exercises changing state and repeated submissions.
+All 41 CTests pass; the rebuilt installed app passes strict signature verification
+and headless retail replay.
+See the renderer handoff for the final source checkpoint and packaged-app checks.
+
+**Result — what is verified, and what remains.** The latest same-binary native
+1x/4:3 two-player checks both reached 6,600 vblanks and exited 0: cache off
+110.214 seconds with race drawn counters 17.5–36.5 FPS (final 36.5); cache on
+110.209 seconds with 22.4–33.8 FPS (final 32.0). Candidate GS worker occupancy
+was 97–99%, EE waiting 50–64%. Fixed replay supports the measured 15.8%
+reduction; scene variation prevents a precise native game speedup claim.
+Clean exit, exact comparisons and passing tests establish useful evidence, but
+**player success is not complete**. Full-game speed, visible input latency and
+exhaustive original-reference fidelity remain unproven. Logged game frames use
+a framebuffer-flip heuristic, and GS busy measures CPU worker occupancy. Host
+vblank cadence alone proves neither simulation speed nor hardware GPU utilization.
+
+**Transfer follow-up.** With the command cache enabled, another isolated
+same-binary comparison measured 165.4 ms median with conservative preservation
+and 174.4 ms with the existing complete-block upload experiment. Reads fell
+58→24 and submits 65→31, without a replay improvement. A complete-owner-pixel
+prototype merely moved waits to later partial-nibble uploads and texture reads;
+it still needed 24 reads and measured 177.2 ms, so it was removed. An opt-in
+native 1x/4:3 two-player check reached 6,600 vblanks and exited 0 in 110.788
+seconds; race drawn samples were 17.6–35.1 FPS, final 17.9, with late GS worker
+occupancy 99% and EE waiting 76–77%. Scene variation prevents a matched native
+speed claim. The experiment remains off by default. The next renderer reuse
+spike is a cold-boot packet replay through the existing paraLLEl-GS oracle;
+see `GS_CPU_WRITE_PRESERVATION.md` for the dependency trace and fidelity gates.
+
+**Open questions.** What cadence does the original game use in each tested
+mode? Does rejection retain correctness beyond the tested alpha/depth/framebuffer
+cases and consistently improve heavy full-game runs? Are thin lines and visible control delay still
+present on the current native build? Do solo and local multiplayer both meet the
+same acceptance criteria?
+
+**Next decisive test.** Verify the original cadence for each mode and compare
+matched heavy solo/local multiplayer scenes against that reference, with no
+competing GPU workload and automated runs headless and muted. Record timing,
+cadence, drawn frames, stalls, fidelity evidence and the exact source revision.
+Then arrange hands-on
+original-reference comparison for visible latency and driving feel. Update this
+Result with measured outcomes and remaining gaps; do not promote expected gains
+to verified player acceptance.
+
+## Reusable handoff
+
+- **Success first:** “As a player, I can …”; observable acceptance, proof needed,
+  and evidence limits.
+- **Situation:** the player-visible problem and reproducible starting state.
+- **Task:** the outcome required, scope and priority.
+- **Action:** changes actually made, source checkpoint and validation performed.
+- **Result:** measured outcomes against acceptance; explicitly state unmet
+  criteria, uncertainties and the next decisive test. Keep proposed work separate.
+
+## Existing renderer reuse spike — completed scope, unmet player outcome
+
+**Situation/task:** native carnage still misses full-speed player acceptance.
+Test the existing Road Trip paraLLEl-GS wheel against real EOD traffic before
+considering a large live-backend change.
+
+**Action:** added a default-off, bounded capture before the first queued GS
+command; extended the existing independent scratch oracle to all four command
+kinds from pristine initialization. Reused Road Trip's explicit NTSC CRTC fields
+only after observing the actual SetGsCrt call and checking official PS2SDK.
+
+**Result:** real boot/movie/title traffic executes on M2 Pro and produces
+inspectable native images; tiny fixture/early boot and movie VRAM match Vulkan.
+The completed title prefix does not establish parity: its images and full VRAM
+differ from both EOD software and Vulkan. PGS's warm prefix took 951.6 ms versus
+Vulkan 781.4 ms, with different scanout work, so there is no speedup claim.
+Release rebuild and 41 CTests pass. The installed player renderer retains the
+two earlier verified performance changes. Full race speed, reference fidelity
+and visible latency remain open. Next success is a bounded compressed/streaming
+clean-start race replay, traced image differences and matched warmed native
+race timing before live integration. Detailed evidence and limits:
+`GS_COLD_PACKET_REPLAY.md`.
