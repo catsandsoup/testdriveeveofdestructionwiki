@@ -47,6 +47,7 @@ module.exports = {
           "type": "category",
           "label": "runtime-and-platform",
           "items": [
+            "ps2/CUSTOM_VEHICLE_PIPELINE",
             "ps2/MACOS",
             "ps2/MANUAL_RECOVERY",
             "ps2/TIMING_TRACE",
