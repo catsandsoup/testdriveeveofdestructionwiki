@@ -8,14 +8,6 @@
     "source_sha256": "7f72123c7251e054495306a149d22a50d8f5d4f5986413f127097bffdf966d24"
   },
   {
-    "page": "docs/ps2/CODEX_HANDOFF.md",
-    "source_repository": "eod-recomp",
-    "source_path": "docs/CODEX_HANDOFF.md",
-    "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
-    "working_copy_modified": false,
-    "source_sha256": "63c75a1e27be9452791c851abb3c46d5af76997b5e1a6fc0919993b924237f98"
-  },
-  {
     "page": "docs/ps2/DETAIL_PRESETS.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/DETAIL_PRESETS.md",
@@ -176,14 +168,6 @@
     "source_sha256": "3d57b9e61cd4c8a5a587360dc7d31c88dae29ce3c877e0a42b66870ef6ff0e42"
   },
   {
-    "page": "docs/ps2/STATUS.md",
-    "source_repository": "eod-recomp",
-    "source_path": "docs/STATUS.md",
-    "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
-    "working_copy_modified": false,
-    "source_sha256": "e989c76869feffae3755bcbb10784ab4906996b99327f83d6711eb541fb63c5e"
-  },
-  {
     "page": "docs/ps2/TIMING_TRACE.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/TIMING_TRACE.md",
@@ -208,14 +192,6 @@
     "source_sha256": "b77f64a5a2614babacda9044b457ca2c8cf64a5dcc28c381dcc4563e3c624a61"
   },
   {
-    "page": "docs/ps2/superpowers/plans/2026-10-16-macos-takeover.md",
-    "source_repository": "eod-recomp",
-    "source_path": "docs/superpowers/plans/2026-10-16-macos-takeover.md",
-    "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
-    "working_copy_modified": false,
-    "source_sha256": "2c6df5fc1d01f1a3721bcf7e9b284e0b301cddfbead646dfb13e0f0cb0feea3b"
-  },
-  {
     "page": "docs/research/GAMEPLAY_MODS_RE.md",
     "source_repository": "TDEOD RECOMP",
     "source_path": "docs/GAMEPLAY_MODS_RE.md",
@@ -230,14 +206,6 @@
     "repository_head": "7fba3ecfa0cb11ccdccd991b541bf7da03e82144",
     "working_copy_modified": false,
     "source_sha256": "a6bd37ea8a5a80f0f49eb9e1bfbf673c38b87ccf024022a527140d33272c85cd"
-  },
-  {
-    "page": "docs/research/STATUS.md",
-    "source_repository": "TDEOD RECOMP",
-    "source_path": "docs/STATUS.md",
-    "repository_head": "7fba3ecfa0cb11ccdccd991b541bf7da03e82144",
-    "working_copy_modified": false,
-    "source_sha256": "1663a0288c7d5fbe87006cea8daea7ed2f0f0c4b6b97a26438516c95dd8a5941"
   },
   {
     "page": "docs/research/wiki/ai_and_pathfinding.md",

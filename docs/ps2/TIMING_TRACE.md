@@ -1,3 +1,6 @@
+---
+tags: ["engine", "runtime-and-platform", "ps2", "technical-reference"]
+---
 # Motion and audio timing investigation
 
 

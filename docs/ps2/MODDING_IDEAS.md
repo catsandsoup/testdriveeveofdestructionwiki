@@ -1,3 +1,6 @@
+---
+tags: ["engine", "modding-and-formats", "ps2", "technical-reference"]
+---
 # Owner's mod ideas (2026-10-17, condensed from the owner's design doc)
 
 

@@ -1,3 +1,6 @@
+---
+tags: ["engine", "rendering", "ps2", "technical-reference"]
+---
 # LOD, distance and visibility investigation
 
 

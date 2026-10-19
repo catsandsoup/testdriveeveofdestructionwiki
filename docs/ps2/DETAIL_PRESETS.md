@@ -1,3 +1,6 @@
+---
+tags: ["engine", "rendering", "ps2", "technical-reference"]
+---
 # Optional detail presets — October 17 continuation
 
 
@@ -20,7 +23,7 @@ debris, or unchanged performance on every track/hardware.
 
 ## Situation and recovered evidence
 
-The stopped Claude job left investigation only. Its saved 2P trace (`work/t2p`)
+The stopped prior investigation job left investigation only. Its saved 2P trace (`work/t2p`)
 shows far=575 with configured draw distance1150 and native selected car indexes
 1..4. Function00211318 indexes `{1,1,2,2}` using view-count minus1, so the car
 LOD multiplier is the same for1P and2P, not doubled in2P. Camera builder00212B58
@@ -95,6 +98,6 @@ hardware/player acceptance is implied by CPU contracts or one scripted scene.
   same-capture replay establishes renderer parity, not game-hook execution.
 - Evidence: work/lod-continuation/{ctest-final.log,maximum-1,maximum-4,
   replay-results.json,parity-original/final.ppm}. Comparison images in the
-  recovered Claude notes are actual game captures at the same scripted moment,
+  recovered prior investigation notes are actual game captures at the same scripted moment,
   with minor separate-run timing variation possible. No5x/6x tests were run:
   the user's final instruction limited validation to their4x setting.

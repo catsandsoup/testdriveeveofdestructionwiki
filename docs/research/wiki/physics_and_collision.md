@@ -1,3 +1,6 @@
+---
+tags: ["physics", "collision-and-rigid-bodies", "cross-platform", "historical"]
+---
 # Physics, Collision & Detachment Engine: Reverse Engineering Reference
 
 
@@ -96,7 +99,7 @@ $$\vec{F}_{\text{impact}} = \frac{m_{\text{striker}} m_{\text{victim}}}{m_{\text
 1. If $\|\vec{F}_{\text{impact}}\| > \text{damage\_impulse}$ ($12,000\text{ N}$), the deformation bone in `Bone.val` undergoes plastic deformation, crinkling the local mesh vertices.
 2. If $\|\vec{F}_{\text{impact}}\| > \text{removal\_impulse}$ ($35,000\text{ N}$), the bone constraint is severed:
    - Routine `0x00100F10` allocates a 68-byte detached rigid body instance.
-   - Constructor `0x000A3220` inherits the parent car's linear velocity plus an impact scatter impulse:
+   - Constructor `0x000A3220` inherits the integration car's linear velocity plus an impact scatter impulse:
      $$\vec{V}_{\text{detached}} = \vec{V}_{\text{car}} + \frac{\vec{F}_{\text{impact}}}{m_{\text{part}}} \times 0.25$$
    - The detached part is registered into the active physical simulation pool (`0x0006BC20`: `"phystask: detaching at %d ticks!"`).
 3. **Vanilla Despawn Timer**: On Xbox/PS2, a 300-tick (~5.0 second) Time-To-Live countdown is started. When expired, the part is despawned. **In the modern recomp, this timer is completely bypassed to enable permanent debris fields.**

@@ -1,3 +1,6 @@
+---
+tags: ["cars", "combat-and-ai", "cross-platform", "historical"]
+---
 # Test Drive: Eve of Destruction (SLUS-209.10) - Gameplay Mods & Reverse Engineering Technical Reference
 
 
@@ -8,7 +11,7 @@ Source: `docs/GAMEPLAY_MODS_RE.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecf
 :::
 
 
-## Executive Summary & Agent Handoff
+## Executive Summary & investigation Handoff
 
 This technical reference document provides an exhaustive reverse-engineering specification, memory map, disassembly breakdown, mathematical AI formulation, and user guide for gameplay modifications and the Battle Mode subsystem within the static recompilation of *Test Drive: Eve of Destruction* (`SLUS_209.10` / `eod-recomp`).
 

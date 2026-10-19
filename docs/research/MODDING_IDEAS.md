@@ -1,3 +1,6 @@
+---
+tags: ["engine", "modding-and-formats", "cross-platform", "historical"]
+---
 # Modding Ideas — Backlog (after 1:1 parity only)
 
 

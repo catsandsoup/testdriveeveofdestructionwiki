@@ -1,3 +1,6 @@
+---
+tags: ["engine", "rendering", "ps2", "technical-reference"]
+---
 # GS CPU-write preservation
 
 
@@ -49,8 +52,8 @@ has not received the Vulkan guarantee.
 - The local corrected font capture is pixel-identical to its reference. The
   five-frame retail race replay is byte-identical to its preceding image.
   This supports those scenes only; screenshots and retail data are not committed.
-- Tests/build logs are ignored `work/codex-build-cpu-final.log` and
-  `work/codex-ctest-cpu-final.log`; fixture outputs live in `build-mac/`.
+- Tests/build logs are ignored `work/workspace-build-cpu-final.log` and
+  `work/workspace-ctest-cpu-final.log`; fixture outputs live in `build-mac/`.
 
 The original flush-only fixture used a point on a separate render target. At
 6x the current backend renders one physical pixel, which center-sampled 1x

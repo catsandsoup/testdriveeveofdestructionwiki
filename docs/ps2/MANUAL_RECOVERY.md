@@ -1,3 +1,6 @@
+---
+tags: ["engine", "runtime-and-platform", "ps2", "technical-reference"]
+---
 # Human manual recovery
 
 

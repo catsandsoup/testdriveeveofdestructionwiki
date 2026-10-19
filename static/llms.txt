@@ -1,0 +1,6 @@
+# Test Drive: Eve of Destruction technical knowledge
+
+Use knowledge-index.json to filter by category, subcategory, tags, platform and evidence. Each entry has a stable id, canonical URL, raw Markdown URL, source revision/path/hash, address candidates and dependency status. Address candidates are lexical mentions, not verified function symbols. Never treat historical or source-reported claims as current verified behavior. Empty dependencies means not extracted.
+
+- [Structured index](https://catsandsoup.github.io/testdriveeveofdestructionwiki/knowledge-index.json)
+- [Full Markdown corpus](https://catsandsoup.github.io/testdriveeveofdestructionwiki/llms-full.txt)

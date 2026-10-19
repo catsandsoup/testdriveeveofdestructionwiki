@@ -1,3 +1,6 @@
+---
+tags: ["gui", "input-and-player-controls", "ps2", "technical-reference"]
+---
 # Keyboard context in SLUS_209.10
 
 

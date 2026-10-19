@@ -2,20 +2,30 @@
 slug: /
 sidebar_position: 1
 ---
-# Test Drive: Eve of Destruction knowledge base
+# Eve of Destruction modding knowledge
 
-Technical documentation for the PS2 recompilation and related Xbox / cross-platform research. This site uses the default Docusaurus 2 appearance.
+Subsystem-indexed technical references for LLM-assisted modding: engine, models, terrain, cars, physics, HUD, GUI and menus. Use source paths, executable revision and evidence labels before applying a change.
 
-Start with [current Battle recovery](ps2/BATTLE_RECOVERY.md), [PS2 status](ps2/STATUS.md), and the [native weapon tests](native/native-weapon-tests.md). The Battle recovery chapter supersedes conflicting historical weapon and bot claims.
+## Machine retrieval
 
-## How to read the evidence
+- [knowledge-index.json](pathname:///testdriveeveofdestructionwiki/knowledge-index.json): filterable records with stable IDs, category/subcategory, tags, platform, evidence, source revision/path/hash, canonical/raw URLs, address mentions and dependency extraction status.
+- [llms.txt](pathname:///testdriveeveofdestructionwiki/llms.txt): retrieval entry point.
+- [llms-full.txt](pathname:///testdriveeveofdestructionwiki/llms-full.txt): complete sanitized technical Markdown corpus.
+- Individual raw Markdown: `/testdriveeveofdestructionwiki/raw/{id}.md`.
+- [Tags](tags): browse subsystem and evidence tags.
 
-- **PS2 implementation notes:** imported from `eod-recomp/docs`. Each page retains its source path, repository revision, working-copy status and source hash. A page is documentation, not proof that every feature works live.
-- **Native investigations:** static/disassembly analysis and CPU test observations. Read test limitations before drawing gameplay conclusions.
-- **Historical / cross-platform research:** imported from `TDEOD RECOMP/docs`. Some pages mix Xbox and PS2 addresses or describe aspirations as existing behavior. These claims require revalidation against the relevant executable and current implementation.
+Example index filters with `jq`:
 
-## Reproducibility
+```sh
+jq '.entries[] | select(.category == "cars")' knowledge-index.json
+jq '.entries[] | select(.tags | index("historical"))' knowledge-index.json
+jq '.entries[] | select(.platform | startswith("PS2"))' knowledge-index.json
+```
 
-Addresses must always be paired with the executable platform and revision named in the source. Preserve the difference between static evidence, verified CPU tests, live gameplay observations, and proposed behavior. Missing evidence means pending verification.
+## Evidence contract
 
-The repository's `knowledge-manifest.json` records the exact imported source hashes. `npm run sync:knowledge` refreshes the snapshot from local source checkouts; see the repository README for path overrides. No disc images, executables, generated recompilation sources, captures or binary assets are imported.
+[Battle recovery](ps2/BATTLE_RECOVERY.md) contains the current native weapon contract and validation limits. [Native weapon tests](native/native-weapon-tests.md) and [native AI research](native/native-ai-research.md) provide supporting evidence. CPU tests and static disassembly do not establish rendered gameplay success.
+
+Historical and cross-platform references retain research leads and proposals; conflicting claims require revalidation. PS2 addresses must not be reused as Xbox addresses. Index address strings are lexical mentions, not verified function symbols. Empty dependency lists mean dependencies have not been extracted. Source-reported validation is not independently rerun by the documentation importer.
+
+Only technical Markdown is imported. Conversation inventories, session identifiers and orchestration handoffs are excluded. Sanitization removes investigator names and session metadata from imported prose; original source hashes refer to the unmodified source bytes. The source checkout remains authoritative for exact local artifact paths.

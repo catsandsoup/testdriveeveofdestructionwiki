@@ -1,3 +1,6 @@
+---
+tags: ["engine", "rendering", "ps2", "technical-reference"]
+---
 # Native camera aspect hook
 
 
@@ -103,7 +106,7 @@ cmake --build build-mac --target eod_native_camera_test -j2
 ctest --test-dir build-mac -R NativeCamera --output-on-failure
 ```
 
-Parent integration must still compare matched single- and two-player scenes at
+integration integration must still compare matched single- and two-player scenes at
 4:3/16:9/16:10, with aspect-correct display composition, to verify framing, HUD
 proportions, borders, and menu coverage. Source and CPU tests establish the hook
 mechanism; they are not proof that every game screen is visually correct.

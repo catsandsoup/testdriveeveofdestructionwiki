@@ -1,3 +1,6 @@
+---
+tags: ["cars", "combat-and-ai", "ps2", "technical-reference"]
+---
 # Battle recovery: native weapon contract and validation
 
 

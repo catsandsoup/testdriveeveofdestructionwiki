@@ -1,3 +1,6 @@
+---
+tags: ["gui", "input-and-player-controls", "ps2", "technical-reference"]
+---
 # Player journey — PS2 Mac port
 
 

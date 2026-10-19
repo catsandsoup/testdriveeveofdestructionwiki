@@ -1,3 +1,6 @@
+---
+tags: ["engine", "modding-and-formats", "ps2", "technical-reference"]
+---
 # Modding Scope: Test Drive: Eve of Destruction (feasibility study)
 
 
@@ -26,7 +29,7 @@ selection, scene submission and asset streaming separately. Correct edge
 visibility while retaining valid visibility tests; measure costs per player in
 split screen. Use reproducible camera sweeps, distant opponent/track objects,
 wide-edge captures and frame-time/geometry/memory measurements. A dedicated
-fresh specialist agent is appropriate for this research/implementation stream.
+fresh specialist investigation is appropriate for this research/implementation stream.
 
 Zero pop-in is an acceptance ambition, **not an established feasible guarantee**.
 First establish whether highest-detail assets exist, remain resident, and can
@@ -48,7 +51,7 @@ it does not override this newer LOD/culling priority.
 > disc files (`SLUS_209.10` + `DATA/`, read in place from
 > `~/Library/Application Support/TDEODRecomp/disc`; the ELF is byte-identical to
 > the one in this repo). Format findings come from throwaway parsers in
-> `/private/tmp/claude-501/eodmod/` (Xbox) and `/private/tmp/claude-501/eodmod-ps2/`
+> `/private/tmp/prior investigation-501/eodmod/` (Xbox) and `/private/tmp/prior investigation-501/eodmod-ps2/`
 > (PS2, plus `xs.py`, a string/address cross-reference helper for the ELF).
 > Nothing was extracted into a repo. Claims still unverified are marked
 > **(guess)** or **(unverified)**.
@@ -286,7 +289,7 @@ dir_offset: entries, 0x44 bytes each:
   loaded big-endian and inverted, then each further byte is shifted in
   (`c = ((c << 8) | byte) ^ T[c >> 24]`), and the result is inverted. It matches
   every PS2 header and entry and every Xbox entry, header and directory checksum
-  tested (`/private/tmp/claude-501/eodmod-ps2/crc.py`).
+  tested (`/private/tmp/prior investigation-501/eodmod-ps2/crc.py`).
 * **They are checked.** `f_0012FEA0` rejects a set whose cookie, version (6),
   header size (0x28), file size or header CRC is wrong, and extraction
   (`f_00130C30`) and `check_all_resident_crcs` (`f_00130170`) compare entry
@@ -350,10 +353,10 @@ pairs_off: n_pairs × {key_off, value_off}; all values are C strings in a pool a
 ```
 * The last section word is a leftover heap pointer from the Win32 tool. It is
   the only thing that differs between the PS2 and Xbox copies of a table.
-* `parent` implements **inheritance**: a contest section `[$0040$contest]
-  parent='knockout_contest'` inherits its template, and eves inherit
+* `integration` implements **inheritance**: a contest section `[$0040$contest]
+  integration='knockout_contest'` inherits its template, and eves inherit
   `afton_eve_defaults`. The engine errors confirm this: `valtab: table "%s" has
-  missing parent "%s"` / `ambiguous parent` / `parented to self!`.
+  missing integration "%s"` / `ambiguous integration` / `parented to self!`.
 * `@name = $NNNN$name` keys are references to child sections (lists of objects).
 * `include` sections chain files (`eves.val` includes the 14 `*_eves.val`).
 * `frame64` / `unfloat_frame64` / `house_car_frame64`: 64 characters in the
@@ -361,7 +364,7 @@ pairs_off: n_pairs × {key_off, value_off}; all values are C strings in a pool a
   3×3 rotation + XYZ translation. Verified: decoding Afton's derby
   semi-trailer gives an orthonormal rotation and a position of (-37.3, 3.9, 188.6),
   consistent with that arena's bound polygon. Decoder:
-  `/private/tmp/claude-501/eodmod/` (scratch).
+  `/private/tmp/prior investigation-501/eodmod/` (scratch).
 * Both executables contain `Attempt to call ValueFileLoadHumanReadable() from
   non-PC platform???` (PS2: string `003F2148`, used in `f_00134D88`). The
   engine had a **text val loader on PC**, compiled out on consoles. NASCAR Heat
@@ -390,7 +393,7 @@ mip 0 follows at 0x480
   32-bit upload). Verified by decoding `ct.res/1.tm0` (512×256 car livery) with
   the standard PSMT8 unswizzle and a linear (not CSM-swizzled) palette: the
   image is clean. 4-bit pixels are presumably the matching PSMT4 swizzle
-  **(unverified)**. Decoder: `/private/tmp/claude-501/eodmod-ps2/tex2png.py`.
+  **(unverified)**. Decoder: `/private/tmp/prior investigation-501/eodmod-ps2/tex2png.py`.
 * Sizes: unique textures range 16 to 512 px (most 128–256). Each `<name>.tm0`
   is the same texture at twice the size of `<name>.tex` (1,547 of them: all car
   liveries in `ct.res`/`uicar.res`, car interiors in `hobbyset.res`, and about

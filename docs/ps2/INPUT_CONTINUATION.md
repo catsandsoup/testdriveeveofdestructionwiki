@@ -1,3 +1,6 @@
+---
+tags: ["gui", "input-and-player-controls", "ps2", "technical-reference"]
+---
 # Controller/input continuation (October 17, 2026)
 
 
@@ -20,7 +23,7 @@ motor and switch-to-pixel latency acceptance require hands-on testing.
 
 ## Situation/task
 
-Claude's controller job stopped during investigation, with no edits. The mapper
+prior investigation controller job stopped during investigation, with no edits. The mapper
 blocked every held key until release after a context change, and the keyboard's
 default P1 reservation made a first pad P2. Existing actuator DMA support was
 already merged and did not need to be reimplemented.
@@ -88,7 +91,7 @@ establish an overall latency improvement. The DMA regression proves the narrower
 improvement: input arriving during GS blocking reaches this vblank's packet.
 Headless scripts generate no native key events and cannot measure physical or
 visible latency. Logs/sheets: `work/input-validation/` in the input worktree;
-baseline `work/codex-input-baseline/` in the main worktree. Timings are from one
+baseline `work/workspace-input-baseline/` in the main worktree. Timings are from one
 sequential run per build, with scene variation, not a performance benchmark.
 Shared mapper changes and the config parser are separable; SDL assignment,
 focus and sampling integration belong to the non-Windows platform. Existing

@@ -1,3 +1,6 @@
+---
+tags: ["hud", "anchors-and-scaling", "ps2", "technical-reference"]
+---
 # Native race HUD edge anchors
 
 
@@ -103,7 +106,7 @@ importing that renderer-level classifier, and does not risk world/UI overlap.
 CPU contract target links `tools/tests/hud_edge_test.cpp` with the
 production `src/hle_hud.cpp`, include runtime, runtime/include, src, and runs
 separately with no argument and with `disabled`. No graphics or game assets
-are involved. Parent integration owns CMake, regeneration, full build and GPU
+are involved. integration integration owns CMake, regeneration, full build and GPU
 acceptance; config/hle.txt adds only the two wrappers.
 
 Tests inspect the exact temporary guest-memory delta inside stub originals,

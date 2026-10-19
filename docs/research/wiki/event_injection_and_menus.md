@@ -1,3 +1,6 @@
+---
+tags: ["menus", "event-selection", "cross-platform", "historical"]
+---
 # Event Selection & Menu Injection Architecture: Reverse Engineering Reference
 
 

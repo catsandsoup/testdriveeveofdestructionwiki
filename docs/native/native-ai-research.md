@@ -1,3 +1,6 @@
+---
+tags: ["cars", "combat-and-ai", "ps2", "technical-reference"]
+---
 # Native Battle AI research and integration handoff
 
 
@@ -12,16 +15,16 @@ Source: `work/native-ai-research.md` in `investigation session`. Repository HEAD
 
 Success means local Battle with two humans visibly retains both native controls and adds two distinct opponents that drive, attack, shoot, die and respawn; countdown, pause, scoring and the five-kill finish continue normally. Evidence still needed: a rendered two-controller match with those outcomes, restart and return-to-menu, plus solo Battle and four-human regressions. More than four Battle participants is a separate structural change.
 
-This investigation verified native code statically in the owner-provided `SLUS_209.10`, generated `gen/rec_*.c`, and `.venv/bin/python tools/dis.py -f ADDRESS`. No game, build or test was run by this agent. Repository `AGENTS.md`, player-success handoff guidance and existing gameplay notes were read. Existing native code is the reused wheel; it precisely matches this game's EE object layouts and lifecycle. The prior gameplay notes contain inaccuracies identified below.
+This investigation verified native code statically in the owner-provided `SLUS_209.10`, generated `gen/rec_*.c`, and `.venv/bin/python tools/dis.py -f ADDRESS`. No game, build or test was run by this investigation. Repository `investigation.md`, player-success handoff guidance and existing gameplay notes were read. Existing native code is the reused wheel; it precisely matches this game's EE object layouts and lifecycle. The prior gameplay notes contain inaccuracies identified below.
 
-Parent initially authorized research only, then assigned three new integration files. Created `src/battle_bots.cpp`, `src/battle_bots.h`, `tests/battle_bots_test.cpp`; parent owns build/config/HLE integration and separate driver implementation. No existing production/test source was edited here.
+integration initially authorized research only, then assigned three new integration files. Created `src/battle_bots.cpp`, `src/battle_bots.h`, `tests/battle_bots_test.cpp`; integration owns build/config/HLE integration and separate driver implementation. No existing production/test source was edited here.
 
 ## Situation / Task / Action / Result
 
 - Situation: Battle's native participant builder can create valid AI records, but the arena-driver factory has no Battle case and weapon creation explicitly excludes AI.
 - Task: find narrow construction hooks and a safe driving path without bypassing human or native vehicle lifecycle.
 - Action: traced contest count -> DAVMap -> description -> car/driver and weapon factories, BattleMaster phases, DemoDerby dependencies and route AI dependencies. Added construction-only bridges with synthetic boundary tests.
-- Result: count/weapon bridge implementation is ready for parent integration; static findings are verified, runtime success remains unverified. Native Derby cannot be safely substituted solely by changing a vtable/factory because Battle has no initialized boundary. Parent chose a Battle-specific NullDriver update hook retaining native AI LocalCar lifecycle.
+- Result: count/weapon bridge implementation is ready for integration integration; static findings are verified, runtime success remains unverified. Native Derby cannot be safely substituted solely by changing a vtable/factory because Battle has no initialized boundary. integration chose a Battle-specific NullDriver update hook retaining native AI LocalCar lifecycle.
 
 ## Valid participants before allocation
 
@@ -47,7 +50,7 @@ AI LocalCar factory `0x001384C0` obtains config0x4472F0 through176768 and curren
 - bit0x200: arena driver factory138288(event);
 - otherwise NullDriver138680.
 
-It wraps the result in LocalCar(ai), allocation0x1C34, constructor1A2FE0. Parent independently confirmed LocalCar controller pointer+0x1C1C. **138288 has no Battle0x18000224 case**; its unknown path warns `WARNING: No arena driver for type 0x%x` (string3F2EE0) and returns NullDriver138680. NullDriver allocates4 bytes with vtable3F2FB0. Do not run HumanDriver against this object.
+It wraps the result in LocalCar(ai), allocation0x1C34, constructor1A2FE0. integration independently confirmed LocalCar controller pointer+0x1C1C. **138288 has no Battle0x18000224 case**; its unknown path warns `WARNING: No arena driver for type 0x%x` (string3F2EE0) and returns NullDriver138680. NullDriver allocates4 bytes with vtable3F2FB0. Do not run HumanDriver against this object.
 
 HumanDriver18F2A8 is1153 native instructions and extends through1904xx; it does not end at18FBA0. It owns native countdown/death/input/gear behavior and its tail1903F0..190418 invokes car+0x260 virtual+0x2C. Its weapon input calls17DE78(slot,0), queries pad virtual+0x2C and calls weapon virtual+8. Preserve the entire original function for every Human record. HumanDriver uses car+0x38, slot+0x40; Derby uses a different layout.
 
@@ -125,8 +128,8 @@ Route update193718 includes vengeance checks at193B14..193B24 (cheat master and0
 
 ## Concrete integration and next decisive tests
 
-Ready hooks:0012C158 ->original then Battle-only desired4;0020FD48 ->original then exact-AI native weapon setup. Parent should register these as orig-preserving HLE wrappers, compile src/battle_bots.cpp, and integrate battle_driver_reset from its separate file. Test target needs tests/battle_bots_test.cpp +src/battle_bots.cpp and include dirs src/runtime/runtime/include; test defines its own Config constructor/global and driver-reset stub, so do not link config.cpp or battle_driver.cpp. Tests were authored but **not run** due explicit no-build/game coordination.
+Ready hooks:0012C158 ->original then Battle-only desired4;0020FD48 ->original then exact-AI native weapon setup. integration should register these as orig-preserving HLE wrappers, compile src/battle_bots.cpp, and integrate battle_driver_reset from its separate file. Test target needs tests/battle_bots_test.cpp +src/battle_bots.cpp and include dirs src/runtime/runtime/include; test defines its own Config constructor/global and driver-reset stub, so do not link config.cpp or battle_driver.cpp. Tests were authored but **not run** due explicit no-build/game coordination.
 
-Parent's selected driving fallback hooks NullDriver update139230 only for controllers owned by exact AI cars in Battle, retaining native LocalCar update timing. This is a new policy implementation informed by native pursuit/reverse behavior, not claimed to be the original Derby driver. Guard phase1, started, native pause/countdown and dead states; preserve native car/weapon lifecycle and all HumanDriver calls.
+integration's selected driving fallback hooks NullDriver update139230 only for controllers owned by exact AI cars in Battle, retaining native LocalCar update timing. This is a new policy implementation informed by native pursuit/reverse behavior, not claimed to be the original Derby driver. Guard phase1, started, native pause/countdown and dead states; preserve native car/weapon lifecycle and all HumanDriver calls.
 
 Decisive runtime checks: 2-human description has four valid distinct driver/vehicle records with types50,50,51,51 (interleaving should also work); four physical and scene cars, four weapons with correct owners, phase0->1 through1DA618, bots steer/ram/fire/rearm without extra simulation ticks, humans1/2 fire normally, death/respawn/scoring intact, pause freezes them, restarting resets host AI state and weapon counts, exiting/reloading does not duplicate scene/registry ownership. Keep Battle capped4 until master records/rankings/HUD/spawn selection and identity assumptions are expanded deliberately.

@@ -1,3 +1,6 @@
+---
+tags: ["cars", "ai-and-navigation", "cross-platform", "historical"]
+---
 # AI Logic, Pathfinding & Combat State Machines: Reverse Engineering Reference
 
 

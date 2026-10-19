@@ -1,3 +1,6 @@
+---
+tags: ["cars", "combat-and-ai", "ps2", "technical-reference"]
+---
 # Native weapon test handoff
 
 
@@ -20,7 +23,7 @@ CPU acceptance: execute the owner's generated native trigger/cooldown routines
 against synthetic EE memory; check launch velocity, muzzle position, in-flight
 state, cooldown deadline and release/repress transitions. This cannot establish
 the patch's registration/input routing, visible projectile flight, collision,
-damage, or original-console visual fidelity. Those need the parent agent's live
+damage, or original-console visual fidelity. Those need the integration investigation's live
 game and integration checks.
 
 ## Situation
@@ -34,7 +37,7 @@ update and is not a trigger replacement.
 
 Add a focused CPU test which executes real generated code without shipping any
 retail-generated source. Owned files are the new test, extractor and CMake
-integration only. Do not modify the parent's game patch or live-cheat tests.
+integration only. Do not modify the integration's game patch or live-cheat tests.
 
 ## Action
 
@@ -83,7 +86,7 @@ this game's original generated routines are the relevant reusable wheel.
 
 ## Result
 
-After coordinating exclusive build time with the parent:
+After coordinating exclusive build time with the integration:
 
 ```
 EOD_HEADLESS=1 EOD_MUTE=1 cmake --build build-mac --target native_weapon_test -j2
@@ -92,9 +95,9 @@ EOD_HEADLESS=1 EOD_MUTE=1 ctest --test-dir build-mac -R '^native_chicken_weapon$
 
 Build succeeded. CTest passed: **138 checks**, **0.26 seconds**. `git diff --check`
 also passed. Generated test code remains in the ignored build directory. No
-game was run by this agent and no production patch file was edited.
+game was run by this investigation and no production patch file was edited.
 
-Not claimed: the whole suite was not run by this agent because parent owns
+Not claimed: the whole suite was not run by this investigation because integration owns
 coordinated game/build validation. The CPU cases do not establish visible
 player success. Next decisive test: run the patched live registration/input
 path with native L2 input, verify the straight native shot and a second shot

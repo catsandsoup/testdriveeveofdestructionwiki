@@ -1,3 +1,6 @@
+---
+tags: ["engine", "runtime-and-platform", "ps2", "technical-reference"]
+---
 # Mac port contribution handoff — 2026-10-16
 
 
@@ -204,7 +207,7 @@ remain unverified; packaging and headless replay do not complete those criteria.
 ## Native GS per-draw command cost — October 16 continuation (STAR)
 
 **Situation:** the native 1x/4:3 two-player race stutters because the GS worker
-needs ~25 ms per game frame. The fixed capture `work/claude-native/race2p-5000.gsd`
+needs ~25 ms per game frame. The fixed capture `work/prior investigation-native/race2p-5000.gsd`
 (2 game frames, 36,365 draws) replayed in ~49 ms. An earlier "~42 ms GPU busy per
 replay" reading was wrong: it summed every process's Metal intervals. Filtered to
 `eod`, depth 0, the GPU is busy ~5 ms per warm replay (10% of wall time);
@@ -263,7 +266,7 @@ vblanks (the visible jumping).
   encodes on its own queue thread.
 
 **Gate:** display PPM and 4 MiB VRAM byte-identical to the pre-change binary at
-RenderScale 1 and 6 for race2p-5000, race2p, codex-native2p and three heavy
+RenderScale 1 and 6 for race2p-5000, race2p, workspace-native2p and three heavy
 late-race captures; 43/43 CTests (the CPU-write fixtures exercise the merge).
 
 **Result:** race2p-5000 warm replay 49 -> 23 ms per 2 frames at 1x (loaded
@@ -311,7 +314,7 @@ got MoltenVK's async submits (SDL loaded MoltenVK before the setting was made).
 - Diagnostic: `EOD_VK_PASS_LOG=1` prints one line per render pass/submit.
 
 **Gate:** display PPM and 4 MiB VRAM identical to the pre-change build at
-RenderScale 1, 4 and 6 for race2p-5000, race2p, codex-native2p, three heavy
+RenderScale 1, 4 and 6 for race2p-5000, race2p, workspace-native2p, three heavy
 late-race captures and race2p-start (specializer modes 0/1/2); ctest 44/44.
 
 **Result (live scripted 2P race, headless muted, 5 s windows from the

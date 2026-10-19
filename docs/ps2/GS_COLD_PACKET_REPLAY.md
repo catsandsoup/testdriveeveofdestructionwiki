@@ -1,3 +1,6 @@
+---
+tags: ["engine", "rendering", "ps2", "technical-reference"]
+---
 # Bounded clean-start paraLLEl-GS experiment — 2026-10-16
 
 
