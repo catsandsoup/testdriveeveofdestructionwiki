@@ -7,7 +7,7 @@ tags: ["engine", "runtime-and-platform", "ps2", "technical-reference"]
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/TIMING_TRACE.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `5a611823d71b98c248131e0fd17ab8ebebf4dc8106064f37164ef2f2ab7955da`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/TIMING_TRACE.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `5a611823d71b98c248131e0fd17ab8ebebf4dc8106064f37164ef2f2ab7955da`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 

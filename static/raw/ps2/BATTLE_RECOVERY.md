@@ -1,18 +1,19 @@
-# Battle recovery: native weapon contract and validation
+# Battle mode, chicken weapons and AI contracts
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/BATTLE_RECOVERY.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `yes`. Source SHA-256: `7f72123c7251e054495306a149d22a50d8f5d4f5986413f127097bffdf966d24`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/BATTLE_RECOVERY.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `c035f5ede272d905c8f5accf7d2e32918b0332affa8e171a79774a2474a9cee7`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
-Status: focused native CPU evidence verified on 2026-10-19; live acceptance and
-bot completion are pending. This chapter supersedes conflicting weapon, input,
-registry and respawn claims in [the historical gameplay notes](GAMEPLAY_MODS_RE.md).
+Status: experimental bot policy; native CPU contracts and bounded live Battle evidence verified on
+2026-10-19; complete-match and lifecycle acceptance are tracked below. This chapter supersedes conflicting weapon, input,
+registry and respawn claims in [the historical gameplay notes] (`GAMEPLAY_MODS_RE.md`, source checkout).
 It describes the North American `SLUS_209.10` executable only. Addresses are
 guest EE addresses, not host pointers or portable APIs for another game.
+Executable SHA-256: `4f60053dc141365f5ae50737622f8408be30ced513b4c109427c926461f2e2ae`.
 
 ## Player success and acceptance
 
@@ -58,7 +59,7 @@ state writes.
 
 ## Native address evidence
 
-Evidence was inspected in the owner's local `gen/rec_020.c`, `gen/rec_021.c` and
+Evidence was inspected in locally generated `gen/rec_020.c`, `gen/rec_021.c` and
 `gen/rec_023.c`, with the guest addresses below as stable lookup keys. Generated
 file partitioning can change. Source checkout at the initial focused test run:
 `67c972b0fed775994d1769382676bd94ebdc3bc7` plus the uncommitted recovery changes.
@@ -80,7 +81,7 @@ the recovery.
 | `0x0017DA58` | Resolves attacker index through `0x00179A08` before the native radial impulse path. | Ownership flow inspected; not exercised by focused fixture. |
 | `0x0018AA80` | Stores steering `$f12` at car+`0x1B6C`. | Native setter inspection. Writing car+`0x1B80` is not this steering contract. |
 
-Reinspect locally with the owner's executable and analysis metadata present:
+Reinspect locally with a local executable and analysis metadata present:
 
 ```sh
 .venv/bin/python tools/dis.py -f 0017DE78
@@ -155,6 +156,9 @@ straight shot; mortar adds the velocity vector. Pitch affects the straight
 shot because it follows the car's forward axis. The native trigger also
 transforms the muzzle offset by the car pose before launching.
 
+Default blast force and radius multipliers are now one; existing saved values
+remain configurable and are not silently overwritten.
+
 For the straight optional Chicken Fight mod, master+weapon is `0x09`; forcing
 `0x19` selects mortar. If turbo is also enabled, the corresponding straight-shot
 mask is `0x0B`, before unrelated flags. Preserve the distinction between flags
@@ -178,7 +182,7 @@ detonation and reset paths own the remaining projectile lifecycle.
 
 [`extract_native_weapon_reference.py`] (`../tools/extract_native_weapon_reference.py`, source checkout)
 reuses the existing movie-bit reference extraction approach. At build time it
-extracts the owner's generated `0x0017E000`, `0x0017E4D8`, `0x0017E5C8` and
+extracts locally generated `0x0017E000`, `0x0017E4D8`, `0x0017E5C8` and
 `0x0017AF80` into the build directory. The checked-in
 [`native_weapon_test.cpp`] (`../tests/native_weapon_test.cpp`, source checkout) contains synthetic
 inputs and authored assertions, not copied retail functions.
@@ -229,36 +233,247 @@ Automated builds and game runs must be coordinated, headless and muted. Use
 validation at 1x PS2 resolution, 4:3, original timing and no frame skipping.
 Archive local evidence under ignored work/build directories, not the repository.
 
-## Pending validation — runtime and bots
+## Native Battle construction and bot policy
 
-The following are acceptance requirements, not completed results. The primary
-investigator should replace each pending item only with identified evidence.
+Battle event ID is `0x18000224`. The current event is `0x003CF19C`, and the
+master pointer is `0x003CF194` (Battle vtable `0x003F7770`). The master is
+`0x5AC` bytes with **four** `0x50`-byte participant records starting at `+0x454`.
+Rankings start at `+0x594`, spawn index at `+0x5A4`, and participant count at
+`+0x5A8`. Increasing count beyond four overwrites adjacent state. Other race
+arrays having twenty entries does not expand Battle's records, rankings or HUD.
+Faster host hardware does not remove these structural constraints.
+
+The optional `BattleBots` setting fills to four participants before native roster
+construction (`0x0012C158`), allowing `0x0012AEF0`, `0x00111E10` and
+`0x001116E0` to select valid native vehicles and driver records. Participant
+records are at description+`0x2C`, stride `0x78`: type `0x50` identifies a human,
+`0x51` identifies AI. **Human slots are not necessarily first.** Live solo
+construction has put its human in slot 3; mixed construction has put humans in
+slots 2 and 3. Human count and viewport count cannot identify a particular car.
+The AI slot mask is latched at event construction, so UI changes take effect on
+the next event.
+
+After `0x0020FD48` builds the world, missing AI weapons are created through
+`0x00227EE8(slot)`, the same scene factory used by native humans. It derives
+muzzle offsets from the model, creates the explosive chicken scene and queues
+physical construction through `0x00213578 / 0x001758B8`. `0x0017EA10` registers
+the physical interface later. Capacity accounting must reserve queued entries;
+checking only the current registry count is insufficient. Bounds are sixteen
+weapon records and 1,200 world/visible object pointers. Existing scene/weapon
+ownership and native suppression `0x002CE180` are respected.
+
+Battle's native AI factory chooses a NullDriver. It does not register with the
+normal driver update list; hooking its empty update function produced no live
+inputs even though an isolated wrapper test passed. The policy therefore runs
+after native AICar update `0x001A2D20`, once per actual car update. Native physics,
+damage, scene updates and human drivers still run. The policy selects a living
+opponent with hysteresis, leads moving targets, steers toward contact, slows for
+turns, reverses when stuck and fires only when aim/range/elevation permit. It
+uses native weapon input and cooldown instead of changing weapon state.
+This is a custom pursuit/ramming policy, not recovered original Battle AI.
+
+### Correct vehicle controls
+
+| Car offset | Native setter | Meaning/evidence |
+| --- | --- | --- |
+| `+0x1B6C` | `0x0018AA78/80` | Steering target. Physics smooths into `+0x1B80`; that latter field is not the input setter. |
+| `+0x1B70` | `0x0018AA70` | Throttle input. |
+| `+0x1B74` | `0x0018AA68` | Brake input. |
+| `+0x1B78` | `0x0018AA60` | Drivetrain engagement input: native Derby writes **1** through `0x001975B0 → 0x001988E8`. Setting zero prevented useful bot acceleration in a live test. “Clutch” is an inferred label, not an original symbol. |
+| `+0x1B7C` | `0x0018AA58` | Rear brake/handbrake input. Physics multiplies it by eight and combines it with the rear braking terms. |
+| `+0x1B90` | `0x0018AA50` | Requested gear; `-10` is native automatic forward selection, `-1` reverse. |
+
+Earlier claims that `+0x1B78` is the handbrake are incorrect. Native Human and
+Derby callers, physics consumers, and live RAM comparison agree on the corrected
+separation. A nonzero throttle field alone did not establish working driving.
+
+### Death, scoring and respawn
+
+Common Car damage already reports death through
+`0x0018D6C0 → 0x001DA468 → BattleMaster virtual +0x60 → 0x00166F48`.
+This works for AI without NullDriver forwarding. Do not report it twice.
+The participant record's dead flag is master+`0x458 + slot*0x50`, death time
+`+0x45C`, kills `+0x460`, deaths `+0x464`, suicide penalties `+0x468`.
+Displayed/net score is **kills minus suicide penalties**. `0x00167D58` changes
+phase 1 (combat) to phase 2 (finished) at five net kills; phase 0 is countdown.
+
+Humans see “Press the SELECT button to respawn.” Bots request the same native
+operation, `0x001671E8(master,slot)`, while dead and combat is active. It checks
+the native strict two-second delay before calling `0x001675C0`, which resets the
+car through `0x00189F50`, chooses a native track spawn with `0x001673B8`, applies
+it through the car's virtual reset, and resets event presentation. The bridge
+does not invent spawn coordinates or directly clear death/score fields.
+
+Initial placement also has a common native path:
+`0x00185470 → 0x00187248 → 0x00187688 → 0x001D92A8 → 0x001DA418 → 0x00167C70`.
+Do not infer that all AI need a manual teleport because their driver is NullDriver.
+Native Derby uses a separate bound resource loaded through `0x00151BA0`;
+Battle's bound pointer `0x003CD580` was zero in live runs. Substituting Derby
+controllers without constructing their dependencies is unsafe.
+
+### Solo menu exposure
+
+`SinglePlayerBattle` appends a contest referencing an existing native VAL Battle
+section after the outer `0x001244A8` loader returns. It preserves every existing
+race, VAL key/value string and native `c_battle` track layout. The native caller
+then sorts/remaps through `0x001248E0`. There is no world-origin arena, shared
+string overwrite or replacement of a track's first race.
+
+Native limits are forty Eves, thirty-two contests per Eve, and 320 total
+contests. The observed solo resource set already contained 312 contests. The
+bridge fills remaining capacity in display-name order; consequently Battle
+availability is bounded by the loaded resource set, not guaranteed for every
+track. Expanding the table or safely constructing a separate Battle menu is
+future work. This capacity limit must not be silently bypassed. With the tested
+resource set, the alphabetically allocated additions are Anoka, Ashland, Baxter,
+Dennison, Dundas, Eagan, Gilroy and Hampton. Menu placement follows the native
+contest list, not necessarily alphabetic event names; the scripted solo route
+selects Battle one entry above Jump Race on Dennison.
+
+Course following, its native ABI, solo eligibility decision and limitations
+are documented in [Battle navigation](BATTLE_NAVIGATION.md).
+
+## Native map and event unlocking
+
+`UnlockAll` is enabled by default. It writes the existing feat masks at
+`0x003D18E0` and `0x003D18E4`, seven track-prize bytes at
+`0x004A8AF8..0x004A8AFE`, and event-selection override `0x003D8180=1`.
+The latter two operations mirror native `0x002CBC18` and `0x002CD418`;
+`0x002CD4A8` consumes the override. Only seven bytes belong to the prize
+masks; the adjacent bytes must remain unchanged. The full career cheat
+`0x002B6DB8` is not called because it also changes money, vehicles and
+career state. With `UnlockAll=false`, these fields are left to native progression.
+
+Home's `hidden=until_career_done` gate uses
+`0x002C71B0 → 0x002E0AF8 → 0x00205368(7)` and the feat masks. Home has a
+native multiplayer Battle descriptor in `homebase_eves.val`,
+`$0069$contest`, with `max_cars=2`, `terrain_mask=64`, and
+`terrain_disable_mask=128`. With its inherited terrain bits, the final
+native mask is 341. This corrects the older claim that Home had no Battle data.
+Unlocking a track does not by itself validate custom bot navigation on it.
+
+The resource display-name list includes Anoka, Ashland, Baxter, Dennison, Dundas,
+Eagan, Gilroy, Hampton, Hastings, Home, Kenyon, Mankato, Welch and Woodly.
+Do not infer menu tap counts from that list: the actual multiplayer journey
+uses nine RIGHT taps to reach Woodly; ten wrapped to Anoka in the captured run.
+Home's sixteen native multiplayer contests put Battle last, while Woodly's
+25-contest list places Battle at native index 15 (zero based). These menu
+contracts are used by the scripted input journey, without selecting maps by
+writing arbitrary runtime state.
+
+## Live evidence and remaining validation
+
+Automated runs use isolated memory cards, Vulkan 1x, FrameSkip=0, muted audio,
+original force/radius scales of one, and all optional gameplay flags disabled
+for the vanilla baseline. `tools/test_battle.sh` saves exact configuration,
+controller scripts, captures, trace and final RAM under ignored local output.
+Its exit check only establishes reaching combat, not full player acceptance.
+
+- `vanilla-battle` (7,000 vblanks): two native humans, two cars, phase 0→1,
+  flags `0x09`, independent movement, visible chickens and arming/reload UI.
+  This does not establish exhaustive camera-angle or blast-credit fidelity.
+- `mixed-2` (9,000 vblanks): two humans plus two AI, four valid weapon interfaces,
+  native phase 0→1, bot movement/firing/ramming, and a bot credited two kills.
+  Screenshots show both human wrecks and the native SELECT respawn prompt.
+  The automated inputs in this run did not press SELECT, so no human respawns
+  should be inferred. One bot remained near its initial area, motivating further
+  recovery-policy validation.
+- `single-3` (10,000 vblanks, exit 0): Battle selected from Dennison's solo
+  menu, one human in slot 3 and three AI in slots 0–2. All bots moved over
+  100 world units from their initial positions, fired native weapons, scored
+  kills and completed two observed death→respawn cycles each. Human SELECT
+  inputs produced two observed respawns. Maximum net scores were 2, 3 and 3
+  for the AI. These are sampled trace counts, not an exhaustive shot log.
+- `mixed-final` (18,000 vblanks, exit 0): two humans and two bots;
+  both bots fired, scored and completed two observed respawns. Maximum
+  displacements were 183.16 and 223.35 world units, with maximum net scores
+  2 and 3. The match **did not reach phase 2**. Both human input schedules
+  ended before the run ended, leaving wrecked humans unrespawned; the bots
+  continued, but later showed poor progress near obstacles. This is evidence
+  of a navigation limitation, not complete-match acceptance.
+- `home-1` (12,000 vblanks, exit 0): rendered Home/native `homebase.trk`,
+  two humans/two bots, phase 0→1, bot maximum alive-period displacements
+  139.42/268.47, sampled fire transitions 2/6, maximum net scores 1/1,
+  observed bot respawns 0/1. The longest throttled interval within three
+  units was 7.17/2.33 seconds. This baseline precedes course following;
+  its native course cache was empty, so Home uses direct-pursuit fallback.
+  It establishes attacks and movement around the Home layout, not a finished
+  match or obstacle-clearance guarantee.
+- `woodly-route` (12,000 vblanks, exit 0): WOODLY remained selected in
+  captures and native `Afton.trk` loaded. Two humans/two bots reached phase
+  0→1. Bot maximum alive-period displacement was 234.42/190.36, sampled
+  fire transitions 3/5, maximum net scores 2/1, and each bot respawned once.
+  Course telemetry was valid in 114 samples per bot; only slot 1 used routing
+  in five samples (native t=92.409–96.413), with direct interception elsewhere.
+  The longest throttled interval within three units was 10.01/5.34 seconds.
+  Captures show the farmyard, native chickens, moving opponents and fence pins.
+  The run **did not reach phase 2**. This proves bounded course activation and
+  combat on Woodly, not general obstacle avoidance or completed map acceptance.
+- `dennison-route` (15,000 vblanks, exit 0): native `Dennison.trk`,
+  two humans/two bots, phase 0→1. Bot maximum alive-period displacements
+  were 164.20/206.12, sampled fire transitions 4/4, maximum net scores 3/2,
+  and respawns 0/2. Course following activated in 3/27 of 171/168 sampled
+  bot updates. Longest throttled intervals within three units were 11.34/3.67
+  seconds. Human SELECT inputs produced 2/1 sampled respawns. The run did
+  not reach phase 2, and pins remain. Different stimuli/frame bounds prevent
+  treating these observations as a controlled performance comparison with
+  `mixed-final`; primary-course following is not a complete obstacle solution.
+- The navigation rebuild passed **54/54 CTests** (15.31 seconds, latest checkpoint rebuild), including the
+  138 native weapon assertions. The local macOS app rebuilt successfully and
+  passed `codesign --verify --deep --strict`.
+- Earlier failed experiments are not acceptance: a NullDriver hook never ran;
+  writing zero to drivetrain engagement left bots nearly stationary. Those
+  failures explain why fixture-only success was insufficient.
+
+The run named `woodly-1` was a menu-navigation mistake: native logs loaded
+`Anoka.trk`, and captures show ANOKA before acceptance. Its 12,000-vblank
+run nevertheless reached phase 2 at native t=104.438 with two humans and two
+bots, slot 0 at five net kills, and visible native ranks/Eve standings. This
+proves a bounded completed mixed match on Anoka with the previous direct
+pursuit policy; it proves neither Woodly routing nor controlled restart.
+The continued script entered post-event presentation. Keep this distinction
+when interpreting the local directory name.
+
+The following requirements remain pending until a named live run proves them.
 
 | Pending check | Evidence needed |
 | --- | --- |
-| Original two-player Battle | Exact build/config/input sequence; independently controlled P1/P2; rendered native shots; RAM/trace correlation. |
+| Additional original-reference coverage | Additional pitch/camera angles and direct original-hardware comparisons beyond the recorded vanilla run. |
 | Reload in a real match | First shot, held input through expiry, release, second press; matching native state/deadline and visible second shot. |
 | Collision, blast and ownership | Native impact/detonation path; correct attacker and victim; score changes consistent with the hit. |
-| Optional native-path bots | One human plus three bots and two humans plus two bots; no human-controller replacement; native registration and trigger use. |
+| Complete mixed match with course routing | Two humans plus two bots through five net kills and results with the final course policy; the earlier direct-pursuit Anoka run reached this threshold. |
 | Recovery and respawn | Observed wall recovery and native respawn transforms on the actual track; no invented world-origin circle or unsupported time guarantee. |
 | Complete lifecycle | Countdown, combat, death, respawn, score threshold, results, restart and exit without stale state. |
-| Regression validation | Full coordinated CTest run and relevant normal-race/control checks after final code changes. |
+| Additional regression journeys | Four-human Battle, restart, return-to-menu and normal-race visual checks beyond the passing fixture suite. |
 
-## STAR handoff
+## Pending acceptance journeys
 
-**Situation:** historical implementation/notes mixed the weapon interface with
-the body, treated update as fire, forced the mortar flag, and made unsupported
-claims about synthetic registration, bots and arena relocation.
+The checkpoint intentionally does not claim that Battle and course-navigation acceptance is complete. Preserve working builds and branches until the remaining
+acceptance is verified; final source push and cleanup follow that acceptance.
 
-**Task:** recover the original weapon/control contract before extending Battle,
-then prove the player acceptance above with live evidence.
+The bounded next weapon journey is authored as:
 
-**Action:** inspected native call sites and stores, documented ABI/flags/state,
-added build-local extraction and focused native tests, and marked conflicting
-historical documentation. The chapter intentionally leaves bot and live-runtime
-results pending for the primary investigator.
+```sh
+tools/test_battle.sh "$DISC" weapon work/battle-weapon-reload 7000 Dennison
+```
 
-**Result:** the focused native CPU suite passes; visible player acceptance is
-not established by this chapter. Next decisive test is a bounded rendered
-two-player Battle with independent inputs and native shot/reload state traced
-through a real collision and score event, followed by the optional bot matrix.
+It uses original two-human Battle with bots/enhancements off, holds human 0's
+L2 from vblank 5200 through 5549, releases at 5550 and presses again at 5580.
+Human 1 remains neutral. Input-state checks establish the intended timeline;
+real reload, visible flight/impact and score evidence remain pending until this
+journey is actually inspected. `BATTLE_BLAST` records the native detonation
+entry's attacker index, position, radius and force when tracing is enabled;
+it does not itself prove which car was hit or why a later score changed.
+
+Use an explicitly named `Anoka` mixed run for the next full-match/lifecycle
+journey; the harness supports its ten RIGHT taps and requires `Anoka.trk`.
+Control post-match input separately: demonstrate rank/results, select restart,
+observe a fresh countdown/score reset, return to the menu and exit. Existing
+fixed smoke scripts do not certify those post-match choices.
+
+The major unresolved implementation gap is obstacle-aware pursuit: the current
+reader only supplies primary-course segments, and no safe native wall/clearance
+query ABI or secondary-branch traversal contract has been established. Resolve
+that interface from native callers/consumers and test it before adding steering
+heuristics or claiming general pathfinding. Recheck moving-target fence chases
+on Home/Woodly and full mixed/solo matches after such a change.

@@ -1,19 +1,19 @@
 ---
 tags: ["engine", "rendering", "ps2", "technical-reference"]
 ---
-# Independent renderer reconnaissance — 2026-10-16
+# Renderer architecture and dependencies
 
 
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/RECOMP_RENDERER_RECON.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `93cf1760e8e6af14a0474dd783288ff17f81eca1b46831b8b59f97c3d03e8faf`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/RECOMP_RENDERER_RECON.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `93cf1760e8e6af14a0474dd783288ff17f81eca1b46831b8b59f97c3d03e8faf`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
 ## Finding and evidence boundary
 
-**No proven matching Monster Games / NASCAR Heat / Dirt to Daytona / Test Drive: Eve of Destruction PS2 static recompilation or decompilation targeting Metal/Vulkan was found.** This is a bounded public-source search, not proof that none exists. Queries covered those game/developer names plus PS2 recompilation, decompilation, Metal, Vulkan and racing. Local `contributors.md` and `RENDERER_REFERENCES.md` supplied requirements only; their conclusions were not treated as independent evidence.
+**No proven matching Monster Games / NASCAR Heat / Dirt to Daytona / Test Drive: Eve of Destruction PS2 static recompilation or decompilation targeting Metal/Vulkan was found.** This is a bounded public-source search, not proof that none exists. Queries covered those game/developer names plus PS2 recompilation, decompilation, Metal, Vulkan and racing.
 
 Road Trip is a relevant racing PS2 static recompilation with a published Mac package and test harness. That establishes an inspectable candidate, **not a correctness oracle or proof of matching EOD transfers**. Its forks, PS2Recomp integrations and bundled paraLLEl-GS are one dependency lineage, not several independently successful ports.
 

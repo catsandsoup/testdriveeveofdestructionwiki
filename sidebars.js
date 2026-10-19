@@ -11,6 +11,14 @@ module.exports = {
           "items": [
             "research/wiki/ai_and_pathfinding"
           ]
+        },
+        {
+          "type": "category",
+          "label": "combat-and-ai",
+          "items": [
+            "ps2/BATTLE_NAVIGATION",
+            "ps2/BATTLE_RECOVERY"
+          ]
         }
       ]
     },

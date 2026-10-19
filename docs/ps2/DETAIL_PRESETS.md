@@ -1,13 +1,13 @@
 ---
 tags: ["engine", "rendering", "ps2", "technical-reference"]
 ---
-# Optional detail presets — October 17 continuation
+# Rendering detail presets
 
 
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/DETAIL_PRESETS.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `d975750da76c55fc7f71684d29e5ea2a106060d3b6b5b7845a2f3ebfe09b4e75`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/DETAIL_PRESETS.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `d975750da76c55fc7f71684d29e5ea2a106060d3b6b5b7845a2f3ebfe09b4e75`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 

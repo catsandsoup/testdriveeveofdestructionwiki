@@ -1,10 +1,10 @@
-# PS2 / Vulkan / MoltenVK references checked during takeover
+# PS2, Vulkan and MoltenVK reference contracts
 
 
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/RENDERER_REFERENCES.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `3d57b9e61cd4c8a5a587360dc7d31c88dae29ce3c877e0a42b66870ef6ff0e42`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/RENDERER_REFERENCES.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `3d57b9e61cd4c8a5a587360dc7d31c88dae29ce3c877e0a42b66870ef6ff0e42`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -87,7 +87,7 @@ source exactly matches the 2004 game.
 ## Readback-cost follow-up and standing reuse rule — October 16, 2026
 
 the documented requirements checking existing projects online, Context7 and
-SDK sources before designing replacements. This is now in root `contributors.md`.
+SDK sources before designing replacements. This is now in root `AGENTS.md`.
 Rechecked Road Trip's live third-party listing: PS2Recomp still pins
 `818f279be3f9cdecaa9c7b4a3a7cbe8fe44fd6e4`.
 

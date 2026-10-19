@@ -4,7 +4,7 @@
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/NATIVE_CAMERA_ASPECT.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `51b9c2b40d6497f30352a5b07d919fe5bf52afa8e3c620a3efceb3131679a792`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/NATIVE_CAMERA_ASPECT.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `51b9c2b40d6497f30352a5b07d919fe5bf52afa8e3c620a3efceb3131679a792`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -103,7 +103,7 @@ cmake --build build-mac --target eod_native_camera_test -j2
 ctest --test-dir build-mac -R NativeCamera --output-on-failure
 ```
 
-upstream integration must still compare matched single- and two-player scenes at
+Integration validation must still compare matched single- and two-player scenes at
 4:3/16:9/16:10, with aspect-correct display composition, to verify framing, HUD
 proportions, borders, and menu coverage. Source and CPU tests establish the hook
 mechanism; they are not proof that every game screen is visually correct.

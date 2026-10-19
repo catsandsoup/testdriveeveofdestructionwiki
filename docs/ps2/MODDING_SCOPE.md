@@ -7,7 +7,7 @@ tags: ["engine", "modding-and-formats", "ps2", "technical-reference"]
 :::note Source and evidence
 PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
-Source: `docs/MODDING_SCOPE.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `038b9456905096f3ce88bc7abce90935206f4234c45ebda286263ecfbf604206`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
+Source: `docs/MODDING_SCOPE.md` in `eod-recomp`. Repository HEAD: `26dcfb108ab4c0b0ffacf9fba915417acd65a52e`. Working-copy modifications: `no`. Source SHA-256: `ccf449cc8ed3dbe165494d00f7e6f166a505f58a0c80f65e876fe78fc1b94385`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
@@ -278,10 +278,10 @@ pairs_off: n_pairs × {key_off, value_off}; all values are C strings in a pool a
 ```
 * The last section word is a leftover heap pointer from the Win32 tool. It is
   the only thing that differs between the PS2 and Xbox copies of a table.
-* `upstream` implements **inheritance**: a contest section `[$0040$contest]
-  upstream='knockout_contest'` inherits its template, and eves inherit
+* `parent` implements **inheritance**: a contest section `[$0040$contest]
+  parent='knockout_contest'` inherits its template, and eves inherit
   `afton_eve_defaults`. The engine errors confirm this: `valtab: table "%s" has
-  missing upstream "%s"` / `ambiguous upstream` / `parented to self!`.
+  missing parent "%s"` / `ambiguous parent` / `parented to self!`.
 * `@name = $NNNN$name` keys are references to child sections (lists of objects).
 * `include` sections chain files (`eves.val` includes the 14 `*_eves.val`).
 * `frame64` / `unfloat_frame64` / `house_car_frame64`: 64 characters in the
@@ -494,9 +494,11 @@ editor **Low**.
   (which `c_*.va0` prop layout to use), `line_basename`, start/arena positions,
   AI skill and purse. All of these keys were found in the `*_eves.val` files.
 * **The 2-player menu is data, and it is the same data on PS2.** Each track's
-  `<track>_eves.val` has one `[eve] mode = multi` with ~25 contests (every track
-  except HomeBase offers jump/normal/figure-8/derby/battle/capture/gauntlet/…,
-  and `soccer` appears only in MP on 5 tracks). These files are semantically
+  `<track>_eves.val` has one `[eve] mode = multi` with a track-specific contest list. HomeBase also has a native multiplayer
+  Battle definition (`$0069$contest`, `max_cars=2`); the older claim that Home
+  was excluded was incorrect. Most other tracks have roughly 25 contests
+  including jump/normal/figure-8/derby/battle/capture/gauntlet/…; `soccer`
+  appears only in MP on 5 tracks. These files are semantically
   identical on both discs, so the Xbox decode applies to the PS2 port. Adding a
   contest to that list adds an MP option.
 * Split screen and pads on PS2: `Multiplayer requires at least two

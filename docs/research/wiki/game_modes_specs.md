@@ -1,7 +1,7 @@
 ---
 tags: ["menus", "event-selection", "cross-platform", "historical"]
 ---
-# Granular Specifications: 15 Custom Game Modes
+# Custom game-mode proposals — unverified designs
 
 
 :::note Source and evidence

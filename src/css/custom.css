@@ -1,0 +1,513 @@
+/**
+ * Test Drive: Eve of Destruction (PS2 Recomp)
+ * Visual Theme: Industrial Demolition Derby, Brushed Steel, Rivets, Hazard Stripes, and DualShock 2 Accents
+ */
+
+:root {
+  --ifm-color-primary: #f5a623;
+  --ifm-color-primary-dark: #e09418;
+  --ifm-color-primary-darker: #d48800;
+  --ifm-color-primary-darkest: #b36f00;
+  --ifm-color-primary-light: #f7b23e;
+  --ifm-color-primary-lighter: #f8bd58;
+  --ifm-color-primary-lightest: #fad28d;
+  --ifm-code-font-size: 92%;
+
+  --eod-hazard-yellow: #f5a623;
+  --eod-spray-yellow: #ffe600;
+  --eod-rust-orange: #ff5722;
+  --eod-brake-red: #d32f2f;
+  --eod-steel-border: #2e3544;
+  --eod-steel-dark: #12151b;
+  --eod-steel-plate: #181c24;
+  --eod-steel-light: #252b37;
+  --eod-asphalt-bg: #0b0d10;
+  --eod-text-bright: #f8fafc;
+  --eod-text-muted: #94a3b8;
+  --eod-glow-yellow: rgba(245, 166, 35, 0.45);
+  --eod-glow-red: rgba(211, 47, 47, 0.4);
+
+  /* DualShock 2 Button Colors */
+  --ps2-cross: #5865f2;
+  --ps2-circle: #ef4444;
+  --ps2-square: #ec4899;
+  --ps2-triangle: #10b981;
+
+  --ifm-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ifm-heading-font-family: 'Russo One', 'Impact', sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Always dark derby theme */
+  --ifm-background-color: var(--eod-asphalt-bg);
+  --ifm-background-surface-color: var(--eod-steel-plate);
+  --ifm-navbar-background-color: var(--eod-steel-dark);
+  --ifm-footer-background-color: #07080a;
+  --ifm-font-color-base: #e2e8f0;
+  --ifm-heading-color: #f8fafc;
+  --ifm-link-color: var(--eod-hazard-yellow);
+  --ifm-link-hover-color: #ffc72c;
+  --ifm-menu-color-active: var(--eod-hazard-yellow);
+  --ifm-menu-color: #cbd5e1;
+  --ifm-hr-border-color: var(--eod-steel-border);
+}
+
+/* Force dark mode aesthetic across the site */
+html[data-theme='light'],
+html[data-theme='dark'] {
+  --ifm-background-color: var(--eod-asphalt-bg);
+  --ifm-background-surface-color: var(--eod-steel-plate);
+  --ifm-navbar-background-color: var(--eod-steel-dark);
+  --ifm-footer-background-color: #07080a;
+  --ifm-font-color-base: #e2e8f0;
+  --ifm-heading-color: #f8fafc;
+  --ifm-link-color: var(--eod-hazard-yellow);
+  --ifm-link-hover-color: #ffc72c;
+  background-color: var(--eod-asphalt-bg);
+  color: #e2e8f0;
+}
+
+body {
+  background-color: var(--eod-asphalt-bg);
+  background-image: 
+    radial-gradient(ellipse at 50% 0%, rgba(245, 166, 35, 0.06) 0%, transparent 70%),
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   NAVBAR: Heavy Industrial Steel Beam with Hazard Trim
+   ============================================================ */
+.navbar {
+  background-color: var(--eod-steel-dark);
+  border-bottom: 2px solid var(--eod-steel-border);
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+
+/* Hazard diagonal stripes on bottom border of navbar */
+.navbar::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--eod-hazard-yellow),
+    var(--eod-hazard-yellow) 8px,
+    #12151b 8px,
+    #12151b 16px
+  );
+  z-index: 10;
+}
+
+.navbar__brand {
+  font-family: 'Russo One', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__title {
+  color: #ffffff;
+  font-size: 1.15rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.navbar__item {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: var(--eod-hazard-yellow) !important;
+  text-shadow: 0 0 10px var(--eod-glow-yellow);
+}
+
+/* ============================================================
+   SIDEBAR: Metal Workshop Panel with Riveted Tabs
+   ============================================================ */
+.theme-doc-sidebar-container {
+  background-color: #0f1217 !important;
+  border-right: 1px solid var(--eod-steel-border) !important;
+}
+
+.menu__list {
+  padding: 12px 8px;
+}
+
+/* Category headers */
+.menu__list-item-collapsible {
+  background: var(--eod-steel-plate);
+  border: 1px solid var(--eod-steel-border);
+  border-radius: 4px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  padding: 2px 6px;
+  font-family: 'Russo One', sans-serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.menu__list-item-collapsible:hover {
+  border-color: var(--eod-hazard-yellow);
+}
+
+.menu__link {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 3px;
+  padding: 6px 10px;
+  margin: 2px 0;
+  color: #cbd5e1;
+  transition: all 0.15s ease;
+}
+
+/* In-game PS2 menu active button effect */
+.menu__link--active {
+  background: linear-gradient(90deg, rgba(245, 166, 35, 0.2) 0%, rgba(245, 166, 35, 0.05) 100%) !important;
+  color: var(--eod-spray-yellow) !important;
+  font-weight: 700;
+  border-left: 3px solid var(--eod-hazard-yellow);
+  text-shadow: 0 0 8px rgba(255, 230, 0, 0.5);
+  box-shadow: inset 0 0 12px rgba(245, 166, 35, 0.1);
+}
+
+.menu__link:hover:not(.menu__link--active) {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+/* ============================================================
+   TYPOGRAPHY & HEADINGS: Racing Stencil & Distressed Metals
+   ============================================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Russo One', 'Impact', sans-serif;
+  letter-spacing: 0.5px;
+  color: #f8fafc;
+}
+
+h1 {
+  font-size: 2.2rem;
+  border-bottom: 2px solid var(--eod-steel-border);
+  padding-bottom: 12px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 90px;
+  height: 2px;
+  background: var(--eod-hazard-yellow);
+  box-shadow: 0 0 8px var(--eod-hazard-yellow);
+}
+
+h2 {
+  font-size: 1.6rem;
+  margin-top: 36px;
+  color: var(--eod-spray-yellow);
+  text-transform: uppercase;
+}
+
+h3 {
+  font-size: 1.25rem;
+  color: #e2e8f0;
+}
+
+/* ============================================================
+   CALLOUTS & ADMONITIONS: Stamped Steel & Hazard Borders
+   ============================================================ */
+.alert {
+  background-color: var(--eod-steel-plate) !important;
+  border: 1px solid var(--eod-steel-border) !important;
+  border-left: 4px solid var(--ifm-color-primary) !important;
+  border-radius: 4px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.alert--info {
+  border-left-color: #3b82f6 !important;
+}
+
+.alert--note {
+  border-left-color: var(--eod-hazard-yellow) !important;
+}
+
+.alert--warning,
+.alert--caution {
+  border-left-color: var(--eod-rust-orange) !important;
+}
+
+.alert--danger {
+  border-left-color: var(--eod-brake-red) !important;
+}
+
+/* ============================================================
+   CODE BLOCKS: Brushed Dark Steel with PS2 Memory Feel
+   ============================================================ */
+pre, .theme-code-block {
+  background-color: #080a0d !important;
+  border: 1px solid var(--eod-steel-border) !important;
+  border-radius: 6px !important;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+code {
+  background-color: #1a1e28;
+  border: 1px solid #2e3646;
+  color: var(--eod-spray-yellow);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 88%;
+}
+
+/* ============================================================
+   TABLES: Industrial Speedway Spec Sheet
+   ============================================================ */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid var(--eod-steel-border);
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--eod-steel-plate);
+  margin: 20px 0;
+}
+
+th {
+  background-color: #12151c;
+  color: var(--eod-hazard-yellow);
+  font-family: 'Russo One', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--eod-steel-border);
+  padding: 12px 16px;
+}
+
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(46, 53, 68, 0.6);
+  font-size: 0.92rem;
+}
+
+tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+tr:hover {
+  background-color: rgba(245, 166, 35, 0.05);
+}
+
+/* ============================================================
+   CUSTOM PS2 & DERBY COMPONENTS
+   ============================================================ */
+
+/* DualShock 2 Button Badges */
+.ps2-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #181b22;
+  border: 2px solid #3b4252;
+  font-family: -apple-system, sans-serif;
+  font-weight: 900;
+  font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.15);
+  margin: 0 4px;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.ps2-btn.cross {
+  color: var(--ps2-cross);
+  border-color: rgba(88, 101, 242, 0.5);
+  text-shadow: 0 0 6px rgba(88, 101, 242, 0.7);
+}
+
+.ps2-btn.circle {
+  color: var(--ps2-circle);
+  border-color: rgba(239, 68, 68, 0.5);
+  text-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
+}
+
+.ps2-btn.square {
+  color: var(--ps2-square);
+  border-color: rgba(236, 72, 153, 0.5);
+  text-shadow: 0 0 6px rgba(236, 72, 153, 0.7);
+}
+
+.ps2-btn.triangle {
+  color: var(--ps2-triangle);
+  border-color: rgba(16, 185, 129, 0.5);
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
+}
+
+.ps2-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: #11141a;
+  border: 1px solid var(--eod-steel-border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.ps2-badge.primary {
+  border-color: var(--eod-hazard-yellow);
+  color: var(--eod-hazard-yellow);
+  background: rgba(245, 166, 35, 0.08);
+}
+
+.ps2-badge.ps2 {
+  border-color: #00439c;
+  color: #60a5fa;
+  background: rgba(0, 67, 156, 0.15);
+}
+
+/* 3D Angled Metal Action Buttons */
+.eod-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #2b323f 0%, #171b22 100%);
+  border: 1px solid #4a5568;
+  color: #ffffff !important;
+  font-family: 'Russo One', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border-radius: 4px;
+  transform: skewX(-6deg);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  text-decoration: none !important;
+}
+
+.eod-btn > * {
+  transform: skewX(6deg);
+}
+
+.eod-btn:hover {
+  background: linear-gradient(180deg, #f5a623 0%, #d48800 100%);
+  border-color: #ffd000;
+  color: #000000 !important;
+  box-shadow: 0 0 20px rgba(245, 166, 35, 0.5), 0 4px 12px rgba(0, 0, 0, 0.8);
+  transform: skewX(-6deg) translateY(-2px);
+}
+
+.eod-btn:active {
+  transform: skewX(-6deg) translateY(1px);
+}
+
+/* Secondary Caution-striped Button */
+.eod-btn.secondary {
+  background: #15181f;
+  border-color: var(--eod-steel-border);
+  color: var(--eod-hazard-yellow) !important;
+}
+
+.eod-btn.secondary:hover {
+  background: #1f2530;
+  border-color: var(--eod-hazard-yellow);
+  color: #ffffff !important;
+}
+
+/* ============================================================
+   CRT SCREEN SCANLINE FILTER (TOGGLEABLE)
+   ============================================================ */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 4px, 6px 100%;
+  opacity: 0.75;
+}
+
+/* ============================================================
+   FOOTER: Demolition Derby Pit Lane
+   ============================================================ */
+.footer {
+  background-color: var(--ifm-footer-background-color) !important;
+  border-top: 2px solid var(--eod-steel-border);
+  position: relative;
+  padding: 30px 20px;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--eod-hazard-yellow),
+    var(--eod-hazard-yellow) 8px,
+    #07080a 8px,
+    #07080a 16px
+  );
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0d10;
+}
+::-webkit-scrollbar-thumb {
+  background: #232936;
+  border: 1px solid #363f52;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--eod-hazard-yellow);
+}

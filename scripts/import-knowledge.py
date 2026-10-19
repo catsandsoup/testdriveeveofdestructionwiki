@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 """Import Markdown only; do not copy executable, disc, generated, capture or binary assets."""
 import argparse, hashlib, json, re, subprocess
+from datetime import date
 from pathlib import Path
 parser = argparse.ArgumentParser()
 import os
 parser.add_argument('--ps2', type=Path, default=Path(os.environ.get('EOD_PS2_SOURCE', '../eod-recomp')))
 parser.add_argument('--research', type=Path, default=Path(os.environ.get('EOD_RESEARCH_SOURCE', '../TDEOD RECOMP')))
 args = parser.parse_args()
+# Fail before touching published outputs if a source checkout is unavailable.
+for source_repo in (args.ps2, args.research):
+    if not (source_repo / "docs").is_dir() or not any((source_repo / "docs").rglob("*.md")):
+        parser.error(f"Missing or empty source documentation: {source_repo / 'docs'}")
+imported_date = date.today().isoformat()
 root = Path(__file__).resolve().parents[1]
 manifest = []
-previous_manifest_path = root / 'knowledge-manifest.json'
-previous_manifest = json.loads(previous_manifest_path.read_text()) if previous_manifest_path.exists() else []
 def git(repo, *argv):
     p = subprocess.run(['git', '-C', str(repo), *argv], capture_output=True, text=True)
     return p.stdout.strip() if p.returncode == 0 else 'unavailable'
@@ -39,14 +43,27 @@ def render(text, source, mapping):
 entries = []
 for group, repo, label in [('ps2', args.ps2, 'PS2 implementation notes'), ('research', args.research, 'Historical / cross-platform research')]:
     for source in sorted((repo / 'docs').rglob('*.md')):
-        if source.name in {'CODEX_HANDOFF.md', 'STATUS.md', 'BATTLE_RECOVERY.md', 'DEVELOPER_HANDOFF.md', 'PLAYER_JOURNEY.md', 'PLAYER_SUCCESS_AND_STAR.md', 'MODDING_IDEAS.md', 'mod_tools_roadmap.md', 'GAMEPLAY_MODS_RE.md', 'native-ai-research.md', 'native-weapon-tests.md'} or 'superpowers' in source.parts:
+        if source.name in {'CODEX_HANDOFF.md', 'STATUS.md', 'DEVELOPER_HANDOFF.md', 'PLAYER_JOURNEY.md', 'PLAYER_SUCCESS_AND_STAR.md', 'MODDING_IDEAS.md', 'mod_tools_roadmap.md', 'GAMEPLAY_MODS_RE.md', 'native-ai-research.md', 'native-weapon-tests.md'} or 'superpowers' in source.parts:
             continue
         entries.append((source, root / 'docs' / group / source.relative_to(repo / 'docs'), repo, label))
 def sanitize(text, source):
+    # Public titles describe mechanisms, not the research session that produced them.
+    public_titles = {
+        'DETAIL_PRESETS.md': 'Rendering detail presets',
+        'INPUT_CONTINUATION.md': 'Controller allocation and input routing',
+        'GS_COLD_PACKET_REPLAY.md': 'Clean-start GS packet replay',
+        'RECOMP_RENDERER_RECON.md': 'Renderer architecture and dependencies',
+        'RENDERER_REFERENCES.md': 'PS2, Vulkan and MoltenVK reference contracts',
+        'MACOS.md': 'macOS and Apple Silicon runtime',
+        'engine_overhauls_specs.md': 'Engine extension proposals — unverified designs',
+        'game_modes_specs.md': 'Custom game-mode proposals — unverified designs',
+    }
+    if source.name in public_titles:
+        text = re.sub(r'^# [^\n]+', '# ' + public_titles[source.name], text, count=1, flags=re.M)
     text = re.sub(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', '[metadata omitted]', text, flags=re.I)
     text = re.sub(r"Claude(?:'s)?|Antigravity|Gemini|Codex", 'documentation process', text, flags=re.I)
-    text = re.sub(r'(?i)\bsubagents?\b|\bagents?\b', 'contributors', text)
-    text = re.sub(r'(?i)\bparent\b', 'upstream', text)
+    # Preserve literal VAL `parent` keys and technical agent/ownership terminology.
+    text = text.replace('Parent integration', 'Integration validation')
     # Remove human workflow references while preserving technical owner indices, slots and ownership.
     text = re.sub(r"(?i)\bthe owner's (?:thin black lines|M2 Pro|PS2 disc|Xbox disc|local machine|personal configuration|own saves|design doc|Road Trip reference|priority|requirements?)\b", 'the cited', text)
     text = re.sub(r"(?i)\bowner-provided\b", 'provided', text)
@@ -62,6 +79,7 @@ def sanitize(text, source):
         "the user's final instruction limited validation to their4x setting.": '',
         "Runs use isolated memory cards, not the owner's saves.": 'Runs used isolated memory card data.',
         'The owner requested removal of the “Get back in the race!” countdown, while': 'A change removes the “Get back in the race!” countdown, while',
+        "The checkpoint intentionally does not claim the owner's entire Battle/chicken request is complete.": 'The checkpoint intentionally does not claim that Battle and course-navigation acceptance is complete.',
         'the owner’s thin black lines': 'the observed thin black lines',
         "the owner's thin black lines": 'the observed thin black lines',
         "the owner's own Xbox disc": 'the Xbox disc',
@@ -69,7 +87,7 @@ def sanitize(text, source):
         "the owner’s machine": 'specific hardware',
         "DLSS is explicitly the very last priority per the owner;": '',
         "No private chats, game execution, builds or GPU workloads were used. ": '',
-        "Local `investigation.md` and `RENDERER_REFERENCES.md` supplied requirements only; their conclusions were not treated as independent evidence.": '',
+        "Local `AGENTS.md` and `RENDERER_REFERENCES.md` supplied requirements only; their conclusions were not treated as independent evidence.": '',
         "See the main branch's docs/DEVELOPER_HANDOFF.md for current owner priorities, build instructions and branch map.": 'Consult the source repository for current build instructions and implementation status.',
     }
     for old, new in replacements.items():
@@ -107,6 +125,8 @@ def sanitize(text, source):
     if source.name == 'index.md' and 'docs/wiki' in source.as_posix():
         text = re.sub(r'(?im)^.*(?:mod_tools_roadmap|Community Mod Tools Roadmap).*\n?', '', text)
     text = text.replace('MODDING_IDEAS', 'unverified design proposal')
+    text = re.sub(r"The checkpoint intentionally does not claim the owner's entire Battle/chicken\s+request is complete\.", 'The checkpoint intentionally does not claim that Battle and course-navigation acceptance is complete.', text)
+    text = re.sub(r'\n## STAR handoff.*\Z', '', text, flags=re.S)
     return text
 # Remove excluded planning and workflow pages, plus their stale retrieval copies.
 for stale in ['docs/ps2/CODEX_HANDOFF.md', 'docs/ps2/STATUS.md', 'docs/research/STATUS.md', 'docs/ps2/DEVELOPER_HANDOFF.md', 'docs/ps2/PLAYER_JOURNEY.md', 'docs/ps2/PLAYER_SUCCESS_AND_STAR.md', 'docs/ps2/MODDING_IDEAS.md', 'docs/research/MODDING_IDEAS.md', 'docs/ps2/GAMEPLAY_MODS_RE.md', 'docs/research/GAMEPLAY_MODS_RE.md', 'docs/native/native-ai-research.md', 'docs/native/native-weapon-tests.md', 'docs/research/wiki/mod_tools_roadmap.md', 'docs/ps2/superpowers/plans/2026-10-16-macos-takeover.md']:
@@ -119,26 +139,22 @@ for stale in ['docs/ps2/CODEX_HANDOFF.md', 'docs/ps2/STATUS.md', 'docs/research/
 mapping = {s.resolve(): d for s,d,_,_ in entries}
 for source, dest, repo, label in entries:
     raw = source.read_bytes()
-    relative = str(source.relative_to(repo)) if repo else str(source.relative_to(args.session))
+    relative = str(source.relative_to(repo))
     revision = git(repo, 'rev-parse', 'HEAD') if repo else 'session working notes'
     dirty = git(repo, 'status', '--porcelain', '--', relative) if repo else 'working notes'
     digest = hashlib.sha256(raw).hexdigest()
     warning = ('This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. ' if 'research' in dest.parts or 'historical' in dest.parts or source.name == 'GAMEPLAY_MODS_RE.md' else '')
     warning += 'Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.'
-    provenance = f'\n\n:::note Source and evidence\n{label}. {warning}\n\nSource: `{relative}` in `{repo.name if repo else "native evidence source"}`. Repository HEAD: `{revision}`. Working-copy modifications: `{"yes" if dirty else "no"}`. Source SHA-256: `{digest}`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.\n:::\n\n'
+    provenance = f'\n\n:::note Source and evidence\n{label}. {warning}\n\nSource: `{relative}` in `{repo.name if repo else "native evidence source"}`. Repository HEAD: `{revision}`. Working-copy modifications: `{"yes" if dirty else "no"}`. Source SHA-256: `{digest}`. Imported {imported_date}. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.\n:::\n\n'
     content = render(sanitize(raw.decode('utf-8'), source), source, mapping)
+    content = '\n'.join(line.rstrip() for line in content.splitlines()).rstrip() + '\n'
     # Keep the heading first so Docusaurus derives a useful title.
     lines = content.splitlines(keepends=True)
     if lines and lines[0].startswith('# '): content = lines[0] + provenance + ''.join(lines[1:])
     else: content = '# ' + source.stem.replace('_',' ') + provenance + content
     dest.parent.mkdir(parents=True, exist_ok=True)
-    if dest.name != 'BATTLE_RECOVERY.md':
-        dest.write_text(content)
+    dest.write_text(content)
     manifest.append({'page': str(dest.relative_to(root)), 'source_repository': repo.name if repo else 'native evidence source', 'source_path': relative, 'repository_head': revision, 'working_copy_modified': bool(dirty), 'source_sha256': digest})
-for prior in previous_manifest:
-    if prior.get('page') == 'docs/ps2/BATTLE_RECOVERY.md' and (root / prior['page']).exists():
-        manifest.append(prior)
-        break
 (root / 'knowledge-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 print(f'Imported {len(entries)} Markdown sources; provenance recorded in knowledge-manifest.json')
 
@@ -166,13 +182,14 @@ for item in manifest:
     category, subcategory = classify(path.stem)
     platform = 'PS2 SLUS_209.10' if '/ps2/' in item['page'] or '/native/' in item['page'] else 'mixed Xbox / PS2; verify per claim'
     historical = '/research/' in item['page'] or path.name == 'GAMEPLAY_MODS_RE.md'
-    evidence = 'historical-unverified' if historical else ('static-analysis-and-cpu-tests; live-gameplay-pending' if path.name in ['BATTLE_RECOVERY.md','native-ai-research.md','native-weapon-tests.md'] else 'source-reported; verify per claim')
+    evidence = 'historical-unverified' if historical else ('static-analysis-cpu-tests-and-bounded-gameplay; consult per-claim limits' if path.name in ['BATTLE_RECOVERY.md','native-ai-research.md','native-weapon-tests.md'] else 'source-reported; verify per claim')
     docid = str(path.relative_to(root/'docs').with_suffix(''))
     tags = [category, subcategory, 'ps2' if platform.startswith('PS2') else 'cross-platform', 'historical' if historical else 'technical-reference']
     record = dict(id=docid, title=title, category=category, subcategory=subcategory, tags=tags, platform=platform, evidence=evidence,
         source_revision=item['repository_head'], source_path=item['source_path'], source_repository=item['source_repository'], source_sha256=item['source_sha256'],
         url='https://catsandsoup.github.io/testdriveeveofdestructionwiki/'+docid+'/', raw_url='https://catsandsoup.github.io/testdriveeveofdestructionwiki/raw/'+docid+'.md',
         function_addresses=sorted(set(re.findall(r'\b(?:f_)?(?:0x)?00[0-9a-fA-F]{6}\b',content))), dependencies=[], dependencies_status='not-extracted; consult source')
+    if path.name == 'BATTLE_RECOVERY.md': record['tags'] += ['weapons', 'trajectory', 'battle', 'bots', 'native-abi']
     index.append(record)
     header='---\ntags: '+json.dumps(tags)+'\n---\n'
     if not content.startswith('---\n'):
