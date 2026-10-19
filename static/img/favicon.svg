@@ -1,36 +1,73 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100%" height="100%">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e2229"/>
-      <stop offset="100%" stop-color="#0a0c0e"/>
+    <!-- Weathered Steel Panel Gradient -->
+    <linearGradient id="favMetal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e2430"/>
+      <stop offset="50%" stop-color="#141820"/>
+      <stop offset="100%" stop-color="#0a0d12"/>
     </linearGradient>
-    <linearGradient id="redPill" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#e53935"/>
-      <stop offset="100%" stop-color="#8e0000"/>
+
+    <!-- Test Drive Red Oval Gradient -->
+    <linearGradient id="favRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="40%" stop-color="#e11d48"/>
+      <stop offset="100%" stop-color="#881337"/>
     </linearGradient>
-    <linearGradient id="yellowSpray" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffee55"/>
-      <stop offset="100%" stop-color="#ff9900"/>
+
+    <!-- Acid Yellow Spray Gradient -->
+    <linearGradient id="favYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffb00"/>
+      <stop offset="60%" stop-color="#ffd000"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
     </linearGradient>
+
+    <!-- Rivet Specular Gradient -->
+    <radialGradient id="favRivet" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="50%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
   </defs>
 
-  <!-- Chamfered plate background -->
-  <polygon points="8,2 56,2 62,8 62,56 56,62 8,62 2,56 2,8" fill="url(#bgGrad)" stroke="#3a4250" stroke-width="2"/>
-  
-  <!-- Subtle corner rivets -->
-  <circle cx="7" cy="7" r="1.5" fill="#a0aec0"/>
-  <circle cx="57" cy="7" r="1.5" fill="#a0aec0"/>
-  <circle cx="7" cy="57" r="1.5" fill="#a0aec0"/>
-  <circle cx="57" cy="57" r="1.5" fill="#a0aec0"/>
+  <!-- 1. Galvanized Steel Base Plate with Beveled Border -->
+  <rect x="2" y="2" width="60" height="60" rx="8" fill="url(#favMetal)" stroke="#3b4556" stroke-width="2"/>
+  <rect x="4" y="4" width="56" height="56" rx="6" fill="none" stroke="#0a0c10" stroke-width="1" opacity="0.7"/>
 
-  <!-- Red oval badge -->
-  <ellipse cx="32" cy="22" rx="26" ry="11" fill="url(#redPill)" stroke="#ff4d4d" stroke-width="1" transform="rotate(-6, 32, 22)"/>
-  <text x="32" y="26" font-family="'Impact', 'Arial Black', sans-serif" font-size="10" font-weight="900" font-style="italic" fill="#ffffff" text-anchor="middle" letter-spacing="0.5" transform="rotate(-6, 32, 22)">TD</text>
+  <!-- 2. Four Corner Rivets -->
+  <circle cx="6" cy="6" r="1.6" fill="url(#favRivet)"/>
+  <circle cx="58" cy="6" r="1.6" fill="url(#favRivet)"/>
+  <circle cx="6" cy="58" r="1.6" fill="url(#favRivet)"/>
+  <circle cx="58" cy="58" r="1.6" fill="url(#favRivet)"/>
 
-  <!-- Acid yellow spray letters: EOD -->
-  <text x="33" y="52" font-family="'Impact', 'Arial Black', sans-serif" font-size="22" font-weight="900" font-style="italic" fill="#000000" text-anchor="middle" transform="skewX(-8)">EOD</text>
-  <text x="31" y="50" font-family="'Impact', 'Arial Black', sans-serif" font-size="22" font-weight="900" font-style="italic" fill="url(#yellowSpray)" stroke="#d48800" stroke-width="0.8" text-anchor="middle" transform="skewX(-8)">EOD</text>
+  <!-- 3. Slanted Red "Test Drive" Oval Badge -->
+  <g transform="translate(32, 21) rotate(-6)">
+    <!-- Shadow -->
+    <ellipse cx="0" cy="1" rx="24" ry="9" fill="#000000" opacity="0.8"/>
+    <!-- Outer White Ring -->
+    <ellipse cx="0" cy="0" rx="23.5" ry="8.5" fill="#ffffff"/>
+    <!-- Red Fill -->
+    <ellipse cx="0" cy="0" rx="21.5" ry="6.8" fill="url(#favRed)"/>
+    <!-- White Bold Text -->
+    <text x="0" y="3" font-family="'Impact', 'Arial Black', sans-serif" font-size="7.5" font-weight="900" font-style="italic" fill="#ffffff" text-anchor="middle" letter-spacing="0.4">TEST DRIVE</text>
+  </g>
 
-  <!-- Bottom hazard bar -->
-  <rect x="12" y="56" width="40" height="3" fill="#ffcc00" rx="1"/>
+  <!-- 4. Acid-Yellow Spray Graffiti: "EOD" with Signature Checkmark Swoosh -->
+  <g transform="translate(32, 45)">
+    <!-- Drop Shadow -->
+    <g transform="rotate(-3) skewX(-8)">
+      <text x="-0.8" y="4.5" font-family="'Impact', 'Arial Black', sans-serif" font-size="20" font-weight="900" font-style="italic" fill="#05070a" text-anchor="middle" letter-spacing="0.8">EOD</text>
+      <!-- Swoosh Shadow -->
+      <path d="M 17 2 C 22 4, 27 1, 29 -5 C 28 -1, 23 7, 16 5 Z" fill="#05070a"/>
+    </g>
+
+    <!-- Vibrant Yellow Spray Layer -->
+    <g transform="rotate(-3) skewX(-8)">
+      <text x="0" y="3.5" font-family="'Impact', 'Arial Black', sans-serif" font-size="20" font-weight="900" font-style="italic" fill="url(#favYellow)" stroke="#b45309" stroke-width="0.8" text-anchor="middle" letter-spacing="0.8">EOD</text>
+      <!-- Signature Checkmark Swoosh extending from right -->
+      <path d="M 17 1 C 22 3, 27 0, 29 -6 C 28 -2, 23 6, 16 4 Z" fill="url(#favYellow)" stroke="#b45309" stroke-width="0.5"/>
+      <!-- Small paint drips -->
+      <circle cx="-13" cy="7" r="0.9" fill="url(#favYellow)"/>
+      <circle cx="1" cy="8" r="1.1" fill="url(#favYellow)"/>
+    </g>
+  </g>
 </svg>

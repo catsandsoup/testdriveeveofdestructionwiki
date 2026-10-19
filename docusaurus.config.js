@@ -20,7 +20,7 @@ module.exports = {
 
   stylesheets: [
     {
-      href: 'https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Russo+One&family=Teko:wght@500;600;700&display=swap',
+      href: 'https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&family=Permanent+Marker&family=Russo+One&family=Teko:wght@500;600;700&display=swap',
       type: 'text/css',
     },
   ],
@@ -51,7 +51,7 @@ module.exports = {
       title: 'EOD [PS2 RECOMP]',
       logo: {
         alt: 'Test Drive: Eve of Destruction Logo',
-        src: 'img/favicon.svg',
+        src: 'img/logo.svg',
       },
       items: [
         {

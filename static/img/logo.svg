@@ -1,86 +1,170 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <!-- Metal gradient -->
-    <linearGradient id="metalPlate" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1e2229"/>
-      <stop offset="50%" stop-color="#14171d"/>
-      <stop offset="100%" stop-color="#0a0c0e"/>
-    </linearGradient>
-    
-    <!-- Red oval gradient -->
-    <linearGradient id="redBadge" x1="0%" y1="0%" x2="100%" y2="50%">
-      <stop offset="0%" stop-color="#d32f2f"/>
-      <stop offset="50%" stop-color="#b71c1c"/>
-      <stop offset="100%" stop-color="#7f0000"/>
+    <!-- Dark Weathered Steel Gradient -->
+    <linearGradient id="metalChassis" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c222c"/>
+      <stop offset="40%" stop-color="#13171f"/>
+      <stop offset="70%" stop-color="#181d26"/>
+      <stop offset="100%" stop-color="#0a0d12"/>
     </linearGradient>
 
-    <!-- Yellow spray gradient -->
-    <linearGradient id="yellowSpray" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffee55"/>
-      <stop offset="60%" stop-color="#ffcc00"/>
-      <stop offset="100%" stop-color="#ff9900"/>
+    <!-- Beveled Metal Border Gradient -->
+    <linearGradient id="metalBevel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a5568"/>
+      <stop offset="50%" stop-color="#2d3748"/>
+      <stop offset="100%" stop-color="#1a202c"/>
     </linearGradient>
 
-    <!-- Hazard stripe pattern -->
-    <pattern id="hazardStripe" width="20" height="20" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="0" y2="20" stroke="#f5a623" stroke-width="10" />
-      <line x1="10" y1="0" x2="10" y2="20" stroke="#16181d" stroke-width="10" />
-    </pattern>
+    <!-- Test Drive Red Oval Gradient -->
+    <linearGradient id="testDriveRed" x1="0%" y1="0%" x2="100%" y2="80%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="25%" stop-color="#e11d48"/>
+      <stop offset="65%" stop-color="#be123c"/>
+      <stop offset="100%" stop-color="#881337"/>
+    </linearGradient>
 
-    <!-- Drop shadow -->
-    <filter id="grungeShadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="2" dy="3" stdDeviation="2" flood-color="#000" flood-opacity="0.9"/>
+    <!-- Acid Yellow Spray Paint Gradient -->
+    <linearGradient id="sprayYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffb00"/>
+      <stop offset="35%" stop-color="#ffd000"/>
+      <stop offset="85%" stop-color="#ff9d00"/>
+      <stop offset="100%" stop-color="#e67e00"/>
+    </linearGradient>
+
+    <!-- Deep Drop Shadow Filter -->
+    <filter id="heavyShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="3" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.95"/>
     </filter>
+
+    <!-- Spray Overspray Glow Filter -->
+    <filter id="sprayGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Rivet Specular Gradients -->
+    <radialGradient id="rivetHead" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#cbd5e1"/>
+      <stop offset="45%" stop-color="#64748b"/>
+      <stop offset="90%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
   </defs>
 
-  <!-- Base Plate with Chamfered Corners -->
-  <polygon points="12,0 508,0 520,12 520,108 508,120 12,120 0,108 0,12" fill="url(#metalPlate)" stroke="#3a4250" stroke-width="2"/>
+  <!-- 1. Base Plate: Riveted Heavy Galvanized Steel Panel -->
+  <rect x="8" y="8" width="496" height="496" rx="28" fill="url(#metalChassis)" stroke="url(#metalBevel)" stroke-width="6" filter="url(#heavyShadow)"/>
   
-  <!-- Rivets at 4 corners -->
-  <circle cx="10" cy="10" r="3.5" fill="#4a5568" stroke="#1a202c" stroke-width="1"/>
-  <circle cx="9" cy="9" r="1.5" fill="#a0aec0"/>
-  
-  <circle cx="510" cy="10" r="3.5" fill="#4a5568" stroke="#1a202c" stroke-width="1"/>
-  <circle cx="509" cy="9" r="1.5" fill="#a0aec0"/>
-  
-  <circle cx="10" cy="110" r="3.5" fill="#4a5568" stroke="#1a202c" stroke-width="1"/>
-  <circle cx="9" cy="109" r="1.5" fill="#a0aec0"/>
-  
-  <circle cx="510" cy="110" r="3.5" fill="#4a5568" stroke="#1a202c" stroke-width="1"/>
-  <circle cx="509" cy="109" r="1.5" fill="#a0aec0"/>
+  <!-- Subtle Industrial Inset Groove -->
+  <rect x="22" y="22" width="468" height="468" rx="18" fill="none" stroke="#0a0c10" stroke-width="3" opacity="0.8"/>
+  <rect x="24" y="24" width="464" height="464" rx="16" fill="none" stroke="#2a3444" stroke-width="1.5" opacity="0.6"/>
 
-  <!-- Hazard strip on left edge -->
-  <polygon points="15,4 32,4 32,116 15,116" fill="url(#hazardStripe)" opacity="0.85"/>
-  <line x1="33" y1="4" x2="33" y2="116" stroke="#f5a623" stroke-width="2"/>
+  <!-- 2. Four Heavy Bolted Corner Plates with Rivets -->
+  <!-- Top Left -->
+  <polygon points="12,12 70,12 70,36 36,70 12,70" fill="#202733" stroke="#374151" stroke-width="2"/>
+  <circle cx="34" cy="34" r="7" fill="url(#rivetHead)" stroke="#0f172a" stroke-width="1.5"/>
+  <circle cx="32" cy="32" r="2" fill="#ffffff" opacity="0.8"/>
 
-  <!-- Red oval badge for TEST DRIVE -->
-  <g transform="translate(48, 14)">
-    <!-- Red outer frame with distressed angle -->
-    <polygon points="5,-2 175,-6 182,34 2,36" fill="none" stroke="#b71c1c" stroke-width="2" opacity="0.6"/>
-    <!-- Red pill -->
-    <ellipse cx="88" cy="15" rx="84" ry="16" fill="url(#redBadge)" stroke="#ff4d4d" stroke-width="1.5" filter="url(#grungeShadow)" transform="rotate(-3, 88, 15)"/>
-    <text x="88" y="21" font-family="'Impact', 'Arial Black', sans-serif" font-size="19" font-weight="900" font-style="italic" fill="#ffffff" text-anchor="middle" letter-spacing="1.5" filter="url(#grungeShadow)" transform="rotate(-3, 88, 15)">TEST DRIVE</text>
+  <!-- Top Right -->
+  <polygon points="500,12 442,12 442,36 476,70 500,70" fill="#202733" stroke="#374151" stroke-width="2"/>
+  <circle cx="478" cy="34" r="7" fill="url(#rivetHead)" stroke="#0f172a" stroke-width="1.5"/>
+  <circle cx="476" cy="32" r="2" fill="#ffffff" opacity="0.8"/>
+
+  <!-- Bottom Left -->
+  <polygon points="12,500 70,500 70,476 36,442 12,442" fill="#202733" stroke="#374151" stroke-width="2"/>
+  <circle cx="34" cy="478" r="7" fill="url(#rivetHead)" stroke="#0f172a" stroke-width="1.5"/>
+  <circle cx="32" cy="476" r="2" fill="#ffffff" opacity="0.8"/>
+
+  <!-- Bottom Right -->
+  <polygon points="500,500 442,500 442,476 476,442 500,442" fill="#202733" stroke="#374151" stroke-width="2"/>
+  <circle cx="478" cy="478" r="7" fill="url(#rivetHead)" stroke="#0f172a" stroke-width="1.5"/>
+  <circle cx="476" cy="476" r="2" fill="#ffffff" opacity="0.8"/>
+
+  <!-- 3. Stenciled Background Graphics (Demolition Derby Stencil Texture) -->
+  <g opacity="0.12" fill="#cbd5e1">
+    <text x="38" y="110" font-family="'Impact', 'Arial Black', sans-serif" font-size="28" letter-spacing="4">FUEL FLAMMABLE</text>
+    <text x="38" y="440" font-family="'Impact', 'Arial Black', sans-serif" font-size="34" letter-spacing="6">952087</text>
+    <line x1="38" y1="120" x2="474" y2="120" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8,6"/>
+    <line x1="38" y1="410" x2="474" y2="410" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="8,6"/>
   </g>
 
-  <!-- PS2 Badge in Top Right -->
-  <g transform="translate(385, 12)">
-    <rect x="0" y="0" width="118" height="22" rx="3" fill="#000000" stroke="#003791" stroke-width="1.5"/>
-    <text x="8" y="15" font-family="'Arial Black', sans-serif" font-size="11" font-weight="900" fill="#00439c" letter-spacing="1">PS2</text>
-    <line x1="36" y1="4" x2="36" y2="18" stroke="#2d3748" stroke-width="1"/>
-    <text x="42" y="15" font-family="'Courier New', monospace" font-size="10" font-weight="bold" fill="#ffcc00" letter-spacing="0.5">SLUS_209.10</text>
+  <!-- 4. The Iconic Slanted Red "TEST DRIVE" Oval Badge -->
+  <g transform="translate(256, 175) rotate(-6)">
+    <!-- Heavy Drop Shadow Behind Badge -->
+    <ellipse cx="0" cy="5" rx="192" ry="58" fill="#000000" opacity="0.9" filter="url(#heavyShadow)"/>
+    
+    <!-- Outer Distressed White Border -->
+    <ellipse cx="0" cy="0" rx="190" ry="56" fill="#ffffff" stroke="#cbd5e1" stroke-width="3"/>
+    
+    <!-- Dark Inner Border Frame -->
+    <ellipse cx="0" cy="0" rx="182" ry="50" fill="#991b1b"/>
+    
+    <!-- Red Badge Core Fill -->
+    <ellipse cx="0" cy="0" rx="178" ry="46" fill="url(#testDriveRed)"/>
+
+    <!-- Shiny Specular Arc at Top of Badge -->
+    <path d="M -150 -10 A 160 38 0 0 1 150 -10 A 170 42 0 0 0 -150 -10 Z" fill="#ffffff" opacity="0.25"/>
+
+    <!-- Crisp Bold White Italic "Test Drive" Lettering -->
+    <!-- Drop Shadow on Text -->
+    <text x="3" y="19" font-family="'Impact', 'Arial Black', sans-serif" font-size="64" font-weight="900" font-style="italic" fill="#500724" text-anchor="middle" letter-spacing="1">Test Drive</text>
+    <!-- Crisp White Text -->
+    <text x="0" y="16" font-family="'Impact', 'Arial Black', sans-serif" font-size="64" font-weight="900" font-style="italic" fill="#ffffff" text-anchor="middle" letter-spacing="1">Test Drive</text>
+    <!-- Registered Symbol -->
+    <text x="145" y="-12" font-family="'Arial Black', sans-serif" font-size="16" font-weight="900" fill="#ffffff">®</text>
   </g>
 
-  <!-- Acid Yellow Stencil Spray: EVE OF DESTRUCTION -->
-  <g transform="translate(50, 48)">
-    <!-- Drop shadow grunge duplicate -->
-    <text x="3" y="45" font-family="'Impact', 'Arial Black', sans-serif" font-size="44" font-weight="900" font-style="italic" fill="#000000" letter-spacing="2" opacity="0.9" transform="skewX(-8)">EVE OF DESTRUCTION</text>
-    <!-- Front glowing yellow text -->
-    <text x="0" y="42" font-family="'Impact', 'Arial Black', sans-serif" font-size="44" font-weight="900" font-style="italic" fill="url(#yellowSpray)" stroke="#d48800" stroke-width="1.5" letter-spacing="2" transform="skewX(-8)" filter="url(#grungeShadow)">EVE OF DESTRUCTION</text>
+  <!-- 5. Explosive Yellow Spray-Paint Graffiti: "EVE OF DESTRUCTION" -->
+  <g transform="translate(256, 305)">
+    <!-- Burnt Black / Dark Red Spray Shadow Layer (Overspray effect) -->
+    <g transform="rotate(-4) skewX(-10)">
+      <!-- EVE OF Drop Shadow -->
+      <text x="-4" y="-30" font-family="'Permanent Marker', 'Impact', 'Arial Black', sans-serif" font-size="62" font-weight="900" fill="#090a0f" text-anchor="middle" letter-spacing="3" opacity="0.95">EVE OF</text>
+      <!-- DESTRUCTION Drop Shadow -->
+      <text x="-4" y="42" font-family="'Permanent Marker', 'Impact', 'Arial Black', sans-serif" font-size="58" font-weight="900" fill="#090a0f" text-anchor="middle" letter-spacing="2" opacity="0.95">DESTRUCTION</text>
+      
+      <!-- Signature Yellow Graffiti Checkmark / Underline Tail Shadow -->
+      <path d="M 140 38 C 170 42, 210 20, 225 -25 C 220 0, 180 62, 130 52 Z" fill="#090a0f" opacity="0.9"/>
+      <!-- Paint Drip Shadows -->
+      <path d="M -155 52 Q -155 78 -153 82 Q -150 78 -151 52 Z" fill="#090a0f"/>
+      <path d="M -20 54 Q -20 86 -17 90 Q -15 86 -16 54 Z" fill="#090a0f"/>
+      <path d="M 85 54 Q 85 80 88 84 Q 90 80 89 54 Z" fill="#090a0f"/>
+    </g>
+
+    <!-- Vibrant Yellow Spray Paint Layer -->
+    <g transform="rotate(-4) skewX(-10)" filter="url(#sprayGlow)">
+      <!-- EVE OF -->
+      <text x="0" y="-34" font-family="'Permanent Marker', 'Impact', 'Arial Black', sans-serif" font-size="62" font-weight="900" fill="url(#sprayYellow)" stroke="#c2410c" stroke-width="2.5" text-anchor="middle" letter-spacing="3">EVE OF</text>
+      
+      <!-- DESTRUCTION -->
+      <text x="0" y="38" font-family="'Permanent Marker', 'Impact', 'Arial Black', sans-serif" font-size="58" font-weight="900" fill="url(#sprayYellow)" stroke="#c2410c" stroke-width="2.5" text-anchor="middle" letter-spacing="2">DESTRUCTION</text>
+
+      <!-- Signature Yellow Spray Graffiti Checkmark / Underline Tail -->
+      <path d="M 142 34 C 172 38, 214 16, 228 -28 C 222 -3, 182 58, 132 48 Z" fill="url(#sprayYellow)" stroke="#c2410c" stroke-width="1.5"/>
+      
+      <!-- Paint Drips -->
+      <path d="M -154 48 Q -154 74 -152 78 Q -150 74 -151 48 Z" fill="url(#sprayYellow)"/>
+      <circle cx="-152" cy="85" r="3" fill="url(#sprayYellow)"/>
+      
+      <path d="M -19 50 Q -19 82 -17 86 Q -15 82 -16 50 Z" fill="url(#sprayYellow)"/>
+      <circle cx="-17" cy="94" r="3.5" fill="url(#sprayYellow)"/>
+
+      <path d="M 86 50 Q 86 76 88 80 Q 90 76 89 50 Z" fill="url(#sprayYellow)"/>
+      <circle cx="88" cy="88" r="2.8" fill="url(#sprayYellow)"/>
+    </g>
   </g>
 
-  <!-- Bottom subtitle bar -->
-  <g transform="translate(52, 98)">
-    <rect x="0" y="0" width="450" height="15" fill="#0a0c0e" rx="2" stroke="#252b36" stroke-width="1"/>
-    <text x="8" y="11" font-family="'Courier New', monospace" font-size="9.5" font-weight="bold" fill="#94a3b8" letter-spacing="1.5">RECOMPILATION &amp; REVERSE-ENGINEERING WIKI • EMOTION ENGINE &amp; GS</text>
+  <!-- 6. Bottom Stamped Plate: PS2 Native Recomp Technical Emblem -->
+  <g transform="translate(64, 436)">
+    <rect x="0" y="0" width="384" height="38" rx="6" fill="#0d1117" stroke="#334155" stroke-width="1.5"/>
+    <!-- Small PS2 Blue Badge -->
+    <rect x="6" y="6" width="46" height="26" rx="3" fill="#003791"/>
+    <text x="29" y="24" font-family="'Russo One', sans-serif" font-size="14" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">PS2</text>
+    
+    <!-- Title Text -->
+    <text x="64" y="24" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="bold" fill="#ffd000" letter-spacing="0.5">SLUS_209.10</text>
+    <text x="175" y="24" font-family="'Russo One', sans-serif" font-size="12" fill="#94a3b8" letter-spacing="1">• RECOMP WIKI</text>
   </g>
 </svg>

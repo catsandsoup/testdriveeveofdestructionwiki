@@ -1,34 +1,42 @@
 /**
  * Test Drive: Eve of Destruction — PS2 Recompilation Wiki Theme
- * Authentic PS2 Racing & Technical Reverse-Engineering Aesthetic
- * Dark graphite, brushed steel, deep crimson accents, and clean DualShock 2 iconography.
+ * Authentic PS2 Racing & Demolition Derby Workshop Aesthetic
+ * Derived from original game assets (Cover, Main Menu, Career Car Purchase Screen):
+ * - Weathered galvanized steel panels with beveled metallic borders & corner rivets
+ * - Recessed console slot menus with bright glowing in-game yellow active text (#ffd200)
+ * - Chunky segmented amber/yellow stat meters with numeric level indicators
+ * - Stamped metallic action tabs and DualShock 2 hardware iconography
  */
 
 :root {
-  --ifm-color-primary: #e5a93c;
-  --ifm-color-primary-dark: #cf9228;
-  --ifm-color-primary-darker: #c3871e;
-  --ifm-color-primary-darkest: #a16b0d;
-  --ifm-color-primary-light: #eac05c;
-  --ifm-color-primary-lighter: #ecc86c;
-  --ifm-color-primary-lightest: #f3dd9d;
+  --ifm-color-primary: #ffd000;
+  --ifm-color-primary-dark: #e6b800;
+  --ifm-color-primary-darker: #cc9f00;
+  --ifm-color-primary-darkest: #997300;
+  --ifm-color-primary-light: #ffd933;
+  --ifm-color-primary-lighter: #ffdf4d;
+  --ifm-color-primary-lightest: #fff099;
 
-  --ps2-bg-darkest: #0c0e12;
-  --ps2-bg-surface: #14171e;
-  --ps2-bg-panel: #1b202a;
-  --ps2-bg-active: #222836;
-  --ps2-border: #262c38;
-  --ps2-border-light: #353e4f;
+  /* Authentic Game Steel & Chassis Palette */
+  --ps2-bg-darkest: #0a0d12;
+  --ps2-bg-surface: #12161f;
+  --ps2-bg-panel: #171c26;
+  --ps2-bg-slot: #07090d;
+  --ps2-border: #283140;
+  --ps2-border-light: #3d4a60;
+  --ps2-border-bevel-light: #4c5d77;
+  --ps2-border-bevel-dark: #10141c;
 
-  /* Authentic In-Game Menu Accents */
-  --ps2-menu-crimson: #8e1b1b;
-  --ps2-menu-crimson-hover: #a82424;
-  --ps2-gold: #e5a93c;
+  /* Authentic In-Game Branding & Highlights */
+  --ps2-game-yellow: #ffd000;
+  --ps2-game-amber: #f59e0b;
+  --ps2-game-crimson: #be123c;
+  --ps2-game-red: #e11d48;
   --ps2-silver: #cbd5e1;
-  --ps2-text-bright: #f1f5f9;
-  --ps2-text-muted: #8492a6;
+  --ps2-text-bright: #ffffff;
+  --ps2-text-muted: #94a3b8;
 
-  /* DualShock 2 Button Colors */
+  /* DualShock 2 Hardware Colors */
   --ps2-cross: #5c6bc0;
   --ps2-circle: #ef5350;
   --ps2-square: #ec407a;
@@ -41,14 +49,14 @@
 
   --ifm-background-color: var(--ps2-bg-darkest);
   --ifm-background-surface-color: var(--ps2-bg-surface);
-  --ifm-navbar-background-color: #101319;
-  --ifm-footer-background-color: #080a0d;
+  --ifm-navbar-background-color: #0d1016;
+  --ifm-footer-background-color: #07090c;
   --ifm-font-color-base: #d1d5db;
-  --ifm-heading-color: #f3f4f6;
-  --ifm-link-color: var(--ps2-gold);
-  --ifm-link-hover-color: #ffd24d;
-  --ifm-menu-color-active: var(--ps2-gold);
-  --ifm-menu-color: #9ca3af;
+  --ifm-heading-color: #f8fafc;
+  --ifm-link-color: var(--ps2-game-yellow);
+  --ifm-link-hover-color: #ffe066;
+  --ifm-menu-color-active: var(--ps2-game-yellow);
+  --ifm-menu-color: #94a3b8;
   --ifm-hr-border-color: var(--ps2-border);
 }
 
@@ -56,12 +64,12 @@ html[data-theme='light'],
 html[data-theme='dark'] {
   --ifm-background-color: var(--ps2-bg-darkest);
   --ifm-background-surface-color: var(--ps2-bg-surface);
-  --ifm-navbar-background-color: #101319;
-  --ifm-footer-background-color: #080a0d;
+  --ifm-navbar-background-color: #0d1016;
+  --ifm-footer-background-color: #07090c;
   --ifm-font-color-base: #d1d5db;
-  --ifm-heading-color: #f3f4f6;
-  --ifm-link-color: var(--ps2-gold);
-  --ifm-link-hover-color: #ffd24d;
+  --ifm-heading-color: #f8fafc;
+  --ifm-link-color: var(--ps2-game-yellow);
+  --ifm-link-hover-color: #ffe066;
   background-color: var(--ps2-bg-darkest);
   color: #d1d5db;
 }
@@ -70,27 +78,41 @@ body {
   background-color: var(--ps2-bg-darkest);
   color: #d1d5db;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  background-image: 
+    radial-gradient(ellipse at 50% 0%, rgba(30, 41, 59, 0.25) 0%, transparent 70%);
 }
 
 /* ============================================================
-   NAVBAR: Clean PS2 Header with Dark Steel & Crimson Accent
+   NAVBAR: Authentic Weathered Steel Bar
    ============================================================ */
 .navbar {
-  background-color: #101319;
-  border-bottom: 1px solid var(--ps2-border);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  padding: 0 1rem;
+  background: linear-gradient(180deg, #131720 0%, #0d1016 100%);
+  border-bottom: 2px solid var(--ps2-border);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
+  padding: 0 1.2rem;
 }
 
 .navbar__brand {
   font-family: 'Russo One', sans-serif;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__logo {
+  height: 34px;
+  width: 34px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  border: 1px solid #3b4556;
 }
 
 .navbar__title {
   color: #ffffff;
   font-size: 1.05rem;
+  letter-spacing: 0.5px;
 }
 
 .navbar__item {
@@ -100,67 +122,79 @@ body {
 }
 
 .navbar__link {
-  color: #9ca3af;
-  transition: color 0.15s ease;
+  color: #94a3b8;
+  transition: all 0.15s ease;
 }
 
-.navbar__link:hover,
+.navbar__link:hover {
+  color: var(--ps2-game-yellow) !important;
+  text-shadow: 0 0 8px rgba(255, 208, 0, 0.4);
+}
+
 .navbar__link--active {
-  color: #ffffff !important;
+  color: var(--ps2-game-yellow) !important;
+  text-shadow: 0 0 10px rgba(255, 208, 0, 0.5);
+  border-bottom: 2px solid var(--ps2-game-yellow);
 }
 
 /* ============================================================
-   SIDEBAR: PS2 Menu Rail
+   SIDEBAR: In-Game Console Menu Slots (Matching Game Main Menu)
    ============================================================ */
 .theme-doc-sidebar-container {
-  background-color: #0d1015 !important;
-  border-right: 1px solid var(--ps2-border) !important;
+  background: linear-gradient(180deg, #0e1117 0%, #080a0e 100%) !important;
+  border-right: 2px solid var(--ps2-border) !important;
 }
 
 .menu__list {
-  padding: 10px 6px;
+  padding: 12px 8px;
 }
 
 .menu__list-item-collapsible {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--ps2-border);
+  background: linear-gradient(90deg, #141822 0%, #10131b 100%);
+  border: 1px solid var(--ps2-border-light);
+  border-top-color: var(--ps2-border-bevel-light);
   border-radius: 4px;
-  margin-top: 8px;
-  margin-bottom: 3px;
-  padding: 3px 8px;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  padding: 4px 10px;
   font-family: 'Russo One', sans-serif;
-  font-size: 0.8rem;
-  letter-spacing: 0.5px;
+  font-size: 0.78rem;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: #cbd5e1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .menu__list-item-collapsible:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: #19202c;
   color: #ffffff;
 }
 
 .menu__link {
   font-size: 0.84rem;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: 4px;
-  padding: 5px 10px;
-  margin: 1px 0;
-  color: #9ca3af;
-  transition: all 0.12s ease;
+  padding: 6px 12px;
+  margin: 2px 0;
+  color: #94a3b8;
+  transition: all 0.15s ease;
 }
 
-/* Selected menu item inspired by PS2 game menu item plate */
+/* Selected menu item inspired by the game's active recessed slot (ACTION) */
 .menu__link--active {
-  background: var(--ps2-menu-crimson) !important;
-  color: #ffffff !important;
-  font-weight: 600;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.4);
+  background: #06080b !important;
+  color: var(--ps2-game-yellow) !important;
+  font-weight: 700;
+  border-left: 3px solid var(--ps2-game-yellow) !important;
+  border-radius: 2px 4px 4px 2px;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.9), inset 0 0 0 1px #222a36 !important;
+  text-shadow: 0 0 8px rgba(255, 208, 0, 0.45);
 }
 
 .menu__link:hover:not(.menu__link--active) {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   color: #ffffff;
+  padding-left: 14px;
 }
 
 /* ============================================================
@@ -317,6 +351,160 @@ tr:hover {
   border-color: #3b4252;
 }
 
+/* ============================================================
+   CAREER CAR PURCHASE SCREEN: RIVETED PANELS & CHASSIS PLATES
+   ============================================================ */
+.ps2-panel {
+  position: relative;
+  background: linear-gradient(135deg, #181d26 0%, #12161f 60%, #0d1017 100%);
+  border: 1px solid var(--ps2-border-light);
+  border-top-color: var(--ps2-border-bevel-light);
+  border-left-color: var(--ps2-border-bevel-light);
+  border-right-color: var(--ps2-border-bevel-dark);
+  border-bottom-color: var(--ps2-border-bevel-dark);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  padding: 1.25rem;
+}
+
+.ps2-panel-riveted {
+  position: relative;
+}
+
+.ps2-panel-riveted::before,
+.ps2-panel-riveted::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #e2e8f0 0%, #64748b 60%, #1e293b 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.8), inset 0 0.5px 0.5px rgba(255, 255, 255, 0.6);
+  z-index: 2;
+}
+
+.ps2-panel-riveted::before {
+  top: 8px;
+  left: 8px;
+}
+
+.ps2-panel-riveted::after {
+  top: 8px;
+  right: 8px;
+}
+
+/* ============================================================
+   CAREER CAR PURCHASE SCREEN: CHUNKY STAT METERS
+   Speed / Handling / Durability Segmented Yellow/Amber Meters
+   ============================================================ */
+.stat-meter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-meter__label {
+  width: 85px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.stat-meter__track {
+  flex: 1;
+  display: flex;
+  gap: 3px;
+  background: #06080c;
+  padding: 3px 4px;
+  border-radius: 3px;
+  border: 1px solid #1e2430;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.stat-meter__block {
+  flex: 1;
+  height: 10px;
+  border-radius: 1.5px;
+  background: #141822;
+  border: 1px solid #202735;
+  transition: all 0.2s ease;
+}
+
+.stat-meter__block--active {
+  background: linear-gradient(180deg, #fff275 0%, #ffd000 40%, #f59e0b 100%);
+  border-color: #d97706;
+  box-shadow: 0 0 6px rgba(255, 208, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.stat-meter__val {
+  min-width: 28px;
+  text-align: right;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--ps2-game-yellow);
+}
+
+/* ============================================================
+   STAMPED METALLIC ACTION TABS: [Buy] [Sell] [Drive]
+   ============================================================ */
+.stamped-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(180deg, #242c3b 0%, #171c26 100%);
+  border: 1px solid var(--ps2-border-light);
+  border-top-color: var(--ps2-border-bevel-light);
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-family: 'Russo One', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  color: #cbd5e1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.stamped-tab:hover {
+  background: linear-gradient(180deg, #2c3647 0%, #1d2431 100%);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.stamped-tab--active,
+.stamped-tab--primary {
+  background: linear-gradient(180deg, #e11d48 0%, #9f1239 100%);
+  border-color: #f43f5e;
+  border-top-color: #fda4af;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.stamped-tab--yellow {
+  background: linear-gradient(180deg, #ffd000 0%, #d97706 100%);
+  border-color: #fbbf24;
+  border-top-color: #fef08a;
+  color: #000000;
+  font-weight: 900;
+  box-shadow: 0 2px 8px rgba(255, 208, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* ============================================================
+   GRAFFITI SPRAY ACCENT (Permanent Marker)
+   ============================================================ */
+.spray-graffiti {
+  font-family: 'Permanent Marker', 'Russo One', sans-serif;
+  color: var(--ps2-game-yellow);
+  text-shadow: 2px 2px 0 #05070a, 0 0 12px rgba(255, 208, 0, 0.4);
+  letter-spacing: 1px;
+}
+
 /* PS2 Pill Badges */
 .ps2-pill {
   display: inline-flex;
@@ -324,24 +512,24 @@ tr:hover {
   gap: 5px;
   padding: 3px 8px;
   border-radius: 3px;
-  background: #12151c;
+  background: #10141c;
   border: 1px solid var(--ps2-border);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: #94a3b8;
   font-weight: 600;
 }
 
 .ps2-pill.ps2 {
-  background: rgba(0, 67, 156, 0.12);
+  background: rgba(0, 67, 156, 0.15);
   border-color: #00439c;
   color: #60a5fa;
 }
 
 .ps2-pill.active {
-  background: rgba(229, 169, 60, 0.12);
-  border-color: var(--ps2-gold);
-  color: var(--ps2-gold);
+  background: rgba(255, 208, 0, 0.12);
+  border-color: var(--ps2-game-yellow);
+  color: var(--ps2-game-yellow);
 }
 
 /* ============================================================
@@ -349,7 +537,7 @@ tr:hover {
    ============================================================ */
 .footer {
   background-color: var(--ifm-footer-background-color) !important;
-  border-top: 1px solid var(--ps2-border);
-  padding: 32px 20px;
+  border-top: 2px solid var(--ps2-border);
+  padding: 36px 20px;
   font-size: 0.85rem;
 }
