@@ -5,7 +5,7 @@ tags: ["engine", "rendering", "ps2", "technical-reference"]
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/NATIVE_CAMERA_ASPECT.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `51b9c2b40d6497f30352a5b07d919fe5bf52afa8e3c620a3efceb3131679a792`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -106,7 +106,7 @@ cmake --build build-mac --target eod_native_camera_test -j2
 ctest --test-dir build-mac -R NativeCamera --output-on-failure
 ```
 
-integration integration must still compare matched single- and two-player scenes at
+upstream integration must still compare matched single- and two-player scenes at
 4:3/16:9/16:10, with aspect-correct display composition, to verify framing, HUD
 proportions, borders, and menu coverage. Source and CPU tests establish the hook
 mechanism; they are not proof that every game screen is visually correct.
@@ -128,8 +128,8 @@ establish a wider field of view. Trace counters are process-local.
 ## Matched rendered race check (2026-10-16)
 
 The actual 2P captures at vblank 4500 from
-`/private/tmp/eod-mp-4x3-reference-20261016/frame_04500.png` and
-`/private/tmp/eod-mp-diagnostics-20261016/frame_04500.png` use identical scripted
+`[local path omitted]` and
+`[local path omitted]` use identical scripted
 inputs. Both composed images are 3840×2400; the 4:3 image occupies x=320..3519,
 while the 16:10 race fills the canvas and reveals additional scenery on both
 sides. Camera/car positions differ slightly because rendering performance

@@ -5,7 +5,7 @@ tags: ["physics", "collision-and-rigid-bodies", "cross-platform", "historical"]
 
 
 :::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/wiki/physics_and_collision.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `5b1e345a1b283a86b9ed0be6392c75a495b49d69de36d25d5ec6621bfd1c66b0`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -99,7 +99,7 @@ $$\vec{F}_{\text{impact}} = \frac{m_{\text{striker}} m_{\text{victim}}}{m_{\text
 1. If $\|\vec{F}_{\text{impact}}\| > \text{damage\_impulse}$ ($12,000\text{ N}$), the deformation bone in `Bone.val` undergoes plastic deformation, crinkling the local mesh vertices.
 2. If $\|\vec{F}_{\text{impact}}\| > \text{removal\_impulse}$ ($35,000\text{ N}$), the bone constraint is severed:
    - Routine `0x00100F10` allocates a 68-byte detached rigid body instance.
-   - Constructor `0x000A3220` inherits the integration car's linear velocity plus an impact scatter impulse:
+   - Constructor `0x000A3220` inherits the upstream car's linear velocity plus an impact scatter impulse:
      $$\vec{V}_{\text{detached}} = \vec{V}_{\text{car}} + \frac{\vec{F}_{\text{impact}}}{m_{\text{part}}} \times 0.25$$
    - The detached part is registered into the active physical simulation pool (`0x0006BC20`: `"phystask: detaching at %d ticks!"`).
 3. **Vanilla Despawn Timer**: On Xbox/PS2, a 300-tick (~5.0 second) Time-To-Live countdown is started. When expired, the part is despawned. **In the modern recomp, this timer is completely bypassed to enable permanent debris fields.**

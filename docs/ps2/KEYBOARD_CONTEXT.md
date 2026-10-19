@@ -5,7 +5,7 @@ tags: ["gui", "input-and-player-controls", "ps2", "technical-reference"]
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/KEYBOARD_CONTEXT.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `45f219d5aee2a77c8677b6010fb8cba2440a591d269e011f337749c0235c3515`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::

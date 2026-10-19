@@ -2,7 +2,7 @@
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/MANUAL_RECOVERY.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `1dc3bb47fd8feb8672e260f660f863c7008027161cc742fbd0eebe8d6b478531`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -19,7 +19,7 @@ This does not remove solid world boundaries or other out-of-world safety code.
 
 ## Situation and task
 
-The owner requested removal of the “Get back in the race!” countdown, while
+A change removes the “Get back in the race!” countdown, while
 keeping manual SELECT and AI recovery. Hiding text alone would still teleport
 the car; clearing its deadline would disable the direct SELECT recovery path.
 

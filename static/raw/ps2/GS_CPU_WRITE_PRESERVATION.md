@@ -2,7 +2,7 @@
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/GS_CPU_WRITE_PRESERVATION.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `6bd890197ca5ff79be32c95fc606e8f9e886b386f6a8b421678a10d95adf1476`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -15,7 +15,7 @@ A CPU upload can replace only part of a page last rendered on the GPU. Dropping
 that page's owner without reading its remaining contents back loses untouched
 pixels. The original partial-upload fixture differed from software in 8,188 of
 4,194,304 VRAM bytes. This is a proven ownership defect; it has not been tied to
-the owner's thin black lines.
+the cited.
 
 ## Actual supplied bytes, ordered writes
 
@@ -49,8 +49,8 @@ has not received the Vulkan guarantee.
 - The local corrected font capture is pixel-identical to its reference. The
   five-frame retail race replay is byte-identical to its preceding image.
   This supports those scenes only; screenshots and retail data are not committed.
-- Tests/build logs are ignored `work/workspace-build-cpu-final.log` and
-  `work/workspace-ctest-cpu-final.log`; fixture outputs live in `build-mac/`.
+- Tests/build logs are ignored `work/documentation process-build-cpu-final.log` and
+  `work/documentation process-ctest-cpu-final.log`; fixture outputs live in `build-mac/`.
 
 The original flush-only fixture used a point on a separate render target. At
 6x the current backend renders one physical pixel, which center-sampled 1x
@@ -64,7 +64,6 @@ An isolated alternating baseline/candidate test rebuilt the baseline from
 `2b60019` and used the same 6x five-frame race dump. Warm baseline replay times
 were 211.2–229.5 ms; preservation took 325.0–330.3 ms. Both made 135,695 draw
 calls. Preservation added 58 CPU readbacks and increased submits from 7 to 65.
-See ignored `work/cpu-write-retail/{baseline,candidate,baseline-again,candidate-again}.log`
 and `timings.json`. This is a correctness fix with a substantial performance
 cost, not a speed optimization. It does not meet full-speed 4K multiplayer.
 

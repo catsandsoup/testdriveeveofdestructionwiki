@@ -2,13 +2,13 @@
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/MACOS.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `98e02311ce43b10d8dd853ff54249129ed6386bf874b0416a961ad02b08fb915`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
-> Current acceptance and branch map: [DEVELOPER_HANDOFF.md](DEVELOPER_HANDOFF.md).
+> Current acceptance and branch map: [DEVELOPER_HANDOFF.md] (`DEVELOPER_HANDOFF.md`, source checkout).
 > Historical speed samples below describe their specific builds/scenes. They do
 > not establish current full-game 1:1 accuracy or full-speed heavy multiplayer.
 > Current goal is native 1x/4:3 with no frame skipping before enhancements.
@@ -125,7 +125,7 @@ cmake --build build-mac --target eod eod_input_test eod_pad_rpc_test
 EOD_HEADLESS=1 EOD_MUTE=1 ctest --test-dir build-mac --output-on-failure
 EOD_HEADLESS=1 EOD_MUTE=1 tools/test_2p_race.sh "$HOME/Library/Application Support/TDEODRecomp/disc"
 ```
-## Personal Mac app
+## local build
 
 The app requires your own North American SLUS-20910 v1.00 disc. No game
 files are bundled. Generate and build as above, then enable packaging:
@@ -166,14 +166,14 @@ Missing data in headless mode returns an error without opening dialogs.
 ```sh
 ctest --test-dir build-mac --output-on-failure
 # Read-only source; import only to a scratch destination:
-build-mac/disc_import_cli /path/game.iso /tmp/eod-test/disc 3368996 75BB93EE
-EOD_HEADLESS=1 EOD_MUTE=1 "$HOME/Library/Application Support/TDEODRecomp/local-build/Eve of Destruction.app/Contents/MacOS/eod" --headless --data /tmp/eod-test/disc --frames 600
+build-mac/disc_import_cli /path/game.iso [local path omitted] 3368996 75BB93EE
+EOD_HEADLESS=1 EOD_MUTE=1 "$HOME/Library/Application Support/TDEODRecomp/local-build/Eve of Destruction.app/Contents/MacOS/eod" --headless --data [local path omitted] --frames 600
 # Build a DMG locally; never upload or distribute:
 tools/make_dmg.sh
 ```
 
 Native dialogs are compile-verified only; automated tests never open visible
-windows or play audio. The app and DMG are personal builds only.
+windows or play audio. The app and DMG are local build only.
 
 ## Vulkan GS backend
 
@@ -230,7 +230,7 @@ Test a relocated signed Vulkan app with intentionally invalid external ICD
 overrides and an otherwise isolated environment:
 
 ```sh
-tools/test_app_vulkan.sh "/path/Eve of Destruction.app" /path/race2p.gsd /tmp/app-vulkan.log
+tools/test_app_vulkan.sh "/path/Eve of Destruction.app" /path/race2p.gsd [local path omitted]
 ```
 
 The script stays headless/muted and fails if replay falls back to software.

@@ -2,7 +2,7 @@
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/HUD_EDGE_ANCHORS.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `ce1dabd4b1c1452e28dbf648c7627280a83046bf744660e352644ebc7e16e729`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -103,7 +103,7 @@ importing that renderer-level classifier, and does not risk world/UI overlap.
 CPU contract target links `tools/tests/hud_edge_test.cpp` with the
 production `src/hle_hud.cpp`, include runtime, runtime/include, src, and runs
 separately with no argument and with `disabled`. No graphics or game assets
-are involved. integration integration owns CMake, regeneration, full build and GPU
+are involved. upstream integration owns CMake, regeneration, full build and GPU
 acceptance; config/hle.txt adds only the two wrappers.
 
 Tests inspect the exact temporary guest-memory delta inside stub originals,

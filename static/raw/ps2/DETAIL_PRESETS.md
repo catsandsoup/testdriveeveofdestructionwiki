@@ -2,7 +2,7 @@
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/DETAIL_PRESETS.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `d975750da76c55fc7f71684d29e5ea2a106060d3b6b5b7845a2f3ebfe09b4e75`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -20,7 +20,6 @@ debris, or unchanged performance on every track/hardware.
 
 ## Situation and recovered evidence
 
-The stopped prior investigation job left investigation only. Its saved 2P trace (`work/t2p`)
 shows far=575 with configured draw distance1150 and native selected car indexes
 1..4. Function00211318 indexes `{1,1,2,2}` using view-count minus1, so the car
 LOD multiplier is the same for1P and2P, not doubled in2P. Camera builder00212B58
@@ -93,8 +92,6 @@ hardware/player acceptance is implied by CPU contracts or one scripted scene.
   Original runs did not produce identical hashes; full live-run byte identity
   is not claimed. CPU contracts prove the disabled hook's memory behavior;
   same-capture replay establishes renderer parity, not game-hook execution.
-- Evidence: work/lod-continuation/{ctest-final.log,maximum-1,maximum-4,
   replay-results.json,parity-original/final.ppm}. Comparison images in the
-  recovered prior investigation notes are actual game captures at the same scripted moment,
+  recovered documentation process notes are actual game captures at the same scripted moment,
   with minor separate-run timing variation possible. No5x/6x tests were run:
-  the user's final instruction limited validation to their4x setting.

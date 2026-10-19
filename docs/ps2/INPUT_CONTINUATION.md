@@ -5,7 +5,7 @@ tags: ["gui", "input-and-player-controls", "ps2", "technical-reference"]
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/INPUT_CONTINUATION.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `e592610298880c51f9c03c9be47e0cf78d60785cf52bb6d6aa16f4f4dc776daa`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -23,7 +23,7 @@ motor and switch-to-pixel latency acceptance require hands-on testing.
 
 ## Situation/task
 
-prior investigation controller job stopped during investigation, with no edits. The mapper
+
 blocked every held key until release after a context change, and the keyboard's
 default P1 reservation made a first pad P2. Existing actuator DMA support was
 already merged and did not need to be reimplemented.
@@ -75,7 +75,7 @@ resource-fork metadata; packaging succeeded in Application Support instead.
 Baseline `ec55ff2` and candidate each completed `tools/test_2p_race.sh` at native
 1x/4:3, headless and muted, 6,600 vblanks and exit 0. Both contact sheets show
 independent moving players in a split-screen race; race logs reach 59.9 drawn
-frames/s. Runs use isolated memory cards, not the owner's saves.
+frames/s. Runs used isolated memory card data.
 
 `EOD_INPUT_TIMING=1`, 38 one-second race windows (vblank >= 4300), before/after:
 
@@ -90,8 +90,7 @@ The pump moved across GS, so its phase and gaps changed; counters do **not**
 establish an overall latency improvement. The DMA regression proves the narrower
 improvement: input arriving during GS blocking reaches this vblank's packet.
 Headless scripts generate no native key events and cannot measure physical or
-visible latency. Logs/sheets: `work/input-validation/` in the input worktree;
-baseline `work/workspace-input-baseline/` in the main worktree. Timings are from one
+baseline `work/documentation process-input-baseline/` in the main worktree. Timings are from one
 sequential run per build, with scene variation, not a performance benchmark.
 Shared mapper changes and the config parser are separable; SDL assignment,
 focus and sampling integration belong to the non-Windows platform. Existing

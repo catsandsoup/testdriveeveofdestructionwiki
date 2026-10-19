@@ -11,17 +11,6 @@ module.exports = {
           "items": [
             "research/wiki/ai_and_pathfinding"
           ]
-        },
-        {
-          "type": "category",
-          "label": "combat-and-ai",
-          "items": [
-            "ps2/BATTLE_RECOVERY",
-            "ps2/GAMEPLAY_MODS_RE",
-            "research/GAMEPLAY_MODS_RE",
-            "native/native-ai-research",
-            "native/native-weapon-tests"
-          ]
         }
       ]
     },
@@ -33,11 +22,8 @@ module.exports = {
           "type": "category",
           "label": "modding-and-formats",
           "items": [
-            "ps2/MODDING_IDEAS",
             "ps2/MODDING_SCOPE",
-            "research/MODDING_IDEAS",
-            "research/wiki/engine_overhauls_specs",
-            "research/wiki/mod_tools_roadmap"
+            "research/wiki/engine_overhauls_specs"
           ]
         },
         {
@@ -60,7 +46,6 @@ module.exports = {
           "type": "category",
           "label": "runtime-and-platform",
           "items": [
-            "ps2/DEVELOPER_HANDOFF",
             "ps2/MACOS",
             "ps2/MANUAL_RECOVERY",
             "ps2/TIMING_TRACE",
@@ -79,9 +64,7 @@ module.exports = {
           "label": "input-and-player-controls",
           "items": [
             "ps2/INPUT_CONTINUATION",
-            "ps2/KEYBOARD_CONTEXT",
-            "ps2/PLAYER_JOURNEY",
-            "ps2/PLAYER_SUCCESS_AND_STAR"
+            "ps2/KEYBOARD_CONTEXT"
           ]
         }
       ]

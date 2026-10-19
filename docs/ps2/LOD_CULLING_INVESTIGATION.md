@@ -5,7 +5,7 @@ tags: ["engine", "rendering", "ps2", "technical-reference"]
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/LOD_CULLING_INVESTIGATION.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `2f8c470f7c44eb07ad2ef858f5dde9217d72f19202c2b770d66f5c4f85961134`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -14,7 +14,7 @@ Source: `docs/LOD_CULLING_INVESTIGATION.md` in `eod-recomp`. Repository HEAD: `6
 Static investigation, 2026-10-16. No gameplay changes, builds, game runs or GPU
 measurements were made for this document. Addresses refer to the supported
 `SLUS_209.10` (3,368,996 bytes, ordinary CRC32 `75BB93EE`). Evidence is local
-retail ELF disassembly, generated recompilation and the owner's PS2 disc read
+retail ELF disassembly, generated recompilation and the cited read
 in place. This is a bounded first-hook investigation, not a completed streaming
 or visibility audit.
 
@@ -35,11 +35,11 @@ or zero pop-in. Highest available detail means an existing valid game asset,
 not extra polygons or texels synthesized by rendering at 4K/8K.
 
 The quality ceiling must accommodate much faster future Macs and PCs, including
-RTX 5090 class hardware at 8K, rather than stop at the owner's M2 Pro. Keep an
+RTX 5090 class hardware at 8K, rather than stop at the cited. Keep an
 efficient playable Mac preset and allow explicitly expensive Maximum/Extreme
 presets. Profile EE CPU selection/submission, guest memory/residency, texture
 loading and GPU raster cost separately. Extra GPU throughput and upscaling
-cannot remove CPU submission or absent/residency limitations. DLSS is explicitly the very last priority per the owner; no DLSS investigation
+cannot remove CPU submission or absent/residency limitations.  no DLSS investigation
 or Windows implementation is part of this work.
 
 ## The original draw-distance option is not an unbounded multiplier

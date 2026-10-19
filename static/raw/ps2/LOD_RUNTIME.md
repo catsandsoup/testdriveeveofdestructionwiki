@@ -2,7 +2,7 @@
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/LOD_RUNTIME.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `e9abdf8bf6335b07fa2f774afc76ba8aef11b7e77c67fb5c01fdb610570c1863`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -52,7 +52,7 @@ no guest writes occur. Flags, min/count, model handles, shadow tables, physics,
 simulation and the native selector are untouched. Do not infer that numeric
 handle zero is invalid: these are opaque native handles, not guest pointers.
 
-No preset or personal configuration enables the experiment. High factors may
+No preset or local build enables the experiment. High factors may
 exceed playable rendering/submission cost and have not been accepted visually.
 
 ## Concrete layout corrections and ABI evidence
@@ -136,10 +136,8 @@ for this source checkpoint.
 
 ## Initial game evidence and remaining acceptance
 
-Ignored logs and full4K captures: `work/lod-game/baseline/` and
-`work/lod-game/lod2/`. Main build30CTests pass (including five LOD and three HUD
 contracts); logs `work/hud-build.log` and `work/hud-ctest.log`. The gameplay
-experiment remains opt-in, without changing the personal configuration.
+experiment remains opt-in, without changing the local build.
 
 ## Remaining game acceptance
 

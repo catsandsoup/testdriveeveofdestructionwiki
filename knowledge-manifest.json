@@ -1,35 +1,11 @@
 [
   {
-    "page": "docs/ps2/BATTLE_RECOVERY.md",
-    "source_repository": "eod-recomp",
-    "source_path": "docs/BATTLE_RECOVERY.md",
-    "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
-    "working_copy_modified": true,
-    "source_sha256": "7f72123c7251e054495306a149d22a50d8f5d4f5986413f127097bffdf966d24"
-  },
-  {
     "page": "docs/ps2/DETAIL_PRESETS.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/DETAIL_PRESETS.md",
     "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
     "working_copy_modified": false,
     "source_sha256": "d975750da76c55fc7f71684d29e5ea2a106060d3b6b5b7845a2f3ebfe09b4e75"
-  },
-  {
-    "page": "docs/ps2/DEVELOPER_HANDOFF.md",
-    "source_repository": "eod-recomp",
-    "source_path": "docs/DEVELOPER_HANDOFF.md",
-    "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
-    "working_copy_modified": false,
-    "source_sha256": "9a65ade4a7da3f5124befd2af1c4ce41416b37a2c34f00b1ac1b78ca7a118d5c"
-  },
-  {
-    "page": "docs/ps2/GAMEPLAY_MODS_RE.md",
-    "source_repository": "eod-recomp",
-    "source_path": "docs/GAMEPLAY_MODS_RE.md",
-    "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
-    "working_copy_modified": true,
-    "source_sha256": "0378b65113adab36e47e92cd0fd151649bbbb385230930e0e471fbb599c6f856"
   },
   {
     "page": "docs/ps2/GS_ALPHA_ORDER.md",
@@ -112,14 +88,6 @@
     "source_sha256": "1dc3bb47fd8feb8672e260f660f863c7008027161cc742fbd0eebe8d6b478531"
   },
   {
-    "page": "docs/ps2/MODDING_IDEAS.md",
-    "source_repository": "eod-recomp",
-    "source_path": "docs/MODDING_IDEAS.md",
-    "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
-    "working_copy_modified": false,
-    "source_sha256": "2d782020f47d36c318eeaa747a049544409984c266043ef31735b20675d01cff"
-  },
-  {
     "page": "docs/ps2/MODDING_SCOPE.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/MODDING_SCOPE.md",
@@ -134,22 +102,6 @@
     "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
     "working_copy_modified": false,
     "source_sha256": "51b9c2b40d6497f30352a5b07d919fe5bf52afa8e3c620a3efceb3131679a792"
-  },
-  {
-    "page": "docs/ps2/PLAYER_JOURNEY.md",
-    "source_repository": "eod-recomp",
-    "source_path": "docs/PLAYER_JOURNEY.md",
-    "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
-    "working_copy_modified": false,
-    "source_sha256": "b6223fe3d0eb7b7633882a1649ea2a36f3ae6ff74d87a7ab16b4ae5f9cb7d0da"
-  },
-  {
-    "page": "docs/ps2/PLAYER_SUCCESS_AND_STAR.md",
-    "source_repository": "eod-recomp",
-    "source_path": "docs/PLAYER_SUCCESS_AND_STAR.md",
-    "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
-    "working_copy_modified": false,
-    "source_sha256": "317e02467193cb87b20352da9935f19c1568fad8f0c0d70e0ec8f98ba88b3a69"
   },
   {
     "page": "docs/ps2/RECOMP_RENDERER_RECON.md",
@@ -190,22 +142,6 @@
     "repository_head": "67c972b0fed775994d1769382676bd94ebdc3bc7",
     "working_copy_modified": false,
     "source_sha256": "b77f64a5a2614babacda9044b457ca2c8cf64a5dcc28c381dcc4563e3c624a61"
-  },
-  {
-    "page": "docs/research/GAMEPLAY_MODS_RE.md",
-    "source_repository": "TDEOD RECOMP",
-    "source_path": "docs/GAMEPLAY_MODS_RE.md",
-    "repository_head": "7fba3ecfa0cb11ccdccd991b541bf7da03e82144",
-    "working_copy_modified": false,
-    "source_sha256": "991d120e7e143b8ac28c11ce84c35b285d913c6d1b778b070cfefd8400b6a00c"
-  },
-  {
-    "page": "docs/research/MODDING_IDEAS.md",
-    "source_repository": "TDEOD RECOMP",
-    "source_path": "docs/MODDING_IDEAS.md",
-    "repository_head": "7fba3ecfa0cb11ccdccd991b541bf7da03e82144",
-    "working_copy_modified": false,
-    "source_sha256": "a6bd37ea8a5a80f0f49eb9e1bfbf673c38b87ccf024022a527140d33272c85cd"
   },
   {
     "page": "docs/research/wiki/ai_and_pathfinding.md",
@@ -256,14 +192,6 @@
     "source_sha256": "f010398d39629160326f0fb873213cfcfeefb47edaea247013b1ab4665f9c863"
   },
   {
-    "page": "docs/research/wiki/mod_tools_roadmap.md",
-    "source_repository": "TDEOD RECOMP",
-    "source_path": "docs/wiki/mod_tools_roadmap.md",
-    "repository_head": "7fba3ecfa0cb11ccdccd991b541bf7da03e82144",
-    "working_copy_modified": false,
-    "source_sha256": "0b0ad69e5cc2586dc49d9757a8530e82bfa4a66c39fa61a435362cdb07ad2881"
-  },
-  {
     "page": "docs/research/wiki/physics_and_collision.md",
     "source_repository": "TDEOD RECOMP",
     "source_path": "docs/wiki/physics_and_collision.md",
@@ -278,21 +206,5 @@
     "repository_head": "7fba3ecfa0cb11ccdccd991b541bf7da03e82144",
     "working_copy_modified": false,
     "source_sha256": "81e607a906cf64dd3a99e7b74ddfac9956726a1e23bb01d9da4fa4c8ff85c993"
-  },
-  {
-    "page": "docs/native/native-ai-research.md",
-    "source_repository": "investigation session",
-    "source_path": "work/native-ai-research.md",
-    "repository_head": "session working notes",
-    "working_copy_modified": true,
-    "source_sha256": "1ebc20b142540e583985717884ade29c6489f9378b5495a93e11000847c55906"
-  },
-  {
-    "page": "docs/native/native-weapon-tests.md",
-    "source_repository": "investigation session",
-    "source_path": "work/native-weapon-tests.md",
-    "repository_head": "session working notes",
-    "working_copy_modified": true,
-    "source_sha256": "169841380f0de9e193860ec9cf5f19c3d98c0f8ea9c8ab76d7931d8d609e5f1b"
   }
 ]

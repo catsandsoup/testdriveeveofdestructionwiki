@@ -2,7 +2,7 @@
 
 
 :::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/wiki/event_injection_and_menus.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `d920d6094f1b15f54a27d51b2ad588e268d68ff37cfc84206c1f8190ba9b1b88`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -130,7 +130,7 @@ Place a native C++ hook inside `sub_00023BF0` right before it returns to caller:
 void Hook_EveLoader_InjectCustomModes() {
     uint32_t* num_contests_ptr = (uint32_t*)0x0022EF54;
     ContestRecord* contests = (ContestRecord*)0x0022EF60;
-    
+
     // Inject Custom Game Mode: "Patient Zero"
     uint32_t new_idx = *num_contests_ptr;
     contests[new_idx].global_index   = new_idx;
@@ -143,7 +143,7 @@ void Hook_EveLoader_InjectCustomModes() {
     contests[new_idx].purse          = 2500;
     contests[new_idx].name_table_ptr = (uint32_t)"c_patient_zero";
     contests[new_idx].enabled        = 1;
-    
+
     (*num_contests_ptr)++;
 }
 ```

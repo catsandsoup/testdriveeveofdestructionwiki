@@ -2,7 +2,7 @@
 
 
 :::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/wiki/engine_overhauls_specs.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `12655f3348705ae2d5f8e8ab1330b1b5d0de6430d6627e25afa5a6e9b40930be`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
@@ -27,7 +27,7 @@ void Hook_DetachedPart_Update(DetachedPart* part) {
     // Vanilla:
     // part->ttl_ticks--;
     // if (part->ttl_ticks <= 0) part->Despawn();
-    
+
     // Modern Recomp: No TTL decrement! Debris remains permanently on track.
     part->ttl_ticks = 0x7FFFFFFF;
 }
@@ -63,14 +63,14 @@ void Hook_LoadSceneryObject(SceneryEntry* entry) {
     if (entry->is_hay_bale || entry->is_tire_stack) {
         // Strip static flag
         entry->is_static = false;
-        
+
         // Allocate dynamic rigid body with realistic physical mass
         RigidBody* body = new RigidBody();
         body->SetMass(entry->is_hay_bale ? 75.0f : 120.0f); // kg
         body->SetRestitution(entry->is_hay_bale ? 0.15f : 0.65f); // bounciness
         body->SetFriction(0.85f);
         body->SetCollisionHull(entry->convex_hull);
-        
+
         g_physics_world->AddRigidBody(body);
     }
 }
@@ -79,11 +79,11 @@ void Hook_LoadSceneryObject(SceneryEntry* entry) {
 void Hook_WallCollision_ResolveImpact(CollisionContact* contact, Car* striker) {
     float impact_kinetic_energy = 0.5f * striker->mass * striker->velocity.LengthSquared();
     const float BREAK_THRESHOLD_JOULES = 180000.0f; // High kinetic threshold
-    
+
     if (contact->is_concrete_barrier && impact_kinetic_energy > BREAK_THRESHOLD_JOULES) {
         // Despawn static wall segment from BSP tree
         contact->wall_entity->RemoveFromBSPTree();
-        
+
         // Spawn 4 to 5 fractured physics concrete chunk models
         for (int i = 0; i < 4; i++) {
             Vector3 chunk_pos = contact->position + Vector3((i-2)*0.6f, 0.2f, 0);
@@ -107,18 +107,18 @@ During career mode, the open-world Hub World (`HomeBase.trk`) loaded separately 
 void Load_CannonballRun_MergedWorld() {
     // 1. Load Hub World Town geometry into active scene graph
     g_scene_graph->LoadArchive("HomeBase.trk");
-    
+
     // 2. Load Baxter Speedway and Dundas Trail meshes simultaneously
     g_scene_graph->LoadArchiveIntoWorld("Baxter.trk", Vector3(1200.0f, 0.0f, -450.0f));
     g_scene_graph->LoadArchiveIntoWorld("Dundas.trk", Vector3(-800.0f, -50.0f, 1500.0f));
-    
+
     // 3. Remove all Gate 1 and Gate 2 roadblocks
     g_scene_graph->RemoveEntityByName("c_gate1");
     g_scene_graph->RemoveEntityByName("c_gate2");
-    
+
     // 4. Delete Trigger_ResetVehicle out-of-bounds bounding volumes
     g_trigger_manager->DisableAllResetVolumes();
-    
+
     // 5. Connect Highway splines directly to Track entrance splines
     g_ai_spline_network->ConnectSplines("hiway.ild", "baxter_entrance.ild");
     g_ai_spline_network->ConnectSplines("baxter_exit.ild", "dundas_trail.ild");
@@ -141,7 +141,7 @@ Specific track perimeter walls (such as Turn 3 in Mankato, leading to the car de
 ```cpp
 void Hook_ShortcutWall_OnDestroyed() {
     g_mankato_turn3_shortcut_opened = true;
-    
+
     // Notify all active AI drivers to evaluate shortcut spline
     for (Car* car : g_ai_cars) {
         car->ai_driver->EnableAlternateRoute("mankato_alleyway.ild");

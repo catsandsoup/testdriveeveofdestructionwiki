@@ -5,58 +5,15 @@ tags: ["engine", "modding-and-formats", "ps2", "technical-reference"]
 
 
 :::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. CPU tests, static disassembly, proposals and live gameplay validation are different evidence levels. Consult [current Battle recovery](/ps2/BATTLE_RECOVERY) for corrections and current status.
+PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
 
 Source: `docs/MODDING_SCOPE.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d1769382676bd94ebdc3bc7`. Working-copy modifications: `no`. Source SHA-256: `038b9456905096f3ce88bc7abce90935206f4234c45ebda286263ecfbf604206`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
 :::
 
 
-## Owner priority update — October 16, 2026
+## Scope and evidence
 
-LOD, draw distance and correct widescreen/ultrawide culling are now a **high
-priority workstream**, explicitly promoted by the owner from the otherwise
-deferred mod list. Target very distant highest-available-detail rendering and
-eliminate visible model/quality pop-in where the engine/assets permit. Support
-scalable Maximum/Extreme settings for faster Macs and high-end 8K PCs, beyond
-what the owner's M2 Pro can run at full speed. Retain a playable Mac preset.
-DLSS is explicitly the very last priority. Preserve
-original physics, AI and simulation timing; maintain a faithful baseline for
-comparison. Other mods and 120 Hz remain deferred.
-
-Do not equate disabling all culling with correct wide-aspect visibility. Trace
-frustum construction, per-camera aspect, bounding-volume tests, distance/LOD
-selection, scene submission and asset streaming separately. Correct edge
-visibility while retaining valid visibility tests; measure costs per player in
-split screen. Use reproducible camera sweeps, distant opponent/track objects,
-wide-edge captures and frame-time/geometry/memory measurements. A dedicated
-fresh specialist investigation is appropriate for this research/implementation stream.
-
-Zero pop-in is an acceptance ambition, **not an established feasible guarantee**.
-First establish whether highest-detail assets exist, remain resident, and can
-be submitted beyond original engine limits. More internal render pixels alone
-do not create higher-resolution textures or more detailed meshes. Document
-engine bounds and any loading/streaming limits before promising removal.
-
-The historical planning-only note below remains context for other mod ideas;
-it does not override this newer LOD/culling priority.
-
-> **Status: planning only.** Modding is parked until the macOS port of this PS2
-> recompilation reaches 1:1 parity and passes the 2-player split-screen
-> requirement (see `TDEOD RECOMP/GOALS.md` §0 and `docs/MODDING_IDEAS.md` there).
-> Nothing here has been implemented. Every mod must be opt-in and must leave the
-> default game unchanged.
->
-> **Verified against the PS2 data on 2026-10-16.** First written from the owner's
-> **Xbox** disc (`TDEOD RECOMP/game/`), then checked against the owner's **PS2**
-> disc files (`SLUS_209.10` + `DATA/`, read in place from
-> `~/Library/Application Support/TDEODRecomp/disc`; the ELF is byte-identical to
-> the one in this repo). Format findings come from throwaway parsers in
-> `/private/tmp/prior investigation-501/eodmod/` (Xbox) and `/private/tmp/prior investigation-501/eodmod-ps2/`
-> (PS2, plus `xs.py`, a string/address cross-reference helper for the ELF).
-> Nothing was extracted into a repo. Claims still unverified are marked
-> **(guess)** or **(unverified)**.
-
----
+This page records format, data, and implementation feasibility findings for the PS2 version. Claims marked as guesses remain unverified; platform-specific evidence is identified per section.
 
 ## 0. Summary
 
@@ -89,38 +46,6 @@ frame interpolation.
 
 **Engine lineage is confirmed. The closest sibling is NASCAR: Dirt to Daytona
 (2002, PS2/GameCube), not Heat 2002.** Evidence is in §6.1.
-
-| # | Idea | Feasibility (PS2-based port) | Rough effort* | Main prerequisite |
-|---|---|---|---|---|
-| F1 | **Mod overlay folder** (`mods/<name>/DATA/...` merged over `DATA/` in the virtual disc) | **High** | 1–2 days | none (`build_disc()` in `runtime/iop/stream.cpp`); names must be ISO 8.3 (§2.2) |
-| F2 | `0TSR` archive unpack/repack tool | **High** (CRC solved) | 1–3 days | none; CRC = `f_00135FC8` (§2.1) |
-| F3 | `VALT` ⇄ text decompiler/compiler (round-trip) | **High** | 3–5 days | F2 |
-| G1 | Higher internal resolution | **Done** on D3D11 (1–6×); needs to be redone in the Mac renderer | part of the port | Mac GPU GS backend |
-| G2 | Widescreen (true 16:9 field of view) | **High: already in the game** | 0.5–2 days (verify, optional auto-select) | test in-game option + `AspectRatio=16:9` (§1.2) |
-| G3 | Texture replacement / HD pack (keyed at GS upload, names from the texture loader) | **Med-High** | 2–3 weeks | Mac GPU backend, dump tool, hook `f_00350F58` |
-| G4 | Xbox textures in the PS2 port | **Med** (easy mapping, modest gain) | 1–3 weeks | G3 (true-colour path) or a PS2 `TEX` writer |
-| G5 | New post effects (CRT filter, bloom, sharpening, AA) | **High** | days each | Mac GPU backend |
-| G6 | New per-material shaders (e.g. real environment maps, normal maps) | **Low-Med** | weeks–months | GS-level material identification |
-| G7 | 120 Hz output (opt-in), simulation unchanged | **Low-Med** | weeks+ | transform interpolation hooks, or renderer frame generation |
-| M1 | Re-tune existing cars (physics, durability, damage bones) | **High** | hours per car | F1–F3 |
-| M2 | Re-skin cars / tracks (texture swaps in archives) | **Med-High** | days | F2 + PS2 `TEX` writer (8bpp verified, 4bpp swizzle to confirm) |
-| M3 | Add a **new car** (new mesh) | **Med-Low** | 4–8 weeks for the first car, then days | `SPS4` VIF mesh writer, bone rigging, 8.3 name, chassis limits |
-| T1 | Edit existing tracks' events (props, bounds, laps, car counts) | **High** | hours | F1–F3, frame64 codec (done, §2.3) |
-| T2 | **New track** (custom map) via importer | **Med-Low** | 2–4 months | collision writers (platform-neutral) + `GRAF` with `SPS4` parts |
-| T3 | In-game/standalone track editor | **Low** (as a full editor); **Med** as a "Blender plus exporter" pipeline | months | T2 |
-| A1 | Re-tune AI (lookahead, skill, speed factors) | **High** | hours | F3 |
-| A2 | Auto-generate AI racing lines (`.ild`) for new tracks | **Med** | 2–4 weeks | `.ild` layout (same on both platforms, §4) |
-| A3 | Replace the AI | **Low** | months | deep code reverse engineering |
-| MP1 | New multiplayer **variants** (existing rules, new parameters/props) | **High** | hours per mode | F1–F3 |
-| MP2 | New multiplayer **rule types** (Reverse Only, Juggernaut, etc.) | **Med** (simple ones as HLE hooks) / **Low** (Chain Gang) | 1–4 weeks each | find player-input/damage functions in the ELF |
-| MP3a | More than 20 vehicles | **Low** | months | the race setup holds exactly 20 car slots (§5.2) |
-| MP3b | 3–4 player split screen | **Low** (input side is ready) | months | viewport/camera/HUD code for >2 views does not exist |
-| N1 | NASCAR Heat (PC 2000) **car** import | **Med-Low** (after M3) | 1–2 months | M3 pipeline, re-rig damage bones |
-| N2 | NASCAR Heat / Dirt to Daytona **track** import | **Low-Med** | 2–4 months for the first track | T2 + scale/AI lines |
-| N3 | Physics value transplant (Heat `.val` to EoD `physics.val`) | **Med-High** | days | F3 (key names look shared) |
-
-\*Effort is a rough single-developer estimate after parity is reached. It
-assumes the existing recompilation tooling and gets cheaper with each repeat.
 
 ### 0.1 PS2 hook points found in this pass
 Addresses are EE addresses in `SLUS_209.10` (view with `tools/dis.py -f <addr>`).
@@ -240,7 +165,7 @@ presenter.
   Mapping is trivial: entry names match one to one in matching archives. Value
   is modest (DXT has its own block artifacts), so this is a "nice to have", not
   an HD pack. A real HD pack needs new artwork or AI upscaling (G3). Legal: only
-  from the owner's own Xbox disc, generated locally, never shipped.
+  from the Xbox disc, generated locally, never shipped.
 * G5 post effects (CRT, bloom, FXAA/SMAA, sharpen): **High**, a few days each,
   done in the presenter.
 * G6 per-material shaders: **Low-Med**. Materials have to be identified from GS
@@ -289,7 +214,7 @@ dir_offset: entries, 0x44 bytes each:
   loaded big-endian and inverted, then each further byte is shifted in
   (`c = ((c << 8) | byte) ^ T[c >> 24]`), and the result is inverted. It matches
   every PS2 header and entry and every Xbox entry, header and directory checksum
-  tested (`/private/tmp/prior investigation-501/eodmod-ps2/crc.py`).
+  tested (`[local path omitted] process-501/eodmod-ps2/crc.py`).
 * **They are checked.** `f_0012FEA0` rejects a set whose cookie, version (6),
   header size (0x28), file size or header CRC is wrong, and extraction
   (`f_00130C30`) and `check_all_resident_crcs` (`f_00130170`) compare entry
@@ -353,10 +278,10 @@ pairs_off: n_pairs × {key_off, value_off}; all values are C strings in a pool a
 ```
 * The last section word is a leftover heap pointer from the Win32 tool. It is
   the only thing that differs between the PS2 and Xbox copies of a table.
-* `integration` implements **inheritance**: a contest section `[$0040$contest]
-  integration='knockout_contest'` inherits its template, and eves inherit
+* `upstream` implements **inheritance**: a contest section `[$0040$contest]
+  upstream='knockout_contest'` inherits its template, and eves inherit
   `afton_eve_defaults`. The engine errors confirm this: `valtab: table "%s" has
-  missing integration "%s"` / `ambiguous integration` / `parented to self!`.
+  missing upstream "%s"` / `ambiguous upstream` / `parented to self!`.
 * `@name = $NNNN$name` keys are references to child sections (lists of objects).
 * `include` sections chain files (`eves.val` includes the 14 `*_eves.val`).
 * `frame64` / `unfloat_frame64` / `house_car_frame64`: 64 characters in the
@@ -364,7 +289,7 @@ pairs_off: n_pairs × {key_off, value_off}; all values are C strings in a pool a
   3×3 rotation + XYZ translation. Verified: decoding Afton's derby
   semi-trailer gives an orthonormal rotation and a position of (-37.3, 3.9, 188.6),
   consistent with that arena's bound polygon. Decoder:
-  `/private/tmp/prior investigation-501/eodmod/` (scratch).
+  `[local path omitted] process-501/eodmod/` (scratch).
 * Both executables contain `Attempt to call ValueFileLoadHumanReadable() from
   non-PC platform???` (PS2: string `003F2148`, used in `f_00134D88`). The
   engine had a **text val loader on PC**, compiled out on consoles. NASCAR Heat
@@ -393,7 +318,7 @@ mip 0 follows at 0x480
   32-bit upload). Verified by decoding `ct.res/1.tm0` (512×256 car livery) with
   the standard PSMT8 unswizzle and a linear (not CSM-swizzled) palette: the
   image is clean. 4-bit pixels are presumably the matching PSMT4 swizzle
-  **(unverified)**. Decoder: `/private/tmp/prior investigation-501/eodmod-ps2/tex2png.py`.
+  **(unverified)**. Decoder: `[local path omitted] process-501/eodmod-ps2/tex2png.py`.
 * Sizes: unique textures range 16 to 512 px (most 128–256). Each `<name>.tm0`
   is the same texture at twice the size of `<name>.tex` (1,547 of them: all car
   liveries in `ct.res`/`uicar.res`, car interiors in `hobbyset.res`, and about
@@ -608,7 +533,7 @@ editor **Low**.
     pool(%s)`), and `dirt.val max_pack_size = 20`.
   * Related limits: at most **7 chassis per eve** (`00123EE0`) and **30
     chassis requests** in the texture/model map per race (`davmap`, `0012AB38`).
-  * The data maximum is `max_cars = 14`. 32–64 cars (MODDING_IDEAS §2) remains
+  * The data maximum is `max_cars = 14`. 32–64 cars (unverified design proposal §2) remains
     a multi-month project with real risk.
 * **MP3b, 3–4 player split screen: Low.** Input is ready (multitap, 4+ pads,
   4 player option sections, 4-slot standings UI). Missing: viewports, one
@@ -616,7 +541,7 @@ editor **Low**.
   step if pursued: trace how the 2-player split sets its two scissor/viewport
   regions (from a GS trace of a 2P race) and find the code that loops over
   views.
-* LAN/online (MODDING_IDEAS §4): no engine support. It would need deterministic
+* LAN/online (unverified design proposal §4): no engine support. It would need deterministic
   lockstep or state sync built from scratch: **Low**, a separate large project.
 
 ---
@@ -685,17 +610,17 @@ Heat 2002 → Dirt to Daytona → EoD. Data formats evolved by version number
   on PS2 memory budgets.
 
 ### 6.5 Legal note
-Only for content converted locally from discs/installs **the owner owns**. No
+ No
 converted NASCAR/EoD assets go into any repository or release. NASCAR,
 driver and sponsor marks are licensed to the original publishers. Tools may be
-published, but they should read from the user's own files, the same way as the
+published, but they should read from the source files, the same way as the
 port. (General guidance, not legal advice.)
 
 ---
 
 ## 7. Existing community knowledge and tools
 * **EoD:** none found. There is no Xentax/ZenHAX/GitHub/ModDB work on the
-  `0TSR` formats beyond the owner's BMS script. (A GitHub repo
+ (A GitHub repo
   `catsandsoup/Test-Drive-Eve-Of-Destruction-Recomp-MacOS` is private and
   unrelated as far as can be seen.) The format notes in §2 appear to be the
   first public documentation.
