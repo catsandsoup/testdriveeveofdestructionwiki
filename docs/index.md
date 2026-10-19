@@ -13,7 +13,6 @@ Start with [current Battle recovery](ps2/BATTLE_RECOVERY.md), [PS2 status](ps2/S
 - **PS2 implementation notes:** imported from `eod-recomp/docs`. Each page retains its source path, repository revision, working-copy status and source hash. A page is documentation, not proof that every feature works live.
 - **Native investigations:** static/disassembly analysis and CPU test observations. Read test limitations before drawing gameplay conclusions.
 - **Historical / cross-platform research:** imported from `TDEOD RECOMP/docs`. Some pages mix Xbox and PS2 addresses or describe aspirations as existing behavior. These claims require revalidation against the relevant executable and current implementation.
-- **Historical investigation inventory:** an inventory of earlier agent findings, retained for traceability. Treat it as leads, not current validation.
 
 ## Reproducibility
 

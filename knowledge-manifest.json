@@ -326,13 +326,5 @@
     "repository_head": "session working notes",
     "working_copy_modified": true,
     "source_sha256": "169841380f0de9e193860ec9cf5f19c3d98c0f8ea9c8ab76d7931d8d609e5f1b"
-  },
-  {
-    "page": "docs/historical/antigravity-battle-investigation.md",
-    "source_repository": "investigation session",
-    "source_path": "outputs/antigravity-battle-investigation.md",
-    "repository_head": "session working notes",
-    "working_copy_modified": true,
-    "source_sha256": "d815ab4f0083d4682bdf7dba2cb96d1273134e153eaad7ab12c9c2195ef6bff6"
   }
 ]

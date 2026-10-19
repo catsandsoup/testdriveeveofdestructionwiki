@@ -41,8 +41,6 @@ for group, repo, label in [('ps2', args.ps2, 'PS2 implementation notes'), ('rese
 for name in ['native-ai-research.md', 'native-weapon-tests.md']:
     source = args.session / 'work' / name
     if source.exists(): entries.append((source, root / 'docs/native' / name, None, 'Native PS2 investigation evidence'))
-source = args.session / 'outputs/antigravity-battle-investigation.md'
-if source.exists(): entries.append((source, root / 'docs/historical' / source.name, None, 'Historical investigation inventory; claims require revalidation'))
 mapping = {s.resolve(): d for s,d,_,_ in entries}
 for source, dest, repo, label in entries:
     raw = source.read_bytes()
