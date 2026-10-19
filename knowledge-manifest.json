@@ -28,8 +28,8 @@
     "source_repository": "eod-recomp",
     "source_path": "docs/GAMEPLAY_MODS_RE.md",
     "repository_head": "0959cc4e0e85a43c7ad763dc6b93d7f060d56b5c",
-    "working_copy_modified": false,
-    "source_sha256": "0378b65113adab36e47e92cd0fd151649bbbb385230930e0e471fbb599c6f856"
+    "working_copy_modified": true,
+    "source_sha256": "086ed3715dc992ef7e2c0eb2129178cf1e36d0c9dfcb262888748a6b06feaf42"
   },
   {
     "page": "docs/ps2/GS_ALPHA_ORDER.md",
