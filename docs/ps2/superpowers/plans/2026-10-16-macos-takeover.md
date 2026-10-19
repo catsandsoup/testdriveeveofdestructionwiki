@@ -8,7 +8,7 @@ Source: `docs/superpowers/plans/2026-10-16-macos-takeover.md` in `eod-recomp`. R
 :::
 
 
-&gt; **For agentic workers:** Continue the already dispatched component tasks in their existing isolated worktrees. Parent integrates and verifies on `macos`.
+> **For agentic workers:** Continue the already dispatched component tasks in their existing isolated worktrees. Parent integrates and verifies on `macos`.
 
 **Goal:** Resume the three interrupted Claude tasks and produce a locally usable Mac PS2 recomp with verified two-player input, packaging, and accelerated graphics.
 

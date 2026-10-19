@@ -106,7 +106,7 @@ The AI steers toward $\vec{P}_{\text{lead}}$, ensuring high-speed T-bone impacts
 
 ### 3.2 State 3: Power-Slide Ramming
 When closing in on a target at high speed:
-- If closing speed $&gt; 9.0\text{ m/s}$ and relative angle $(\vec{F}_{\text{ai}} \cdot \vec{F}_{\text{target}}) &lt; 0.15$:
+- If closing speed $> 9.0\text{ m/s}$ and relative angle $(\vec{F}_{\text{ai}} \cdot \vec{F}_{\text{target}}) &lt; 0.15$:
   - Sets throttle to full: `car + 0x1B7C = 1.0f`
   - Applies handbrake: `car + 0x1B78 = 0.90f`
   - This violently breaks rear-axle traction, causing the AI car to whip sideways and slam its reinforced quarter-panel directly into the target vehicle's cabin.

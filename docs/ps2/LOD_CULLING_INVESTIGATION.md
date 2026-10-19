@@ -219,7 +219,7 @@ forcing wrapper there would be too late. Reuse the existing projection trace.
 No production behavior hook was added in this pass.
 
 The first behavioral experiment should multiply **only positive car thresholds**
-at the end of `0021ABF8` by a finite, validated setting &gt;=1 (1 preserves the
+at the end of `0021ABF8` by a finite, validated setting >=1 (1 preserves the
 baseline). Retain zero, all flags, model handles, count, min, shadow tables and
 original physics data. This single load-time hook feeds both selectors and
 avoids duplicated per-frame patches. A large multiplier keeps the highest

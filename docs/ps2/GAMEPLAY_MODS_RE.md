@@ -8,17 +8,17 @@ Source: `docs/GAMEPLAY_MODS_RE.md` in `eod-recomp`. Repository HEAD: `67c972b0fe
 :::
 
 
-&gt; [!WARNING]
-&gt; **Correction — 2026-10-19:** This document contains historical claims that are
-&gt; not a verified implementation contract. Read [Battle recovery](BATTLE_RECOVERY.md)
-&gt; first for the checked native weapon ABI and current evidence limits. In
-&gt; particular, the weapon registry contains owner indices and **interface**
-&gt; pointers; `0x0017E000` is the trigger and `0x0017E5C8` is an update;
-&gt; flag `0x10` selects the feat mortar rather than the straight Battle shot.
-&gt; Earlier steering, synthetic weapon registration, bot recovery guarantees,
-&gt; respawn relocation and world-origin boundary claims must not be used as proof
-&gt; of correct native behavior. The new chapter distinguishes verified CPU results
-&gt; from pending gameplay validation and supersedes conflicting statements below.
+> [!WARNING]
+> **Correction — 2026-10-19:** This document contains historical claims that are
+> not a verified implementation contract. Read [Battle recovery](BATTLE_RECOVERY.md)
+> first for the checked native weapon ABI and current evidence limits. In
+> particular, the weapon registry contains owner indices and **interface**
+> pointers; `0x0017E000` is the trigger and `0x0017E5C8` is an update;
+> flag `0x10` selects the feat mortar rather than the straight Battle shot.
+> Earlier steering, synthetic weapon registration, bot recovery guarantees,
+> respawn relocation and world-origin boundary claims must not be used as proof
+> of correct native behavior. The new chapter distinguishes verified CPU results
+> from pending gameplay validation and supersedes conflicting statements below.
 
 ## Executive Summary & Agent Handoff
 
@@ -276,8 +276,8 @@ Allocated at `0x00167F4C` via `f_0012E870`, constructed via `f_00166C60`:
 - `+0x30`: In-use flag
 - `+0x34`: Distance rating to nearest opponent
 
-&gt; [!CAUTION]
-&gt; The `BattleMaster` structure is strictly dimensioned for 4 cars (`0x454 + 4 * 0x50 = 0x594`). Attempting to register `num_cars > 4` writes past the per-car array, directly corrupting `place[4]` (`+0x594`) and `num_cars` (`+0x5A8`).
+> [!CAUTION]
+> The `BattleMaster` structure is strictly dimensioned for 4 cars (`0x454 + 4 * 0x50 = 0x594`). Attempting to register `num_cars > 4` writes past the per-car array, directly corrupting `place[4]` (`+0x594`) and `num_cars` (`+0x5A8`).
 
 ### 4.6 Global Active Pointers & Memory Map Reference
 The following global addresses govern the runtime Battle Mode session:
@@ -370,7 +370,7 @@ Direct target tail-chasing in open demolition arenas results in AI vehicles cons
 To execute high-speed T-bone collisions rather than glancing rear-end scrapes, bots execute power-slides on sharp cornering angles:
 
 #### Activation Criteria:
-$$face\_dot &lt; 0.15 \quad \text{AND} \quad \|\vec{V}_{\text{ai}}\| &gt; 9.0\text{ m/s}$$
+$$face\_dot &lt; 0.15 \quad \text{AND} \quad \|\vec{V}_{\text{ai}}\| > 9.0\text{ m/s}$$
 where $face\_dot = \hat{L} \cdot \vec{F} = L_x F_x + L_z F_z$.
 
 #### Control Modulation:
@@ -407,7 +407,7 @@ When an AI vehicle strikes a perimeter wall or barrier at an acute angle, full t
 2. **Pin Detection Threshold**:
    $$\|\vec{V}_{\text{ai}}\| &lt; 1.4\text{ m/s} \quad \text{AND} \quad \Delta d &lt; 0.35\text{ m}$$
 3. **Trigger Threshold**:
-   If the pin condition holds for $&gt; 40\text{ frames}$ ($\approx 0.67\text{ s}$ at 60Hz):
+   If the pin condition holds for $> 40\text{ frames}$ ($\approx 0.67\text{ s}$ at 60Hz):
    - Set `reverse_frames = 55` ($\approx 0.92\text{ s}$).
    - Determine reverse escape steering:
      $$\text{reverse\_dir} = (steer\_dot \ge 0.0f) \; ? \; -1 \; : \; +1$$
@@ -430,7 +430,7 @@ AI vehicles scan direct line-of-sight toward their current target:
 
 #### Firing Gate:
 $$\begin{cases}
-direct\_face\_dot &gt; 0.70 & (\text{Target within } \pm 45.5^\circ \text{ heading cone}) \\
+direct\_face\_dot > 0.70 & (\text{Target within } \pm 45.5^\circ \text{ heading cone}) \\
 8.0\text{ m} \le d_{\text{direct}} \le 45.0\text{ m} & (\text{Safe lethal ballistic range}) \\
 \text{cooldown} \ge 65\text{ frames} & (\ge 1.08\text{ s between rounds})
 \end{cases}$$
@@ -515,7 +515,7 @@ For all active vehicles, perimeter distance $d = \sqrt{P_x^2 + P_z^2}$ is monito
            '.        .'
              '-....-'
 ```
-If $d &gt; 24.5\text{ m}$:
+If $d > 24.5\text{ m}$:
 1. Compute inward unit normal $\hat{n} = \left(-\frac{P_x}{d}, -\frac{P_z}{d}\right)$.
 2. Calculate normal velocity component $v_n = \vec{V} \cdot \hat{n}$.
 3. If $v_n &lt; 0$ (vehicle moving outbound):
@@ -649,7 +649,7 @@ ctest --test-dir build-mac --output-on-failure
    - Tests lead-pursuit interception math with closing velocities and wrecked car filtering.
    - Tests power-slide ramming handbrake activation thresholds and turn-exit reset.
    - Tests 40-frame barrier unstick detection and 55-frame reverse recovery timing.
-   - Tests ballistic chicken firing angle ($&gt;0.70$), distance ($8\text{m} \le d \le 45\text{m}$), and 65-frame cooldown.
+   - Tests ballistic chicken firing angle ($>0.70$), distance ($8\text{m} \le d \le 45\text{m}$), and 65-frame cooldown.
    - Tests Demolition Derby infield respawn relocation ($r \in [10, 18]\text{m}$) and kinetic boundary reflection ($e = 0.8$ at $24.5\text{m}$).
    - Tests dynamic participant bot scaling (1P+3AI, 2P+2AI, 3P+1AI, 4P) and event state arbitration guarding.
 

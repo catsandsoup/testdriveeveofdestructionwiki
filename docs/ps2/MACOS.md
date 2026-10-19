@@ -8,10 +8,10 @@ Source: `docs/MACOS.md` in `eod-recomp`. Repository HEAD: `67c972b0fed775994d176
 :::
 
 
-&gt; Current acceptance and branch map: [DEVELOPER_HANDOFF.md](DEVELOPER_HANDOFF.md).
-&gt; Historical speed samples below describe their specific builds/scenes. They do
-&gt; not establish current full-game 1:1 accuracy or full-speed heavy multiplayer.
-&gt; Current goal is native 1x/4:3 with no frame skipping before enhancements.
+> Current acceptance and branch map: [DEVELOPER_HANDOFF.md](DEVELOPER_HANDOFF.md).
+> Historical speed samples below describe their specific builds/scenes. They do
+> not establish current full-game 1:1 accuracy or full-speed heavy multiplayer.
+> Current goal is native 1x/4:3 with no frame skipping before enhancements.
 
 Branch `main` of catsandsoup/eod-recomp. Native arm64 build of the same
 recompiled game code; no emulator, no Rosetta.
@@ -32,7 +32,7 @@ Headless, muted test run: `EOD_HEADLESS=1 EOD_MUTE=1 ./build-mac/eod --headless 
 
 ## What works (verified 2026-10-16, M2 Pro, headless)
 
-- Boot, intro movies, title screen, main menu, Action &gt; Race &gt; Multi.
+- Boot, intro movies, title screen, main menu, Action > Race > Multi.
 - **2-player split screen race** with two independent pads:
   `tools/test_2p_race.sh "<disc folder>"` drives both ports with scripted
   pads and writes a contact sheet where each viewport reacts only to its own

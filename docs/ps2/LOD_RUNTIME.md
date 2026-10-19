@@ -42,7 +42,7 @@ avoid turning a long race into unbounded logging; they do not capture every
 transition or establish a per-frame performance measurement.
 
 `EOD_CAR_LOD_MULTIPLIER=2` requests a load-time experiment. The parser accepts
-only finite float values &gt;=1; malformed/NaN/infinite/overflow values log once
+only finite float values >=1; malformed/NaN/infinite/overflow values log once
 and use 1. A table is changed only after its full validation: own embedded
 records/count, count 1..16, valid minimum, original handles other than the native
 `-1` sentinel, finite nondecreasing thresholds and finite scaled results. The

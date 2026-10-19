@@ -74,7 +74,7 @@ Baseline `ec55ff2` and candidate each completed `tools/test_2p_race.sh` at nativ
 independent moving players in a split-screen race; race logs reach 59.9 drawn
 frames/s. Runs use isolated memory cards, not the owner's saves.
 
-`EOD_INPUT_TIMING=1`, 38 one-second race windows (vblank &gt;= 4300), before/after:
+`EOD_INPUT_TIMING=1`, 38 one-second race windows (vblank >= 4300), before/after:
 
 | Counter (microseconds) | Median before/after | p95 before/after | Maximum before/after |
 | --- | --- | --- | --- |

@@ -387,7 +387,7 @@ By porting the Test Drive: Eve of Destruction (`TDEOD`) simulation engine to a m
 - **Target Gameplay**: Stop on a dime, or explode! On Green: floor it. On Red: come to a complete halt within 1.5 seconds. Any car still moving is detonated into the sky!
 - **Engine Subsystems Scoped**:
   - Global traffic light state machine.
-  - Velocity vector magnitude sensor ($\|\vec{V}\| &gt; 0.22\text{ m/s} = 0.5\text{ mph}$).
+  - Velocity vector magnitude sensor ($\|\vec{V}\| > 0.22\text{ m/s} = 0.5\text{ mph}$).
   - Chassis detonation trigger.
 - **Mathematical & Memory Hook**:
   ```cpp

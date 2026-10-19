@@ -19,7 +19,7 @@ def render(text, source, mapping):
         if re.match(r'^\s*(```|~~~)', line): fence = not fence
         elif not fence:
             parts = re.split(r'(`+[^`]*`+)', line)
-            line = ''.join(p if p.startswith('`') else p.replace('<', '&lt;').replace('>', '&gt;') for p in parts)
+            line = ''.join(p if p.startswith('`') else p.replace('<', '&lt;') for p in parts)
         out.append(line)
     text = '\n'.join(out) + '\n'
     def link(m):

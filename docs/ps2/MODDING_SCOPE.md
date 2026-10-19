@@ -37,21 +37,21 @@ engine bounds and any loading/streaming limits before promising removal.
 The historical planning-only note below remains context for other mod ideas;
 it does not override this newer LOD/culling priority.
 
-&gt; **Status: planning only.** Modding is parked until the macOS port of this PS2
-&gt; recompilation reaches 1:1 parity and passes the 2-player split-screen
-&gt; requirement (see `TDEOD RECOMP/GOALS.md` §0 and `docs/MODDING_IDEAS.md` there).
-&gt; Nothing here has been implemented. Every mod must be opt-in and must leave the
-&gt; default game unchanged.
-&gt;
-&gt; **Verified against the PS2 data on 2026-10-16.** First written from the owner's
-&gt; **Xbox** disc (`TDEOD RECOMP/game/`), then checked against the owner's **PS2**
-&gt; disc files (`SLUS_209.10` + `DATA/`, read in place from
-&gt; `~/Library/Application Support/TDEODRecomp/disc`; the ELF is byte-identical to
-&gt; the one in this repo). Format findings come from throwaway parsers in
-&gt; `/private/tmp/claude-501/eodmod/` (Xbox) and `/private/tmp/claude-501/eodmod-ps2/`
-&gt; (PS2, plus `xs.py`, a string/address cross-reference helper for the ELF).
-&gt; Nothing was extracted into a repo. Claims still unverified are marked
-&gt; **(guess)** or **(unverified)**.
+> **Status: planning only.** Modding is parked until the macOS port of this PS2
+> recompilation reaches 1:1 parity and passes the 2-player split-screen
+> requirement (see `TDEOD RECOMP/GOALS.md` §0 and `docs/MODDING_IDEAS.md` there).
+> Nothing here has been implemented. Every mod must be opt-in and must leave the
+> default game unchanged.
+>
+> **Verified against the PS2 data on 2026-10-16.** First written from the owner's
+> **Xbox** disc (`TDEOD RECOMP/game/`), then checked against the owner's **PS2**
+> disc files (`SLUS_209.10` + `DATA/`, read in place from
+> `~/Library/Application Support/TDEODRecomp/disc`; the ELF is byte-identical to
+> the one in this repo). Format findings come from throwaway parsers in
+> `/private/tmp/claude-501/eodmod/` (Xbox) and `/private/tmp/claude-501/eodmod-ps2/`
+> (PS2, plus `xs.py`, a string/address cross-reference helper for the ELF).
+> Nothing was extracted into a repo. Claims still unverified are marked
+> **(guess)** or **(unverified)**.
 
 ---
 
@@ -111,7 +111,7 @@ frame interpolation.
 | MP1 | New multiplayer **variants** (existing rules, new parameters/props) | **High** | hours per mode | F1–F3 |
 | MP2 | New multiplayer **rule types** (Reverse Only, Juggernaut, etc.) | **Med** (simple ones as HLE hooks) / **Low** (Chain Gang) | 1–4 weeks each | find player-input/damage functions in the ELF |
 | MP3a | More than 20 vehicles | **Low** | months | the race setup holds exactly 20 car slots (§5.2) |
-| MP3b | 3–4 player split screen | **Low** (input side is ready) | months | viewport/camera/HUD code for &gt;2 views does not exist |
+| MP3b | 3–4 player split screen | **Low** (input side is ready) | months | viewport/camera/HUD code for >2 views does not exist |
 | N1 | NASCAR Heat (PC 2000) **car** import | **Med-Low** (after M3) | 1–2 months | M3 pipeline, re-rig damage bones |
 | N2 | NASCAR Heat / Dirt to Daytona **track** import | **Low-Med** | 2–4 months for the first track | T2 + scale/AI lines |
 | N3 | Physics value transplant (Heat `.val` to EoD `physics.val`) | **Med-High** | days | F3 (key names look shared) |
@@ -734,7 +734,7 @@ port. (General guidance, not legal advice.)
    and comparing with the PS2 originals. This unlocks M2, M3 and T2.
 7. **`.ild` generator (A2)**, validated by regenerating Afton's oval.
 8. **First new car (M3/N1)**, then the **first new short track (T2/N2)**.
-9. Only then the risky items: &gt;20 vehicles (MP3a), 3–4 player split screen
+9. Only then the risky items: >20 vehicles (MP3a), 3–4 player split screen
    (MP3b), new rule types (MP2), 120 Hz (G7).
 
 ## 9. Open questions / unknowns

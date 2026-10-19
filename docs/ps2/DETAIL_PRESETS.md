@@ -42,7 +42,7 @@ comparison via value1. No change is posted to the upstream repository.
 
 `[Video] Detail=original|high|maximum` defaults to Original and requires restart.
 High multiplies positive car thresholds by3. Maximum scales the first native
-permitted threshold to at least1,000,000 scaled distance units (&gt;800x the largest
+permitted threshold to at least1,000,000 scaled distance units (>800x the largest
 native far plane1150), preserving ordered finite distances and native minimum,
 count, handle arrays, flags, wheel/damage logic and shadow tables. Invalid tables
 remain unchanged. This retains the highest permitted model for normal finite

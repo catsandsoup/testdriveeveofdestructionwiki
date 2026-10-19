@@ -62,7 +62,7 @@ Verified details from the locally generated routines:
   using the native float literals. Rain velocity is `(0, -19.62, 0)`.
 - The clock lives at 0x3cdacc. State body+0x1e0 is 0 during cooldown, 1 while
   awaiting release, and 2 when armed. Body+0x1e4 is the deadline. The native
-  update transitions 0-&gt;1 only when time is strictly greater than deadline.
+  update transitions 0->1 only when time is strictly greater than deadline.
 - Armed plus pressed fires. State 1 plus released changes to 2 without firing.
   Holding through expiry does not fire. Early release/repress during state 0
   does not bypass cooldown.

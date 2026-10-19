@@ -94,7 +94,7 @@ once (gen code is throwaway) and pick the skip count from that.
 1. **APU/NV2A clock overflow**: `qemu_clock_get_us/ns` multiplied the host ns
    counter before dividing; it overflowed int64 after ~2.5 h (us) / 9 s (ns)
    of Mac uptime, so all APU frame pacing ran on garbage time.
-2. **Port I/O lifted** (`in`/`out` -&gt; `xbox_PortIn/xbox_PortOut`,
+2. **Port I/O lifted** (`in`/`out` -> `xbox_PortIn/xbox_PortOut`,
    kernel_hal.c). MCPX GPIO 0x80C0 bit 5 = TV field line, toggled per vblank.
    D3D's GPU ISR (0x001D1D28) reads it; **XMV starts a movie clock only on an
    even field** -- this was the logos.xmv stall. ACPI PM timer at 0x8008.
@@ -102,14 +102,14 @@ once (gen code is throwaway) and pick the skip count from that.
    consumed. The overlay disable after each movie spun forever otherwise.
    `g_nv2a_overlay_latch_fn` is the hook for actually showing movie frames.
 4. **Translator: cmp/test flag joins** merged as cmp, the test arm rewritten
-   on its edge (`test a,b` == `cmp a&b,0`). Fallback sites 48 -&gt; 42; the rest
+   on its edge (`test a,b` == `cmp a&b,0`). Fallback sites 48 -> 42; the rest
    are in data decoded as code or alias entries starting on a jcc (harmless).
 5. **Lifter: pushfd/popfd/cpuid/cvtpi2ps/ld+stmxcsr/cli/sti/wbinvd.** pushfd/
    popfd were dropped (stack imbalance!); cpuid answers as a Pentium III.
    The JPEG decoder's MMX probe (0x0013B620) depends on these.
 6. **RECOMP_ABI_RESTORE now off by default** (and read by value). Its
    "repair" undid `__SEH_epilog` (0x0016AAFB) and the hand-written Huffman
-   helpers (table 0x002220A0) that return in ebx -&gt; title background was
+   helpers (table 0x002220A0) that return in ebx -> title background was
    noise. NB `RECOMP_ABI_FRAME_HELPER` in recomp_types.h names JSRF's CRT
    addresses, not TDEOD's (0x0016AAC0/0x0016AAFB) -- fix if ever re-enabled.
 7. **AA render targets sampled as textures**: TDEOD renders 640x448 at

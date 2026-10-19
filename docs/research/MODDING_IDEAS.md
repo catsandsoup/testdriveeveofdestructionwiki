@@ -8,10 +8,10 @@ Source: `docs/MODDING_IDEAS.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0c
 :::
 
 
-&gt; **Gate:** none of this starts until the game runs 1:1 with the Xbox original
-&gt; (GOALS.md Definition of Done) and the 2-player split-screen pass requirement
-&gt; (GOALS.md §0) holds. Every item is opt-in and must leave the default game
-&gt; byte-for-byte faithful. Recorded from the owner, 2026-10-16.
+> **Gate:** none of this starts until the game runs 1:1 with the Xbox original
+> (GOALS.md Definition of Done) and the 2-player split-screen pass requirement
+> (GOALS.md §0) holds. Every item is opt-in and must leave the default game
+> byte-for-byte faithful. Recorded from the owner, 2026-10-16.
 
 ## 1. Visual and performance
 

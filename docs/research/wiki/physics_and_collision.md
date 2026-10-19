@@ -93,8 +93,8 @@ When a vehicle suffers a high-energy kinetic impact, the engine calculates the l
 $$\vec{F}_{\text{impact}} = \frac{m_{\text{striker}} m_{\text{victim}}}{m_{\text{striker}} + m_{\text{victim}}} \frac{\Delta \vec{V}}{\Delta t}$$
 
 ### 4.1 Detachment Pipeline
-1. If $\|\vec{F}_{\text{impact}}\| &gt; \text{damage\_impulse}$ ($12,000\text{ N}$), the deformation bone in `Bone.val` undergoes plastic deformation, crinkling the local mesh vertices.
-2. If $\|\vec{F}_{\text{impact}}\| &gt; \text{removal\_impulse}$ ($35,000\text{ N}$), the bone constraint is severed:
+1. If $\|\vec{F}_{\text{impact}}\| > \text{damage\_impulse}$ ($12,000\text{ N}$), the deformation bone in `Bone.val` undergoes plastic deformation, crinkling the local mesh vertices.
+2. If $\|\vec{F}_{\text{impact}}\| > \text{removal\_impulse}$ ($35,000\text{ N}$), the bone constraint is severed:
    - Routine `0x00100F10` allocates a 68-byte detached rigid body instance.
    - Constructor `0x000A3220` inherits the parent car's linear velocity plus an impact scatter impulse:
      $$\vec{V}_{\text{detached}} = \vec{V}_{\text{car}} + \frac{\vec{F}_{\text{impact}}}{m_{\text{part}}} \times 0.25$$
@@ -130,7 +130,7 @@ To support custom modes (such as Shackled Sprint and The Sweeper), the engine's 
 Between body A and body B with rest length $L_0$:
 $$d = \|\vec{P}_B - \vec{P}_A\|, \quad \hat{n} = \frac{\vec{P}_B - \vec{P}_A}{d}$$
 $$\vec{F}_{\text{spring}} = \begin{cases}
-k (d - L_0) \hat{n} + c ((\vec{V}_B - \vec{V}_A) \cdot \hat{n}) \hat{n} & \text{if } d &gt; L_0 \\
+k (d - L_0) \hat{n} + c ((\vec{V}_B - \vec{V}_A) \cdot \hat{n}) \hat{n} & \text{if } d > L_0 \\
 \vec{0} & \text{if } d \le L_0
 \end{cases}$$
 

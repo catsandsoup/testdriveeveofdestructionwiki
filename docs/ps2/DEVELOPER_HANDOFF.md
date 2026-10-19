@@ -23,7 +23,7 @@ Upstream won every conflict in shared code. Windows files stay as upstream ships
 `platform_list_pads`) are non-Windows only, with inline no-ops on Windows (`platform.h`).
 The Vulkan shaders now build from their own copy, `runtime/gs/vulkan/gs_shaders_vk.hlsl`
 (same SPIR-V as before). Windows keeps upstream's input order (pump after the
-vblank IRQ) and host-&gt;local transfer reporting; SDL3 builds keep the fork's.
+vblank IRQ) and host->local transfer reporting; SDL3 builds keep the fork's.
 
 Widescreen follows upstream: `AspectRatio=auto|4:3|16:9|stretch` drives the game's
 own display mode (`src/game_patches.cpp`); SDL3 `platform_set_aspect` feeds the
@@ -224,7 +224,7 @@ POD key with a 4-entry recent cache. Per draw this removes ~35k push-constant an
 (`render passes N, ended by ...` in the stats line).
 
 **Result (measured):** alternating same-capture runs, 4x6 replays, first excluded:
-median 49.05 -&gt; 41.45 ms per replay (-15.5%); GPU busy ~5.0 -&gt; ~4.1 ms per warm
+median 49.05 -> 41.45 ms per replay (-15.5%); GPU busy ~5.0 -> ~4.1 ms per warm
 replay (Metal System Trace, eod only). Draws/batches/readbacks/submits unchanged
 (36,365/1,013/19/22). Race and font fixtures: display image and full 4 MiB VRAM
 byte-identical to the pre-change binary at RenderScale 1 and 6, in default,
@@ -266,10 +266,10 @@ vblanks (the visible jumping).
 RenderScale 1 and 6 for race2p-5000, race2p, codex-native2p and three heavy
 late-race captures; 43/43 CTests (the CPU-write fixtures exercise the merge).
 
-**Result:** race2p-5000 warm replay 49 -&gt; 23 ms per 2 frames at 1x (loaded
-machine; ~38 ms idle baseline), 60 -&gt; 33 ms at 4x, 64 -&gt; 36 ms at 5x. Live
-scripted 2P race (`tools/test_2p_race.sh` input, 1x): 5 s windows 30-39 -&gt;
-59.9 fps, vblank catch-ups ~11/s -&gt; 0, worst vblank debt 77 -&gt; &lt;17 ms. At 4x
+**Result:** race2p-5000 warm replay 49 -> 23 ms per 2 frames at 1x (loaded
+machine; ~38 ms idle baseline), 60 -> 33 ms at 4x, 64 -> 36 ms at 5x. Live
+scripted 2P race (`tools/test_2p_race.sh` input, 1x): 5 s windows 30-39 ->
+59.9 fps, vblank catch-ups ~11/s -> 0, worst vblank debt 77 -> &lt;17 ms. At 4x
 (~3024x1964) median 59.7 with dips to ~36-57 in heavy/start windows; at 5x
 (~4K) median ~53: GPU fragment work dominates there. A one-off ~35 ms GS hitch
 remains at race load (first decode of ~64 MB of textures). The stats line
@@ -319,5 +319,5 @@ countdown):** 1x 59.9 median / 56.5 min, 4x 59.9 / 56.3, 5x 59.9 / 56.9 (the
 countdown windows run at ~57 at every scale: the game's own rate). Before: 4x
 59.8 / 45, 5x 51.7 / 38.6. Windowed muted 4x: 59.9 median, countdown 57.
 Not done: the one-off race-load texture decode (no longer causes vblank debt
-&gt; 2 ms), the two-pass alpha draws (still ~2x fragment work for alpha-tested
+> 2 ms), the two-pass alpha draws (still ~2x fragment work for alpha-tested
 geometry), full-surface conversion passes.
