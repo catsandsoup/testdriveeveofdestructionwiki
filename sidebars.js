@@ -7,13 +7,6 @@ module.exports = {
       "items": [
         {
           "type": "category",
-          "label": "ai-and-navigation",
-          "items": [
-            "research/wiki/ai_and_pathfinding"
-          ]
-        },
-        {
-          "type": "category",
           "label": "combat-and-ai",
           "items": [
             "ps2/BATTLE_NAVIGATION",
@@ -30,8 +23,8 @@ module.exports = {
           "type": "category",
           "label": "modding-and-formats",
           "items": [
-            "ps2/MODDING_SCOPE",
-            "research/wiki/engine_overhauls_specs"
+            "ps2/GAMEPLAY_MODS_RE",
+            "ps2/MODDING_SCOPE"
           ]
         },
         {
@@ -57,8 +50,7 @@ module.exports = {
             "ps2/MACOS",
             "ps2/MANUAL_RECOVERY",
             "ps2/TIMING_TRACE",
-            "ps2/WORKER_SHUTDOWN",
-            "research/wiki/index"
+            "ps2/WORKER_SHUTDOWN"
           ]
         }
       ]
@@ -86,59 +78,6 @@ module.exports = {
           "label": "anchors-and-scaling",
           "items": [
             "ps2/HUD_EDGE_ANCHORS"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "category",
-      "label": "menus",
-      "items": [
-        {
-          "type": "category",
-          "label": "event-selection",
-          "items": [
-            "research/wiki/event_injection_and_menus",
-            "research/wiki/game_modes_specs"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "category",
-      "label": "models",
-      "items": [
-        {
-          "type": "category",
-          "label": "vehicles-and-damage",
-          "items": [
-            "research/wiki/vehicles_and_models"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "category",
-      "label": "physics",
-      "items": [
-        {
-          "type": "category",
-          "label": "collision-and-rigid-bodies",
-          "items": [
-            "research/wiki/physics_and_collision"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "category",
-      "label": "terrain",
-      "items": [
-        {
-          "type": "category",
-          "label": "tracks-landscape-and-skybox",
-          "items": [
-            "research/wiki/maps_and_tracks"
           ]
         }
       ]

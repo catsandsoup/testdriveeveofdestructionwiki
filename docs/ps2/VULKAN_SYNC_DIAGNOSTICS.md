@@ -3,14 +3,6 @@ tags: ["engine", "rendering", "ps2", "technical-reference"]
 ---
 # Vulkan synchronization investigation
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/VULKAN_SYNC_DIAGNOSTICS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `c8994884f0cd3b8be4d7a475324f65c0c311f639c8c9ab9e712d16cb02d53210`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Stable launch VSync
 
 The visible swapchain now chooses FIFO from launch `VSync=1`, or immediate /

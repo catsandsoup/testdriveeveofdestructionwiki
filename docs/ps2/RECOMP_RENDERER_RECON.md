@@ -3,14 +3,6 @@ tags: ["engine", "rendering", "ps2", "technical-reference"]
 ---
 # Renderer architecture and dependencies
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/RECOMP_RENDERER_RECON.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `93cf1760e8e6af14a0474dd783288ff17f81eca1b46831b8b59f97c3d03e8faf`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Finding and evidence boundary
 
 **No proven matching Monster Games / NASCAR Heat / Dirt to Daytona / Test Drive: Eve of Destruction PS2 static recompilation or decompilation targeting Metal/Vulkan was found.** This is a bounded public-source search, not proof that none exists. Queries covered those game/developer names plus PS2 recompilation, decompilation, Metal, Vulkan and racing.

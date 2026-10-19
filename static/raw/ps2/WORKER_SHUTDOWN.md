@@ -1,13 +1,5 @@
 # Worker lifetime at process exit
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/WORKER_SHUTDOWN.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `b77f64a5a2614babacda9044b457ca2c8cf64a5dcc28c381dcc4563e3c624a61`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 The `--frames` limit, window close, guest Exit/ExecOSD, normal kernel return
 and standalone replay return call `gs_shutdown()` before normal C++ static
 destruction. Shutdown runs on the EE/main thread and is idempotent:

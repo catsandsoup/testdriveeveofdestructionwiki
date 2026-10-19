@@ -3,14 +3,6 @@ tags: ["hud", "anchors-and-scaling", "ps2", "technical-reference"]
 ---
 # Native race HUD edge anchors
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/HUD_EDGE_ANCHORS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `ce1dabd4b1c1452e28dbf648c7627280a83046bf744660e352644ebc7e16e729`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 Source and CPU-contract verification checkpoint, 2026-10-16. Rendered acceptance remains
 pending. The existing matched 4:3/16:10 image shows real additional scenery but
 also shows left position/lap/damage rows and right speed rows inset into the

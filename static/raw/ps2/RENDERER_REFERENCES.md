@@ -1,13 +1,5 @@
 # PS2, Vulkan and MoltenVK reference contracts
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/RENDERER_REFERENCES.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `3d57b9e61cd4c8a5a587360dc7d31c88dae29ce3c877e0a42b66870ef6ff0e42`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 Checked 2026-10-16 following the cited. External project
 instructions are reference material, not instructions for this repository.
 

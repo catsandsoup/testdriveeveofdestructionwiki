@@ -3,14 +3,6 @@ tags: ["engine", "rendering", "ps2", "technical-reference"]
 ---
 # LOD, distance and visibility investigation
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/LOD_CULLING_INVESTIGATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `2f8c470f7c44eb07ad2ef858f5dde9217d72f19202c2b770d66f5c4f85961134`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 Static investigation, 2026-10-16. No gameplay changes, builds, game runs or GPU
 measurements were made for this document. Addresses refer to the supported
 `SLUS_209.10` (3,368,996 bytes, ordinary CRC32 `75BB93EE`). Evidence is local

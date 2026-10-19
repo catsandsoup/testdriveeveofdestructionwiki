@@ -1,14 +1,6 @@
 ## ps2/BATTLE_NAVIGATION
 # Experimental Battle navigation
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/BATTLE_NAVIGATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `b2c8fd4d480e54b6f9ce5e9efaed5d37f2d7b17d5094c5683b794d95c1854318`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Player acceptance
 
 A bot must pursue a moving opponent around track obstacles without abandoning
@@ -78,8 +70,32 @@ menu capacity. The current 312/320 contest occupancy leaves eight additions:
 Anoka, Ashland, Baxter, Dennison, Dundas, Eagan, Gilroy and Hampton. This is a
 capacity policy, not a tested small-track allowlist. Home/Mankato/Woodly remain
 native multiplayer selections; unlocking them does not expand the solo table.
-Safe per-map eligibility needs full chase/completion evidence before widening
+Anoka now has bounded final-policy five-kill/results evidence; that does not
+validate every obstacle route. Safe per-map eligibility needs full chase/completion evidence before widening
 solo exposure or claiming any current map to be fully validated.
+
+## Rejected obstacle-query candidates
+
+Read-only native inspection recovered segment/BSP routine `0x00216D98`:
+`a0=start XYZ*`, `a1=end XYZ*`, `a2=hit XYZ output*`, `v0=hit boolean`,
+root pointer at `0x003D1C24`, hit triangle at `0x00496218`. However, saved
+Home/Woodly/Dennison worlds each contain one giant horizontal ground triangle
+and no child nodes. Their installed `track.bsp` resources are only 108 bytes.
+The substantial scenery collision resources are `track.bsc` (SCOL), not this
+fallback BSP. A correct call to that routine would still miss the fences.
+
+The static proxy list at `0x003D216C` is incomplete too: Woodly has nineteen
+BOX proxies far from the observed final pins, while Home has zero. Neither
+candidate was integrated or shipped as a general wall-clearance oracle.
+
+The next discriminating research observation would be a read-only trace of
+actual native impulse/contact entry `0x0017B918`, matched against an actual
+bot body, followed by identifying the blocking SCOL/shape. Native input
+registers there are body `a0`, other shape `a1`, impulse XYZ pointer `a2`,
+contact XYZ pointer `a3`, type `t0`, optional alternate point `t1`, other body
+`t2`, and impulse scale `f12`; it queues contact then calls `0x0017B818`.
+A candidate host logger was written but never built or executed and was removed
+ This is a future probe, not a validated navigation API.
 
 ## Reproduction and diagnostics
 
@@ -107,20 +123,38 @@ native phase/score/lifecycle state remain necessary.
 ## ps2/BATTLE_RECOVERY
 # Battle mode, chicken weapons and AI contracts
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/BATTLE_RECOVERY.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `ce9afc5eaa41741468d49541594c4ef92439116ef63b7a09f43b2141be332bea`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 Status: experimental bot policy; native CPU contracts and bounded live Battle evidence verified on
 2026-10-19; complete-match and lifecycle acceptance are tracked below. This chapter supersedes conflicting weapon, input,
-registry and respawn claims in [the historical gameplay notes] (`GAMEPLAY_MODS_RE.md`, source checkout).
+registry and respawn claims in [the historical gameplay notes](GAMEPLAY_MODS_RE.md).
 It describes the North American `SLUS_209.10` executable only. Addresses are
 guest EE addresses, not host pointers or portable APIs for another game.
 Executable SHA-256: `4f60053dc141365f5ae50737622f8408be30ced513b4c109427c926461f2e2ae`.
+
+## Final bounded scope — 2026-10-19
+
+The owner stopped further expansion at the tested checkpoint and authorized
+building, publishing main and removing verified obsolete builds/merged unused
+branches. This ships the measured native weapon recovery and experimental bot
+policy; it is not a claim that every original acceptance ambition below is met.
+No numeric participant selector, Career exclusion, new obstacle query or native
+versus mod flag-ownership redesign was implemented. `BattleBots` remains a
+boolean that fills Battle to four cars while preserving humans. Changes apply
+when starting the next event, not by restarting the app. Native behavior applies
+when it is off. That does not mean "humans only": native `0x0012C158`
+uses `max(humans, min(contest.max_cars, native_cap))`, with observed native
+caps 99/10/4/4 for one/two/three/four humans. A native Battle descriptor with
+`max_cars=2` therefore yields two cars for one or two humans, then three/four
+for three/four humans. Solo with bots off does not receive the custom AI weapon
+or input policy; that particular gameplay journey was not live-validated.
+Ordinary non-Battle rosters bypass that hook. `SinglePlayerBattle`
+still appends native Battle descriptors in solo Action **and Career** where
+capacity permits; disable it for unchanged native Career contest menus. A Career
+season hard lock was discussed but not added at this stopping point.
+
+Unbuilt contact/weapon tracing candidates and unfinished toggle test fixtures
+were preserved under ignored `work/stopped-expansion-2026-10-19/`, then removed
+from the shipped source. The original inherited recovery backup is preserved.
+Known limitations and the exact verified journeys below remain authoritative.
 
 ## Player success and acceptance
 
@@ -525,9 +559,23 @@ Its exit check only establishes reaching combat, not full player acceptance.
   not reach phase 2, and pins remain. Different stimuli/frame bounds prevent
   treating these observations as a controlled performance comparison with
   `mixed-final`; primary-course following is not a complete obstacle solution.
-- The navigation rebuild passed **54/54 CTests** (15.31 seconds, latest checkpoint rebuild), including the
+- `anoka-lifecycle` (18,000 vblanks, exit 0): verified `Anoka.trk`, two
+  humans/two bots using the final course policy. Native phase 2 began at
+  t=188.322; bot slot 1 reached five net kills (slot 0 maximum four). Both
+  bots and both humans completed three sampled respawns each. Bot maximum
+  alive-period displacements were 143.12/159.39, firing transitions 11/12,
+  and low-progress intervals 3.84/3.19 seconds. Course routing was active in
+  39/41 of 181 sampled updates per bot. Captures show killed-by messages,
+  respawn prompts, 3rd/4th ranks and native Eve standings. The explicit START
+  at vblank 16,500 occurred during finish presentation; no fresh countdown or
+  score reset followed. Thus five-kill/results acceptance is verified on Anoka,
+  while controlled restart and UI return-to-menu remain unverified. The frame
+  bound produced a clean process exit, not evidence of a menu Exit selection.
+- The navigation rebuild passed **54/54 CTests** (13.32 seconds, final safe rebuild), including the
   138 native weapon assertions. The local macOS app rebuilt successfully and
-  passed `codesign --verify --deep --strict`.
+  passed `codesign --verify --deep --strict`. Final bundled startup reached
+  its 60-vblank bound and exited zero, headless/muted with an isolated card.
+  `CFBundleIconFile=AppIcon.icns` points to a nonempty 3,364,625-byte ICNS resource.
 - Earlier failed experiments are not acceptance: a NullDriver hook never ran;
   writing zero to drivetrain engagement left bots nearly stationary. Those
   failures explain why fixture-only success was insufficient.
@@ -548,17 +596,46 @@ The following requirements remain pending until a named live run proves them.
 | Additional original-reference coverage | Additional pitch/camera angles and direct original-hardware comparisons beyond the recorded vanilla run. |
 | Additional real-match angle/impact coverage | The dedicated reload journey below verifies held/release/repress; additional named pitch/camera/impact cases still need live evidence. |
 | Collision, blast and ownership | Native impact/detonation path; correct attacker and victim; score changes consistent with the hit. |
-| Complete mixed match with course routing | Two humans plus two bots through five net kills and results with the final course policy; the earlier direct-pursuit Anoka run reached this threshold. |
+| Additional map completion | The final-policy Anoka run reached five kills/results; Home, Woodly and the final Dennison run did not. |
 | Recovery and respawn | Observed wall recovery and native respawn transforms on the actual track; no invented world-origin circle or unsupported time guarantee. |
 | Complete lifecycle | Countdown, combat, death, respawn, score threshold, results, restart and exit without stale state. |
 | Additional regression journeys | Four-human Battle, restart, return-to-menu and normal-race visual checks beyond the passing fixture suite. |
 
+## Current optional-weapon toggle limits
+
+Progression unlocks do not activate cheat flags. `UnlockAll` and native Extras
+unlock masks are separate from the active flags at `0x003C4190`. Battle supplies
+its native weapon regardless of progression/Extras menu availability; the
+locked-progression vanilla journey verifies flags `0x09` and firing.
+
+While the optional Chicken Fight setting is on, each vblank forces master and
+weapon (`0x09`) and clears mortar/rain (`0x90`), selecting straight native fire.
+Initial OFF leaves native Battle/feat selections alone. OFF after ON preserves
+Battle's weapon bit; outside Battle it clears weapon `0x08` unless rain `0x80`
+is active. It does not restore the previous mortar/rain selection, and the
+master bit remains latched. The rain shortcut's OFF branch clears only `0x80`,
+so master/weapon can remain active while the Chicken Fight checkbox is false.
+These are known ownership limitations; the stopped redesign was not shipped.
+Native rain has priority over mortar, then straight launch; straight-mod ON
+suppresses both alternate modes. Turbo and chickens share L2 and may operate
+together when both are enabled.
+
+For human cars, the common native world builder at `0x00210000` calls
+`0x00227EE8 → 0x00227CA0` for Human records (`0x50`) when `0x002CE180` permits
+it; that gate is a native constant-zero return. The factory builds a BALL scene
+and queues native physical initialization without a Battle/progression/active
+weapon-flag condition. This supports enabling an already constructed weapon
+without manual allocation. Static inspection and a historical non-Battle dump
+support this; fresh current-build Action/Career live-toggle acceptance and the
+actual Extras menu visual state were not completed.
+
 ## Pending acceptance journeys
 
-The checkpoint intentionally does not claim that Battle and course-navigation acceptance is complete. Preserve working builds and branches until the remaining
-acceptance is verified; final source push and cleanup follow that acceptance.
+ The gaps
+below remain recorded for future work; they do not authorize continued feature
+work during the requested final build and safe cleanup.
 
-The bounded next weapon journey is authored as:
+The verified weapon journey is reproduced as:
 
 ```sh
 tools/test_battle.sh "$DISC" weapon work/battle-weapon-reload 7000 Dennison
@@ -579,8 +656,8 @@ No native blast was observed, so this journey does not prove victim/kill credit.
 entry's attacker index, position, radius and force when tracing is enabled;
 it does not itself prove which car was hit or why a later score changed.
 
-Use an explicitly named `Anoka` mixed run for the next full-match/lifecycle
-journey; the harness supports its ten RIGHT taps and requires `Anoka.trk`.
+The completed `Anoka` mixed journey uses ten RIGHT taps and requires
+`Anoka.trk`; its bounded results are recorded above.
 Control post-match input separately: demonstrate rank/results, select restart,
 observe a fresh countdown/score reset, return to the menu and exit. Existing
 fixed smoke scripts do not certify those post-match choices. For an explicit
@@ -606,14 +683,6 @@ on Home/Woodly and full mixed/solo matches after such a change.
 
 ## ps2/DETAIL_PRESETS
 # Rendering detail presets
-
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/DETAIL_PRESETS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `d975750da76c55fc7f71684d29e5ea2a106060d3b6b5b7845a2f3ebfe09b4e75`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
 
 ## Player success and scope
 
@@ -704,16 +773,677 @@ hardware/player acceptance is implied by CPU contracts or one scripted scene.
   with minor separate-run timing variation possible. No5x/6x tests were run:
 
 
+## ps2/GAMEPLAY_MODS_RE
+# Test Drive: Eve of Destruction (SLUS-209.10) - Gameplay Mods & Reverse Engineering Technical Reference
+
+> [!WARNING]
+> **Correction — 2026-10-19:** This document contains historical claims that are
+> not a verified implementation contract. Read [Battle recovery](BATTLE_RECOVERY.md)
+> first for the checked native weapon ABI and current evidence limits. In
+
+> pointers; `0x0017E000` is the trigger and `0x0017E5C8` is an update;
+> flag `0x10` selects the feat mortar rather than the straight Battle shot.
+> Earlier steering, synthetic weapon registration, bot recovery guarantees,
+> respawn relocation and world-origin boundary claims must not be used as proof
+> of correct native behavior. The new chapter distinguishes verified CPU results
+> from pending gameplay validation and supersedes conflicting statements below.
+
+## Executive Summary & Agent Handoff
+
+This technical reference document provides an exhaustive reverse-engineering specification, memory map, disassembly breakdown, mathematical AI formulation, and user guide for gameplay modifications and the Battle Mode subsystem within the static recompilation of *Test Drive: Eve of Destruction* (`SLUS_209.10` / `eod-recomp`).
+
+The systems documented herein encompass:
+1. **Master Feats & Career Cheats Unlocking**: Permanent career unlock states, bitmask layout at `0x003C4190`, career-mode lockout bypass, and concurrent multi-cheat activation.
+2. **High-Velocity Scaled Turbo Boost Thrust Engine**: Interception of `HumanDriver::DriveUpdate` (`f_0018F2A8`), bypass of the hardcoded 100 mph (44.44 m/s) velocity ceiling, and linear forward impulse injection.
+3. **Explosive Ballistic Chicken Shockwave Engine**: Projectile kinematics of the `Ball` object (`0x228` bytes), radial impulse scaling in `f_0017DA58`, and spatial hash grid interaction.
+4. **Single-Player & Multi-AI Battle Mode Architecture**: Full reverse engineering of event type `0x18000224`, master event tables (`0x003C3A70`), contest tables (`0x003C61A8`), Eve tables (`0x003C4D08`), EveResultsTracker (`0x003C4BF8`), the `BattleMaster` core structure (`0x5AC` bytes), vehicle input setters (`f_0018AA50-80`), and weapon accessors (`f_0017DE78`/`f_0017E5C8`).
+5. **Demolition Derby AI Combat Subsystem**: Mathematical formulations for dynamic lead-pursuit trajectory interception, power-slide ramming via rear-wheel handbrake modulation, 40-frame barrier unstick recovery state machine, ballistic chicken weapon firing geometry, 1P-to-4P dynamic bot scaling, 5-kill race finish arbitration, and arena infield respawn/boundary reflection physics.
+6. **Zero-Friction Controller-Only User Journey**: Chording combos (`L1+R1+DPad`, `L3+R3`, Hold `Select`), chord button suppression in IOP pad RPC, and multi-sensory feedback (haptic pulses, audio chimes, HUD banners).
+7. **Configuration & Verification Reference**: Unified `eod.ini` schema, environment variable overrides, headless padscript automation, and CTest regression test execution.
+
+---
+
+## 1. Feature 1: Cheats & Career Unlocks Architecture
+
+### 1.1 Memory Map & Bitmasks
+
+#### Active Gameplay Cheat Mask: `0x003C4190` (`uint32_t`)
+The master gameplay bitmask is evaluated at runtime during vehicle physics ticks, controller input sampling, and collision damage evaluation:
+
+| Bit | Hex Value | Name in `feats.val` | Description | EE Disassembly Sites |
+| :--- | :--- | :--- | :--- | :--- |
+| **0** | `0x001` | *Master Cheat Enable* | Master gate. Must be set for any cheat to activate during gameplay. Set in Arcade; **cleared in Career Mode**. | `0x0018F47C`, `0x0018FC1C`, `0x0017E628`, `0x002C1224` |
+| **1** | `0x002` | `turbo_boost` (`hack=1`) | Turbo Boost on holding L2 button. | `0x0018F488` |
+| **2** | `0x004` | `hardcore_mode` (`hack=2`) | Hardcore realistic deformation / structural damage scaling. | `0x00188BDC`, `0x0018EFFC` |
+| **3** | `0x008` | *Weapon Master Active* | Enables L2 weapon triggering, missile trajectory updates, and reticle tracking. | `0x0017E4EC`, `0x0018FC28`, `0x001AF99C` |
+| **4** | `0x010` | `horn_ball` (`hack=4`) | Chicken Fight (launches forward ballistic explosive chicken from vehicle nose). | `0x0017E25C`, `0x0017E634`, `0x0017F314` |
+| **5** | `0x020` | `ai_vengeance` (`hack=5`) | Demolition Derby AI drivers aggressively seek and ram player vehicle. | `0x00193B20`, `0x001985D0` |
+| **6** | `0x040` | `leader_takes_damage` (`hack=6`) | First place vehicle continuously accumulates structural damage over time. | `0x001B5BD0` |
+| **7** | `0x080` | `raining_chickens` (`hack=7`) | Explosive chickens drop from high altitude directly above all active vehicles. | `0x0017E228`, `0x0017E6CC`, `0x0017F2E0` |
+| **8** | `0x100` | `one_hit_kills` (`hack=8`) | Any collision impact exceeding threshold instantly totals vehicle (`damage = 1.0f`). | `0x0018D7D4`, `0x00204A40` |
+| **9** | `0x200` | `sepia` (`hack=9`) | Vintage sepia visual post-processing color grading filter. | `0x0017868C`, `0x002378F4`, `0x00268930` |
+
+#### Feat Unlock Memory Registers
+- `0x003D18E0` (`uint32_t`): Bitmask of career-completed feats (`0..7`).
+- `0x003D18E4` (`uint32_t`): Cheat feat unlock bitmask. Function `f_00205218()` writes `0xFFFFFFFF` to unlock all feat cheats in the Feats menu.
+- `0x003D80E0` (`int32_t[8]`): Current toggle states (`0 = off`, `1 = on`) for the 8 UI cheat menu entries.
+
+### 1.2 The Career Mode Lockout Vulnerability & Bypass
+In vanilla `SLUS_209.10`, entering any Career Mode race triggers `f_002C1224`:
+```mips
+002c1224 lw   $v1, 0x4190($s0)     ; load active cheat mask from 0x003C4190
+002c1228 andi $v0, $v1, 0xFFFE     ; CLEARS BIT 0 (Master Cheat Enable)!
+002c122c sw   $v0, 0x4190($s0)     ; write back stripped mask
+```
+Because bit 0 is cleared, every subsequent cheat check (`andi $v0, $v1, 0x1; beq $v0, $zero, skip`) fails across vehicle physics and weapons.
+**Recomp Engine Bypass**: `src/game_patches.cpp:game_patches_vblank()` asserts `cheats |= 0x1` every vblank whenever `career_cheats` or any live mod is enabled, permanently neutralizing the career lockout.
+
+### 1.3 Concurrent Turbo Boost & Chicken Weapon Execution
+In the stock PS2 UI, selecting Chicken Fight disabled Turbo Boost and vice versa because the UI table `0x003D80D8` paired `{0x18, 0x80}` to avoid conflicting over the single `Ball` projectile pool.
+In the underlying physics engine:
+- Turbo Boost is evaluated at `0x0018F488` via bit `0x02`.
+- Weapon Firing is evaluated at `0x0018FC28` via bit `0x08` and `0x10`.
+Both inspect the L2 button independently. By setting `0x003C4190 |= 0x1B` (Master `0x01` + Turbo `0x02` + Weapon Master `0x08` + Horn Ball `0x10`), holding L2 initiates maximum forward rocket thrust while continuously launching ballistic explosive chickens.
+
+### 1.4 Master Career Unlock Sequence (`f_002B6DB8`)
+Calling `f_002B6DB8()` executes the engine's internal completion routines:
+- `f_0012CF98()`: Unlocks all career tier tracks, vehicles, and reputation prizes.
+- `f_00205218()`: Unlocks all 8 feat prizes (`0x003D18E4 = 0xFFFFFFFF`).
+- `f_002CD418()`: Unlocks all eve events across all venues.
+- `f_002E06A0()`, `f_002E09C8()`, `f_002E0098()`: Unlocks all Dare challenges and championships.
+
+---
+
+## 2. Feature 2: High-Velocity Scaled Turbo Boost Thrust Engine
+
+### 2.1 Code Location: `f_0018F2A8` (`HumanDriver::DriveUpdate`)
+Vehicle physics updates are executed in `f_0018F2A8` (`0x0018F2A8`–`0x0018FBA0`).
+- Argument `$a0` (`$s2`): Pointer to `VehicleController`
+  - `+0x38`: Pointer to `Car` rigid body object
+  - `+0x3C`: Pointer to `DriverInput` interface
+  - `+0x40`: `int32_t car_index`
+
+### 2.2 Forward Velocity Projection
+The engine projects the 3D linear velocity vector onto the vehicle heading vector:
+```mips
+0018f33c addiu  $a1, $v1, 0x104     ; car->velocity (Vector3: X=0x104, Y=0x108, Z=0x10C)
+0018f340 addiu  $a2, $v1, 0x7C      ; car->forward_heading (Vector3: X=0x7C, Y=0x80, Z=0x84)
+...
+0018f368 madd.s $f22, $f5, $f4      ; $f22 = dot(velocity, forward) -> forward speed (m/s)
+```
+
+### 2.3 Force Multiplier & Rigid Body Injection
+When L2 is depressed:
+```mips
+0018f4b8 lui   $at, 0x3FC0          ; 1.5f (base boost force multiplier)
+0018f4bc mtc1  $at, $f21
+...
+0018f5cc lui   $at, 0x46EA
+0018f5d0 ori   $at, $at, 0x6000     ; 30,000.0f Newtons (base thrust force)
+0018f5d4 mtc1  $at, $f12
+0018f6a4 lwc1  $f0, 0x1B88($a2)     ; car mass factor
+0018f6a8 mul.s $f0, $f0, $f12      ; 30,000.0f * mass
+0018f6ac mul.s $f0, $f21, $f0      ; * 1.5f = 45,000.0f * mass
+```
+Impulse application is completed by calling `f_0017B708(car, force_vec, offset_vec)`.
+
+### 2.4 The Hardcoded 100 mph (44.44 m/s) Top Speed Cap & Bypass
+```mips
+0018f508 lui   $at, 0x4231
+0018f50c ori   $at, $at, 0xC71D     ; 0x4231C71D = 44.444447f m/s (exactly 100.0 mph)
+0018f510 mtc1  $at, $f2             ; speed ceiling register
+...
+0018f550 c.lt.s $f22, $f2           ; compare forward speed ($f22) with 44.444447f
+0018f558 bc1f   L_skip_boost        ; IF SPEED >= 100 MPH, DISENGAGE BOOST ENTIRELY!
+```
+**Recomp Engine Scaling**: In `src/game_patches.cpp:f_0018F2A8()`, the recompiled driver multiplies the thrust impulse by `g_config.turbo_scale` (default `1.75f`) and expands the speed ceiling:
+$$v_{\text{cap}} = 44.444447\text{ m/s} \times \text{turbo\_scale}$$
+At `turbo_scale = 1.75`, $v_{\text{cap}} \approx 77.78\text{ m/s}$ (174.0 mph).
+
+---
+
+## 3. Feature 3: Explosive Ballistic Chicken Detonation & Shockwave Physics
+
+### 3.1 Projectile Kinematics (`Ball` Object, `0x228` Bytes)
+- Projectile Vtable: `0x003F9528` / `0x003F9538`
+- Sound FX bindings: `chkstart.sfx` (launch cluck), `chkroll.sfx` (ground bounce), `explode.sfx` (detonation blast).
+- Initial launch kinematics computed in `f_0017EC58`:
+  $$\vec{v}_{\text{launch}} = \vec{v}_{\text{car}} + (0.707\vec{f} + 0.495\vec{u}) \times 24.89\text{ m/s}$$
+  where $\vec{f}$ is the vehicle forward vector (`car + 0x7C`), $\vec{u}$ is the upward normal (`car + 0x70`), and $\vec{v}_{\text{car}}$ is linear velocity (`car + 0x104`).
+
+### 3.2 Detonation Handler: `f_0017E718`
+Upon contact with a vehicle rigid body or terrain boundary:
+```mips
+0017e79c lui   $at, 0x40F0          ; 0x40F00000 = 7.5f meters (BLAST RADIUS)
+0017e7a0 mtc1  $at, $f20
+...
+0017e7e8 lui   $at, 0x46C3
+0017e7ec ori   $at, $at, 0x5000     ; 0x46C35000 = 25,000.0f Newtons (BLAST FORCE)
+0017e7f0 mtc1  $at, $f13
+0017e7f4 mov.s $f12, $f20           ; argument $f12 = blast radius (7.5m)
+0017e7fc jal   func_17DA58          ; f_0017DA58(pos=$s0, attacker=$a1, radius=$f12, force=$f13)
+```
+
+### 3.3 Shockwave Function & Spatial Hash Grid: `f_0017DA58`
+`f_0017DA58(const float *pos, int attacker_car_idx, float radius, float force)`:
+1. Queries the 100×100 2D spatial hash grid at `0x0048D2B4` (cell size 8m×8m) using the explosion epicenter `(pos[0], pos[2])`.
+2. Gathers dynamic physics bodies in the 4 adjacent spatial buckets.
+3. Computes radial impulse distance $d = \|\vec{P}_{\text{car}} - \vec{P}_{\text{blast}}\|$.
+4. For all bodies within $d \le \text{radius}$:
+   $$\vec{F}_{\text{impulse}} = \text{force} \times \left(1.0 - \frac{d}{\text{radius}}\right) \times \frac{\vec{P}_{\text{car}} - \vec{P}_{\text{blast}}}{d}$$
+   Deformation damage is simultaneously applied to `car + 0x1BEC`.
+**Recomp Engine Scaling**: In `src/game_patches.cpp:f_0017DA58()`, radius and force arguments are scaled by `g_config.chicken_radius_scale` (default `1.5f` $\rightarrow$ 11.25m) and `g_config.chicken_force_scale` (default `2.0f` $\rightarrow$ 50,000 N).
+
+---
+
+## 4. Feature 4: Single Player & Multi-AI Battle Mode Architecture
+
+### 4.1 Master Event Table (`0x003C3A70`) & Bitfield Structure
+In `SLUS_209.10`, the event registry resides at `0x003C3A70`. Entries have a 12-byte stride (`0xC`), terminated by `event_type == 0`:
+
+```
++0x00: uint32_t event_type
++0x04: uint32_t name_string_ptr        (e.g., "battle", "normal_race")
++0x08: uint32_t display_name_string_ptr (e.g., "Battle", "No-Rules Race")
+```
+
+#### Event Registry Dump
+| Index | Event Type Hex | Name String | Display Name String | Category |
+| :--- | :--- | :--- | :--- | :--- |
+| **0** | `0x00002110` | `"normal_race"` | `"No-Rules Race"` | Race |
+| **4** | `0x01002105` | `"figure8_race"` | `"Figure-8"` | Race |
+| **17** | `0x18000215` | `"soccer"` | `"Soccer Match"` | Arena / Minigame |
+| **23** | `0x1800421c` | `"save_ring"` | `"Survival"` | Arena Elimination |
+| **24** | `0x1880221e` | `"kill_derby"` | `"Demolition Derby"` | Arena Elimination |
+| **26** | `0x18802220` | `"kill_push"` | `"Push-Off"` | Arena Elimination |
+| **27** | `0x18802221` | `"kill_knock"` | `"Knock-Out"` | Arena Elimination |
+| **28** | `0x18006222` | `"capture"` | `"Capture the Flag"` | Arena Minigame |
+| **30** | `0x18000224` | `"battle"` | `"Battle"` | Multi-Car Arena Combat |
+
+#### Event Helper Functions
+- `f_0010AFA0(uint32_t event_type)`: Iterates `0x003C3A70`, returns `display_name_string_ptr`. If missing, panics at `0x0010AFE0`: `"race: can't find event type for 0x%x"`.
+- `f_0010AF28(const char *name)`: Performs `strcmp` against `+0x04`, returning `event_type`.
+- `f_0010B000(uint32_t event_type)`: Returns internal identifier string (e.g. `"battle"`).
+
+#### Event Bitflags
+- `event_type & 0x00000100` (Race Flag): Tested at `0x0012415C` in `f_00123B98`. If bit `0x100` is 0 and contest is Contest 0 of an Eve in Career Mode, the engine panics: `"Eve %s, first contest must be a race"`.
+- `event_type & 0x00000800` (Trailer Flag): Tested at `0x001243F0` (`cars * 2 <= 20`).
+- `event_type & 0x18000000` (Arena Category): Handled in Arena Master Factory `f_001D97B0`. At `0x001D993C`, tests `(event_type & 0xFFFF) == 0x0224`, branching to `0x001D9948` which instantiates `BattleMaster` (`0x5AC` bytes) via constructor `f_00166C60`.
+
+### 4.2 In-Memory Eve & Contest Tables
+- **Eve Table**: Base `0x003C4D08`, Stride `0x84`, count at `0x003C4CF4` (`num_eves`):
+  - `+0x00`: `int32_t eve_index`
+  - `+0x04`: `int32_t league_index`
+  - `+0x08..+0x27`: `char track_name[32]` (e.g. `"Dennison"`)
+  - `+0x28..+0x67`: `char eve_display_name[64]`
+  - `+0x70`: `uint32_t num_contests` (number of contests in this Eve)
+- **Contest Table**: Base `0x003C61A8`, Stride `0x28`, count at `0x003C4CF8` (`num_contests`, capacity 320):
+  - `+0x00`: `uint32_t global_index`
+  - `+0x04`: `uint32_t eve_index`
+  - `+0x08`: `uint32_t event_type` (`0x18000224` for Battle Mode)
+  - `+0x0C`: `uint32_t laps` (`1`)
+  - `+0x10`: `uint32_t max_cars` (`4` - strictly bounded by `BattleMaster`)
+  - `+0x14`: `uint32_t terrain_mask` (`0xFFFFFFFF`)
+  - `+0x18`: `uint32_t rounds` (`1`)
+  - `+0x1C`: `uint32_t purse` (`500`)
+  - `+0x20`: `uint32_t name_table_ptr` (layout override, e.g. `"c_battle"`)
+  - `+0x24`: `uint32_t enabled` (`1` = active/selectable in carousel)
+
+### 4.3 Carousel UI Rendering & `EveResultsTracker` (`0x003C4BF8`)
+The Action Mode event selection carousel is driven by `f_00379728`:
+- Mode dispatcher `f_00379CA8` queries `f_002DE250()`. If 0, calls `f_00379728` (Action Mode); if 1, calls `f_00378E50` (Career Mode).
+- Format string `"Event %d of %d"` is stored at `0x0042D588` and referenced at `0x0037993C`:
+  ```mips
+  0037994c jal  f_00120C50       ; verify active eve
+  00379954 jal  f_00120D78       ; returns current_event_idx (0-based) from EveResultsTracker
+  00379958 addiu $s0, $v0, 0x1   ; s0 = current_event_idx + 1 (1-based)
+  0037995c lw   $a0, 0x1854($sp) ; destination string buffer
+  00379960 daddu $a1, $s1, $zero ; format: "Event %d of %d" (0x0042D588)
+  00379964 daddu $a2, $s0, $zero ; %d = current_event_idx + 1
+  00379968 jal  f_003A7068       ; sprintf(dest, "Event %d of %d", cur, total)
+  0037996c daddu $a3, $v0, $zero ; %d = total_events (from f_00120DA8)
+  ```
+- **List Construction Loop** (`0x003797F8`–`0x00379868`):
+  Iterates `s3 = 0` to `num_events - 1`: queries contest pointer via `f_00125388(contest_idx)` (`0x003C61A8 + c * 0x28`), extracts `contest->event_type` (`+0x08`), resolves display name via `f_0010AFA0()`, and stores into carousel array `$sp + 0x12B0 + s3 * 0x80`.
+- **Injection Hook**: Intercepting `f_001244A8` appends Battle Mode (`0x18000224`) and configures Contest 0 of Eve 0 to Battle Mode, causing "Event 1 of 5" in the Action Mode carousel to directly boot Battle Mode.
+
+### 4.4 Controller Query & 1-Player Solo Clean Boot
+- Physical controller query: `f_00335518` counts connected pads.
+- Callers of `f_00335518`:
+  - `0x002C0DF4`: Main Menu Multiplayer verification. Branches to `0x002A3220` displaying dialog `"Multiplayer requires at least two controllers!"` (`0x004197B8`).
+  - `0x002B8E1C`: Player setup screen. Clamps player count to 1 if count $&lt; 2$.
+- **Solo Clean Boot Rationale**: When Battle Mode is launched via Single Player Action Mode (`mode == 0x12F`) or Career Mode (`mode == 0x130`), the code branch at `0x002C0DF4` is **never executed**.
+- **Respawn Safety**: In `f_001673B8` (respawn selector), when `num_cars == 1` (`total_opponents == 0`), the opponent distance loop executes 0 times and assigns spawn point at `0x00167518` without null dereferences. 1 player drives solo cleanly.
+
+### 4.5 `BattleMaster` Object Memory Layout (`0x5AC` Bytes)
+Allocated at `0x00167F4C` via `f_0012E870`, constructed via `f_00166C60`:
+
+| Offset Range | Type | Field Name | Description |
+| :--- | :--- | :--- | :--- |
+| `+0x00` | `uint32_t` | `vtable` | Vtable pointer (`0x003F7770` / `0x003F5BB8`). |
+| `+0x04` | `int32_t` | `event_state` | Match progression: `0` = countdown, `1` = active combat, `2` = match finished / victory. |
+| `+0x08` | `uint32_t` | `saved_cheats` | Preserved cheat mask from `0x003C4190`. |
+| `+0x0C` | `uint32_t` | `flag` | Internal state flags. |
+| `+0x10..+0x450` | `struct[16]` | `respawns[16]` | 16 Arena Respawn records (`0x44` bytes each). |
+| `+0x450` | `int32_t` | `num_respawns` | Total valid respawn points parsed (default 16). |
+| `+0x454..+0x594` | `struct[4]` | `cars[4]` | **Per-Car Battle State Array** (4 cars max, stride `0x50` = 80 bytes). |
+| `+0x594..+0x5A4` | `int32_t[4]` | `place[4]` | Sorted rankings: car indices for 1st, 2nd, 3rd, and 4th place. |
+| `+0x5A8` | `int32_t` | `num_cars` | Total participant cars in the match (1 to 4). |
+
+#### Per-Car Battle State Struct (`0x50` Bytes per slot `i`):
+- `+0x454 + i*0x50`: Slot status flags (`0` = empty, `1` = active/spawned).
+- `+0x460 + i*0x50`: Hits dealt / kills (`int32_t`, incremented at `0x00167084`).
+- `+0x468 + i*0x50`: Hits taken / deaths (`int32_t`, incremented at `0x00167198`).
+- `+0x46C + i*0x50`: Net score (`int32_t`, calculated as `kills - deaths` at `0x00167F8C`).
+
+#### Respawn Point Record (`0x44` Bytes per slot `k`):
+- `+0x00`, `+0x04`, `+0x08`: Right vector $(R_x, R_y, R_z)$
+- `+0x0C`, `+0x10`, `+0x14`: Up normal vector $(U_x, U_y, U_z)$
+- `+0x18`, `+0x1C`, `+0x20`: Forward heading vector $(F_x, F_y, F_z)$
+- `+0x24`, `+0x28`, `+0x2C`: Spawn coordinate $(P_x, P_y, P_z)$
+- `+0x30`: In-use flag
+- `+0x34`: Distance rating to nearest opponent
+
+> [!CAUTION]
+> The `BattleMaster` structure is strictly dimensioned for 4 cars (`0x454 + 4 * 0x50 = 0x594`). Attempting to register `num_cars > 4` writes past the per-car array, directly corrupting `place[4]` (`+0x594`) and `num_cars` (`+0x5A8`).
+
+### 4.6 Global Active Pointers & Memory Map Reference
+The following global addresses govern the runtime Battle Mode session:
+
+| Global Address | Type | Identifier | Description |
+| :--- | :--- | :--- | :--- |
+| `0x003CF194` | `uint32_t*` | `g_battle_master` | Pointer to active `BattleMaster` instance. Non-null during battle. |
+| `0x003CF19C` | `uint32_t` | `cur_event_type` | Current event type (`0x18000224` when Battle Mode is executing). |
+| `0x003C41AC` | `uint32_t` | `num_players` | Number of active human viewports (`1` = full screen, `2..4` = splits). |
+| `0x0048522C` | `uint32_t` | `num_cars` | Active vehicle count participating in the current physics world. |
+| `0x00447458` | `uint32_t[4]` | `g_car_array` | Pointers to active `Car` rigid bodies. Indexable via `f_00179A08(i)`. |
+| `0x003C3A6C` | `uint32_t*` | `g_session_mgr` | Session Manager struct pointer; offset `+0x18` stores player count. |
+
+### 4.7 Vehicle Input Control Setters & Rigid Body Offsets
+AI controllers inject input into vehicles using the native engine control setters:
+
+```
+f_0018AA50(Car *car, int gear)         -> Stores transmission gear into car + 0x1B90 (1 = forward, -1 = reverse)
+f_0018AA80(Car *car, float steer)      -> Stores steering ratio into car + 0x1B6C ([-1.0f, +1.0f])
+f_0018AA70(Car *car, float gas)        -> Stores throttle into car + 0x1B70 ([0.0f, 1.0f])
+f_0018AA68(Car *car, float footbrake)  -> Stores footbrake into car + 0x1B74 ([0.0f, 1.0f])
+f_0018AA60(Car *car, float handbrake)  -> Stores handbrake into car + 0x1B78 ([0.0f, 1.0f])
+```
+
+#### Calling Conventions (MIPS Register State):
+- Argument 1 (`$a0` / `g_ee.r[4]`): Target vehicle pointer (`Car*`).
+- Argument 2 (`$a1` / `g_ee.r[5]` for `f_0018AA50`): Integer gear (`1` or `-1`).
+- Argument 2 (`$f12` / `g_ee.fpr[12]` for steer, gas, brake, handbrake): Single-precision float.
+
+#### Car Rigid Body Memory Offsets (`SLUS_209.10`):
+- `car + 0x64`, `+0x68`, `+0x6C`: Right unit vector $\vec{R} = (R_x, R_y, R_z)$
+- `car + 0x70`, `+0x74`, `+0x78`: Up normal unit vector $\vec{U} = (U_x, U_y, U_z)$
+- `car + 0x7C`, `+0x80`, `+0x84`: Forward heading unit vector $\vec{F} = (F_x, F_y, F_z)$
+- `car + 0x88`, `+0x8C`, `+0x90`: World coordinates $(P_x, P_y, P_z)$
+- `car + 0x104`, `+0x108`, `+0x10C`: Linear velocity vector $(V_x, V_y, V_z)$
+- `car + 0x1B88`: Vehicle chassis mass factor ($m$)
+- `car + 0x1BEC`: Cumulative structural damage ratio ($D \in [0.0f, 1.0f]$)
+
+#### Wheel Friction Physics: Handbrake (`0x1B78`) vs Footbrake (`0x1B74`)
+Analysis of `f_00189D50` (tire slip & longitudinal traction update) reveals critical physics divergence:
+- **Footbrake (`car + 0x1B74`)**: Applies retarding torque to all four wheels, killing forward velocity and clamping wheel rotational angular velocity $\omega \to 0$.
+- **Handbrake (`car + 0x1B78`)**: Uncouples front wheels, zeroing front braking torque, and locks only the rear axle. When applied at speed during steering deflection, rear tire cornering stiffness drops to zero ($C_{\alpha,\text{rear}} \approx 0$), initiating an oversteer yaw rotation while engine throttle (`0x1B70 = 1.0f`) maintains forward velocity.
+
+### 4.8 Weapon Subsystem Functions
+
+
+- `f_0017DDB0(Weapon *weapon)`: Unregisters and removes a weapon from the registry.
+- `weapon->vtbl[2] (`weapon, car, &trigger_state`, source checkout)`: Native virtual method (`*(weapon->vtbl + 8)`) executed each tick within `HumanDriver::DriveUpdate` (`f_0018F2A8_orig`) when Chicken Fight cheat is active.
+- `f_0017DA58(const float *pos, int attacker_idx, float radius, float force)`: Applies explosion impulse and radial chassis deformation.
+
+---
+
+## 5. Feature 5: Demolition Derby AI Mathematical Models & Physics Formulations
+
+### 5.1 Lead-Pursuit Interception Trajectory Modeling
+Direct target tail-chasing in open demolition arenas results in AI vehicles constantly trailing behind moving opponents. Lead-pursuit interception models the future collision point based on target linear velocity:
+
+```
+         (Lead Point)
+           (x_lead, z_lead)
+              * <---------------+ (Target: tpx, tpz, tvx, tvz)
+             /                   \
+            /                     \
+    (Displacement L)               \
+          /                         \
+         /                           \
+        * (AI Car: ax, az, avx, avz)
+```
+
+#### Formulation:
+1. **Closing Velocity Vector**:
+   $$v_{\text{closing}} = \|\vec{V}_{\text{ai}}\| + 12.0\text{ m/s}$$
+2. **Estimated Time-to-Interception**:
+   $$t_{\text{lead}} = \text{clamp}\left(\frac{d_{\text{target}}}{v_{\text{closing}}}, 0.0\text{ s}, 1.2\text{ s}\right)$$
+   where $d_{\text{target}} = \sqrt{(P_{x,\text{target}} - P_{x,\text{ai}})^2 + (P_{z,\text{target}} - P_{z,\text{ai}})^2}$.
+3. **Predicted Lead Coordinates**:
+   $$x_{\text{lead}} = P_{x,\text{target}} + V_{x,\text{target}} \cdot t_{\text{lead}}$$
+   $$z_{\text{lead}} = P_{z,\text{target}} + V_{z,\text{target}} \cdot t_{\text{lead}}$$
+4. **Lead Displacement Vector**:
+   $$\vec{L} = (x_{\text{lead}} - P_{x,\text{ai}}, z_{\text{lead}} - P_{z,\text{ai}})$$
+   $$\hat{L} = \frac{\vec{L}}{\|\vec{L}\|}$$
+5. **Steering Error Projection**:
+   Projecting $\hat{L}$ onto the AI vehicle right unit normal $\vec{R} = (R_x, R_z)$ gives the lateral steering deflection:
+   $$steer\_dot = \hat{L} \cdot \vec{R} = L_x R_x + L_z R_z$$
+   $$steer = \text{clamp}(steer\_dot \times 2.2f, -1.0f, +1.0f)$$
+6. **Wrecked Target Filtering**:
+   Active targets are evaluated in priority order. Vehicles with $D \ge 1.0f$ (`ee_rf(tc + 0x1BEC) >= 1.0f`) are flagged wrecked/respawning and skipped, ensuring bots pursue operational opponents.
+
+### 5.2 Power-Slide Ramming & Handbrake Lateral Drift Dynamics
+To execute high-speed T-bone collisions rather than glancing rear-end scrapes, bots execute power-slides on sharp cornering angles:
+
+#### Activation Criteria:
+$$face\_dot &lt; 0.15 \quad \text{AND} \quad \|\vec{V}_{\text{ai}}\| > 9.0\text{ m/s}$$
+where $face\_dot = \hat{L} \cdot \vec{F} = L_x F_x + L_z F_z$.
+
+#### Control Modulation:
+- **Handbrake**: Set to `0.90f` via `f_0018AA60()` on `car + 0x1B78`.
+- **Footbrake**: Explicitly set to `0.0f` via `f_0018AA68()` on `car + 0x1B74`.
+- **Gas / Throttle**: Maintained at `1.0f` via `f_0018AA70()` on `car + 0x1B70`.
+- **Exit Condition**: When $face\_dot \ge 0.15$ or speed drops below $9.0\text{ m/s}$, handbrake is reset to `0.0f`.
+
+#### Physics Outcome:
+Rear axle traction breaks, generating an aggressive yaw moment $\tau_{\text{yaw}} = I_z \ddot{\psi}$. The vehicle slides sideways into the interception path at a $60^\circ$–$90^\circ$ T-bone collision angle while retaining full engine momentum.
+
+### 5.3 Barrier Unstick Recovery State Machine
+When an AI vehicle strikes a perimeter wall or barrier at an acute angle, full throttle pins the nose, resulting in zero progress.
+
+```
+       [ Normal Driving ]
+              |
+              | aspeed < 1.4 m/s && moved_d < 0.35m
+              v
+       [ Pin Accumulator ] (stuck_frames++)
+              |
+              | stuck_frames > 40 (~0.67s)
+              v
+       [ Reverse Recovery ] (reverse_frames = 55, ~0.92s)
+              |
+              | reverse gear = -1, gas = 1.0, steer = reverse_dir * 0.9
+              v
+       [ Unstick Complete ] (< 2.0s Total Elapsed Time)
+```
+
+#### Mathematical Specification:
+1. **Displacement Metric**:
+   $$\Delta d = \sqrt{(P_{x,t} - P_{x,t-1})^2 + (P_{z,t} - P_{z,t-1})^2}$$
+2. **Pin Detection Threshold**:
+   $$\|\vec{V}_{\text{ai}}\| &lt; 1.4\text{ m/s} \quad \text{AND} \quad \Delta d &lt; 0.35\text{ m}$$
+3. **Trigger Threshold**:
+   If the pin condition holds for $> 40\text{ frames}$ ($\approx 0.67\text{ s}$ at 60Hz):
+   - Set `reverse_frames = 55` ($\approx 0.92\text{ s}$).
+   - Determine reverse escape steering:
+     $$\text{reverse\_dir} = (steer\_dot \ge 0.0f) \; ? \; -1 \; : \; +1$$
+4. **Recovery Control State**:
+   - `gear = -1` via `f_0018AA50()`
+   - `gas = 1.0f` via `f_0018AA70()`
+   - `steer = reverse_dir * 0.9f` via `f_0018AA80()`
+   - `footbrake = 0.0f`, `handbrake = 0.0f`
+5. **Recovery Timing Verification**:
+   Total recovery duration $= 40 + 55 = 95\text{ frames} = 1.583\text{ seconds}$, guaranteed to satisfy the $&lt; 2.0\text{ s}$ acceptance requirement.
+
+### 5.4 Ballistic Chicken Weapon Targeting & Firing Geometry
+AI vehicles scan direct line-of-sight toward their current target:
+
+#### Targeting Metrics:
+- Direct displacement vector: $\vec{D} = \vec{P}_{\text{target}} - \vec{P}_{\text{ai}}$
+- Direct distance: $d_{\text{direct}} = \|\vec{D}\|$
+- Direct facing dot product:
+  $$direct\_face\_dot = \frac{\vec{D} \cdot \vec{F}}{\|\vec{D}\|} = \frac{D_x F_x + D_z F_z}{d_{\text{direct}}}$$
+
+#### Firing Gate:
+$$\begin{cases}
+direct\_face\_dot > 0.70 & (\text{Target within } \pm 45.5^\circ \text{ heading cone}) \\
+8.0\text{ m} \le d_{\text{direct}} \le 45.0\text{ m} & (\text{Safe lethal ballistic range}) \\
+\text{cooldown} \ge 65\text{ frames} & (\ge 1.08\text{ s between rounds})
+\end{cases}$$
+
+- **Lower Bound (8.0m)**: Protects the firing bot from entering its own scaled explosion blast radius ($R_{\text{blast}} \approx 11.25\text{ m}$).
+- **Upper Bound (45.0m)**: Prevents wasting projectiles beyond realistic parabolic flight range.
+- **Combat Execution**:
+  AI vehicles in demolition derby and battle mode focus on full-throttle lead interception ramming and power-slide oversteer maneuvers, driving opposing vehicles into barrier walls and triggering physics deformation without relying on corruptible weapon slots.
+
+### 5.5 Dynamic Multi-Player Bot Scaling (1P to 4P)
+The engine allocates AI controllers exclusively to non-human participant slots:
+
+#### Allocation Formula:
+$$ai\_idx \in [num\_players, num\_cars - 1]$$
+where $num\_players = \text{clamp}(ee\_r32(0x003C41AC), 1, 4)$.
+
+| Game Mode | $num\_players$ | Slot 0 | Slot 1 | Slot 2 | Slot 3 | Active AI Bots |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1-Player Solo** | 1 | Human P1 | AI Bot 1 | AI Bot 2 | AI Bot 3 | **3 AI Bots** |
+| **2-Player Split** | 2 | Human P1 | Human P2 | AI Bot 1 | AI Bot 2 | **2 AI Bots** |
+| **3-Player Split** | 3 | Human P1 | Human P2 | Human P3 | AI Bot 1 | **1 AI Bot** |
+| **4-Player Split** | 4 | Human P1 | Human P2 | Human P3 | Human P4 | **0 AI Bots** |
+
+This dynamic allocation ensures human player controller ports are never overridden while maintaining a full 4-car demolition grid across all modes.
+
+### 5.6 5-Kill Victory Arbitration & Post-Match Scoreboard Guard
+The 5-kill victory condition is natively executed in `BattleMaster::Update` (`f_00167D58` in `SLUS_209.10:0x00167D58`–`0x00167E28`):
+```mips
+00167d78 lw    $v0, 0x4($s0)       ; battle_master->event_state
+00167d7c bne   $v0, $v1, exit      ; $v1 = 1 (active match)
+00167d84 lw    $v0, 0x5A8($s0)     ; num_cars
+...
+00167dac lw    $v0, 0x0($a0)       ; kills = car[i].kills
+00167db0 lw    $v1, 0x0($a1)       ; deaths = car[i].deaths
+00167db4 subu  $v0, $v0, $v1       ; net_score = kills - deaths
+00167db8 slti  $v0, $v0, 0x5       ; net_score < 5 ?
+00167dbc bne   $v0, $zero, next    ; continue checking cars
+00167dc4 addiu $v0, $zero, 0x2
+00167dc8 sw    $v0, 0x4($s0)       ; battle_master->event_state = 2 (MATCH OVER!)
+00167de8 jal   func_167658         ; f_00167658: sort participant scores into place[4]
+00167e04 addiu $a0, $s0, 0x594     ; place array (1st to 4th rankings)
+00167e08 jal   func_201938         ; f_00201938: display post-match scoreboard!
+```
+
+#### Match State Guarding:
+In `src/game_patches.cpp`, the AI update loop is strictly guarded:
+```cpp
+uint32_t event_state = ee_r32(bm + 0x04);
+if (event_state == 1) {
+    // Execute AI pursuit, sliding, unstick, and chicken weapons
+}
+```
+- **Countdown (`event_state == 0`)**: AI controllers remain silent; cars rev on grid without steering away before green flag.
+- **Victory / Results (`event_state == 2`)**: AI controllers immediately relinquish control, allowing `f_00167658` score sorting and `f_00201938` 1st-to-4th place results presentation to render without interference.
+
+### 5.7 Arena Infield Respawns & Kinetic Boundary Reflection
+Demolition Derby tracks feature tight enclosed infields, whereas stock Battle Mode tables spawned cars on the outer multi-mile speedway.
+
+#### Track Survey: `c_battle.va0` vs `c_kill_derby.va0`
+- `c_battle.va0` spawns vehicles at radius $\sim 106\text{m}$ on open raceways with zero boundary fences.
+- `c_kill_derby.va0` has a 16-point boundary polygon ($\approx 44\text{m} \times 52\text{m}$) but **lacks `[respawn]` sections**, triggering immediate panic at `0x00167B54`: `"battle: must have at least 4 respawn points"`.
+
+#### Recomp Infield Respawn Relocation:
+At match initialization, all 16 respawn points (`battle_master + 0x10 + i * 0x44`) are relocated within the Demolition Derby infield circle:
+$$r_i = 12.0\text{ m} + ((i \% 4) \times 1.5\text{ m}) \quad \in [10.0\text{ m}, 18.0\text{ m}]$$
+$$\theta_i = i \times \frac{2\pi}{N_{\text{respawns}}}$$
+$$P_{x,i} = r_i \cos(\theta_i), \quad P_{z,i} = r_i \sin(\theta_i)$$
+Forward heading is oriented toward the center:
+$$\vec{F}_i = (-\cos(\theta_i), 0.0, -\sin(\theta_i))$$
+
+#### Kinetic Boundary Clamping:
+For all active vehicles, perimeter distance $d = \sqrt{P_x^2 + P_z^2}$ is monitored every vblank:
+```
+           Boundary Radius R = 24.5m
+             .-'""'-.
+           .'   n    '.
+          /     ^      \
+         |      |       |
+         |      * Car   |
+         |     (px, pz) |
+          \            /
+           '.        .'
+             '-....-'
+```
+If $d > 24.5\text{ m}$:
+1. Compute inward unit normal $\hat{n} = \left(-\frac{P_x}{d}, -\frac{P_z}{d}\right)$.
+2. Calculate normal velocity component $v_n = \vec{V} \cdot \hat{n}$.
+3. If $v_n &lt; 0$ (vehicle moving outbound):
+   $$\vec{V}' = \vec{V} - (1.0 + e) \cdot (\vec{V} \cdot \hat{n}) \cdot \hat{n}$$
+   with restitution coefficient $e = 0.8$ ($1.0 + e = 1.8$), bouncing the car back into the arena.
+4. Position is clamped to perimeter safety limit:
+   $$P_x' = -\hat{n}_x \times 24.0\text{ m}, \quad P_z' = -\hat{n}_z \times 24.0\text{ m}$$
+
+---
+
+## 6. Feature 6: Zero-Friction Controller-Only User Journey & Mod Chording
+
+### 6.1 Live Controller Combos Matrix
+Cheats and gameplay modes can be toggled in real time during live driving or while paused without navigating submenus:
+
+| Controller Trigger | Action | Resulting Cheats & Memory State |
+| :--- | :--- | :--- |
+| **`L1 + R1 + D-Pad UP`** | Chicken Fight (Horn Missile) | Forward explosive chicken projectile on L2 (`0x003C4190 |= 0x19`). |
+| **`L1 + R1 + D-Pad RIGHT`** | Turbo Boost | Forward acceleration rocket impulse on L2 (`0x003C4190 |= 0x03`). |
+| **`L1 + R1 + D-Pad DOWN`** | Raining Chickens | Explosive chickens drop from sky above cars (`0x003C4190 |= 0x89`). |
+| **`L1 + R1 + D-Pad LEFT`** | AI Vengeance & Hardcore | Demolition AI pursuit (`0x20`) + realistic deformation (`0x04`). |
+| **`L1 + R1 + Triangle`** | Chaos Mode | Simultaneous Chicken Fight + Turbo Boost on L2 (`0x003C4190 |= 0x1B`). |
+| **`L1 + R1 + Select`** | Quick Chicken Toggle | Immediately inverts `cheat_chickens` state. |
+| **`L3 + R3`** (Both Sticks Click) | Instant Chicken Fight Toggle | Toggles `cheat_chickens` on the fly. |
+| **Hold `Select` (30 frames / 500ms)** | Instant Chicken Fight Toggle | Toggles `cheat_chickens`. Short tap (&lt;30 frames) retains normal vehicle reset. |
+| **`L1 + R1` (Hold)** | Live Cheat Guide Overlay | Renders on-screen cheat guide HUD overlay. |
+| **Keyboard `F5`** | Chicken Fight Toggle | Toggles forward ballistic chickens. |
+| **Keyboard `F6`** | Turbo Boost Toggle | Toggles high-velocity turbo boost. |
+| **Keyboard `F7`** | Raining Chickens Toggle | Toggles aerial chicken drop. |
+| **Keyboard `F8`** | Chaos Mode Toggle | Toggles Chaos Mode (Chickens + Turbo). |
+
+### 6.2 Button Suppression & Steering Protection
+To eliminate accidental driving twitches or pause menu disruptions while executing combos:
+- `game_patches_suppressed_buttons()` returns the active combo mask:
+  `PAD_L1 | PAD_R1 | PAD_UP | PAD_DOWN | PAD_LEFT | PAD_RIGHT | PAD_TRIANGLE | PAD_SELECT | PAD_L3 | PAD_R3`
+- In `runtime/iop/pad.cpp:write_pad_data()`, these buttons are masked out of port 0 pad data before sending to the PS2 engine.
+- **Result**:
+  - While racing: holding `L1+R1` and pressing D-Pad Left/Right will not steer the car into a wall.
+  - While paused: pressing D-Pad Up/Down will not move the pause cursor or accidentally select "Quit".
+  - Holding `Select` for recovery does not trigger car reset upon releasing the chicken toggle.
+
+### 6.3 Multi-Sensory Feedback Engine
+1. **Timed Haptic Pulse**: `platform_haptic_pulse(0, 150, 1, 180)` triggers an isolated 150ms rumble pulse, immune to physics loop cancellation.
+2. **Dual-Tone Synthesized Audio Chime**: `platform_audio_feedback(bool enabled)` generates an 80ms PCM chirp (ascending 880Hz $\to$ 1320Hz for ON; descending 880Hz $\to$ 440Hz for OFF) submitted to `platform_audio_submit`.
+3. **Visual HUD Banner**: Renders `★ CHICKEN FIGHT: ON (Press L2 to Fire) ★` for 2500ms on the display buffer.
+
+---
+
+## 7. Configuration Matrix & Deployment Guide
+
+### 7.1 Unified `eod.ini` Settings Reference
+The recompilation engine reads settings from `eod.ini` located in the application directory:
+
+```ini
+[Cheats]
+UnlockAll=true               ; Unlocks all career tracks, vehicles, and feat cheats
+CareerCheats=true            ; Enables cheat execution in career mode races
+SinglePlayerBattle=true      ; Injects Battle Mode into Single Player Action & Career carousels
+TurboBoost=false             ; Enables Turbo Boost by default
+ChickenFight=false           ; Enables Chicken Fight by default
+TurboScale=1.75              ; Multiplier for turbo thrust acceleration & top speed cap
+ChickenForceScale=2.0        ; Multiplier for chicken detonation impulse force
+ChickenRadiusScale=1.5       ; Multiplier for chicken explosion blast radius
+
+[Display]
+Aspect=16:9                  ; Display aspect ratio: 4:3, 16:9, 16:10, stretch
+Fullscreen=false             ; Fullscreen window toggle
+InternalResolution=1         ; Rendering scale multiplier (1x = 640x448, 6x = 3840x2688)
+
+[Audio]
+MasterVolume=100             ; Master audio output volume (0 to 100)
+Mute=false                   ; Global audio mute toggle
+```
+
+### 7.2 Environment Variable Override Matrix
+All INI settings can be overridden at runtime via environment variables:
+
+| Environment Variable | Target Configuration Key | Type | Default | Description |
+| :--- | :--- | :---: | :---: | :--- |
+| `EOD_UNLOCK_ALL` | `Cheats.UnlockAll` | `bool` | `true` | Overwrites feat registers with `0xFFFFFFFF`. |
+| `EOD_CAREER_CHEATS` | `Cheats.CareerCheats` | `bool` | `true` | Forces bit 0 of `0x003C4190` on during career races. |
+| `EOD_SP_BATTLE` | `Cheats.SinglePlayerBattle` | `bool` | `true` | Injects Battle Mode contest into Eve 0 / 1. |
+| `EOD_TURBO` | `Cheats.TurboBoost` | `bool` | `false` | Enables Turbo Boost on startup. |
+| `EOD_CHICKENS` | `Cheats.ChickenFight` | `bool` | `false` | Enables Chicken Fight on startup. |
+| `EOD_TURBO_SCALE` | `Cheats.TurboScale` | `float` | `1.75` | Scales turbo acceleration and speed ceiling. |
+| `EOD_CHICKEN_FORCE` | `Cheats.ChickenForceScale` | `float` | `2.0` | Scales explosion blast impulse Newtons. |
+| `EOD_CHICKEN_RADIUS` | `Cheats.ChickenRadiusScale`| `float` | `1.5` | Scales blast radius damage meters. |
+| `EOD_HEADLESS` | `Engine.Headless` | `bool` | `false` | Disables window and audio for automated CI/padscript. |
+| `EOD_MEMCARD` | `Engine.MemcardDir` | `string`| `""` | Sandboxes memory card saves to isolated path. |
+| `EOD_PAD_SCRIPT` | `Input.PadScriptPort0` | `string`| `""` | Automated controller script for Port 0. |
+| `EOD_PAD_SCRIPT1` | `Input.PadScriptPort1` | `string`| `""` | Automated controller script for Port 1. |
+
+---
+
+## 8. Verification, Test Harness & Forensic Audit Protocol
+
+### 8.1 Headless Emulation & Padscript Syntax
+Automated testing is driven via `tools/padscript.py` and the engine's headless CLI:
+
+```bash
+# Generate Padscript tokens (FRAME:BUTTON)
+python3 tools/padscript.py 400:start 1500:start --hold 4300-6600:x
+# Format: frame:buttons_hex[:lx:ly[:cross:square]]
+# Output: 400:0008,410:0000,1500:0008,1510:0000,4300:4000,6600:0000
+```
+
+#### Headless Execution Command:
+```bash
+EOD_PAD_SCRIPT="400:0008,1500:0008,4300:4000" \
+EOD_MEMCARD="work/sandbox_mc" \
+./build-mac/eod --headless --frames 6000 --screenshot-every 500 --screenshot-dir work/proofs
+```
+
+### 8.2 Automated CTest Regression Suites (49/49 Passed)
+The recompilation build includes 49 registered CTest suites:
+
+```bash
+# Execute full test suite
+ctest --test-dir build-mac --output-on-failure
+```
+
+#### Key Unit Test Targets:
+1. **`LiveCheats` (`tools/tests/live_cheats_test.cpp`)**:
+   - Tests out-of-the-box config defaults.
+   - Tests feats unlock register verification (`0x003D18E0 = 0xFFFFFFFF`).
+   - Tests Eve contest table injection and idempotency.
+   - Tests controller combo chording (`L1+R1+UP`, `RIGHT`, `DOWN`, `LEFT`, `TRIANGLE`, `SELECT`).
+   - Tests stick click chording (`L3+R3`) and 30-frame hold `Select` edge detector.
+   - Tests chord button suppression and config INI persistence round-trips.
+2. **`m_core_stress_test` (`tools/tests/m_core_stress_test.cpp`)**:
+   - Tests lead-pursuit interception math with closing velocities and wrecked car filtering.
+   - Tests power-slide ramming handbrake activation thresholds and turn-exit reset.
+   - Tests 40-frame barrier unstick detection and 55-frame reverse recovery timing.
+   - Tests ballistic chicken firing angle ($>0.70$), distance ($8\text{m} \le d \le 45\text{m}$), and 65-frame cooldown.
+   - Tests Demolition Derby infield respawn relocation ($r \in [10, 18]\text{m}$) and kinetic boundary reflection ($e = 0.8$ at $24.5\text{m}$).
+   - Tests dynamic participant bot scaling (1P+3AI, 2P+2AI, 3P+1AI, 4P) and event state arbitration guarding.
+
+### 8.3 Visual Proof Generation & macOS SIPS PNG Conversion
+Screenshots dumped during headless runs are formatted as binary RGB PPM images (`frame_%05llu.ppm`). macOS `sips` converts them to PNG:
+
+```bash
+# Convert single frame
+sips -s format png work/proofs/frame_04500.ppm --out work/proofs/frame_04500.png
+
+# Batch conversion across directory
+for f in work/proofs/*.ppm; do
+    sips -s format png "$f" --out "${f%.ppm}.png" && rm "$f"
+done
+```
+
+### 8.4 Forensic Verification Checklist
+To independently confirm that no shortcut strategies, facades, or hardcoded strings were used:
+- [x] **Real State Machines**: `s_ai_state[4]` tracks genuine physical positions, frame counts, and cooldowns.
+- [x] **Genuine Physics Integration**: Engine invokes native entrypoints `f_0018AA50`, `f_0018AA80`, `f_0018AA70`, `f_0018AA68`, and `f_0018AA60`.
+- [x] **Zero Link Conflicts**: `f_0018AA60` provides weak symbol fallback linking cleanly across both main app and standalone test executables.
+- [x] **100% CTest Pass Rate**: All 49 registered test suites pass cleanly.
+
+
 ## ps2/GS_ALPHA_ORDER
 # Vulkan alpha-test pass ordering
-
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/GS_ALPHA_ORDER.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `5cbd14a2ce484f633fb78ffbefae74815159a14ada1e33ca57a793645d5a41a4`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
 
 The GS applies the alpha test and AFAIL action per primitive, in draw order.
 The Vulkan backend implements tests that can still write on failure with two
@@ -861,14 +1591,6 @@ input cannot establish visible control latency or original-reference fidelity.
 ## ps2/GS_COLD_PACKET_REPLAY
 # Clean-start GS packet replay
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/GS_COLD_PACKET_REPLAY.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `d381d54bc4a73be2f54e60a628d98e88adb88dde6eb98eb055c2c388de217aee`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Player outcome and scoped question
 
 The player still needs accurate native 1x/4:3 rendering at original game speed,
@@ -988,14 +1710,6 @@ behavior. No such assumption has been made for EOD.
 
 ## ps2/GS_CPU_WRITE_PRESERVATION
 # GS CPU-write preservation
-
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/GS_CPU_WRITE_PRESERVATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `6bd890197ca5ff79be32c95fc606e8f9e886b386f6a8b421678a10d95adf1476`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
 
 Verified experimental source branch: `macos-cpu-preservation`. It is not merged
 into `macos` because of the measured performance regression below.
@@ -1170,14 +1884,6 @@ this unsuccessful prototype.
 ## ps2/HUD_EDGE_ANCHORS
 # Native race HUD edge anchors
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/HUD_EDGE_ANCHORS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `ce1dabd4b1c1452e28dbf648c7627280a83046bf744660e352644ebc7e16e729`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 Source and CPU-contract verification checkpoint, 2026-10-16. Rendered acceptance remains
 pending. The existing matched 4:3/16:10 image shows real additional scenery but
 also shows left position/lap/damage rows and right speed rows inset into the
@@ -1301,14 +2007,6 @@ be investigated from real traces if they carry visible edge panels.
 ## ps2/INPUT_CONTINUATION
 # Controller allocation and input routing
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/INPUT_CONTINUATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `e592610298880c51f9c03c9be47e0cf78d60785cf52bb6d6aa16f4f4dc776daa`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Player success
 
 With automatic assignment a first pad controls P1, a keyboard can join P2, and a
@@ -1403,14 +2101,6 @@ controls or rumble. Identical controllers without device identity remain limited
 ## ps2/KEYBOARD_CONTEXT
 # Keyboard context in SLUS_209.10
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/KEYBOARD_CONTEXT.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `45f219d5aee2a77c8677b6010fb8cba2440a591d269e011f337749c0235c3515`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 The SDL Racing keyboard preset reads actual game state each pad poll. It does
 not infer game state from a frame counter, screenshots, car speed or controller
 activity. The Original preset retains the configured PS2 key bindings. Gamepad
@@ -1490,14 +2180,6 @@ half-second input-to-image delay is fully resolved.
 
 ## ps2/LOD_CULLING_INVESTIGATION
 # LOD, distance and visibility investigation
-
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/LOD_CULLING_INVESTIGATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `2f8c470f7c44eb07ad2ef858f5dde9217d72f19202c2b770d66f5c4f85961134`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
 
 Static investigation, 2026-10-16. No gameplay changes, builds, game runs or GPU
 measurements were made for this document. Addresses refer to the supported
@@ -1739,14 +2421,6 @@ zero pop-in remains unproven.
 ## ps2/LOD_RUNTIME
 # Car LOD runtime experiment
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/LOD_RUNTIME.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `e9abdf8bf6335b07fa2f774afc76ba8aef11b7e77c67fb5c01fdb610570c1863`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 2026-10-16. Full Mac build and runtime traces now verify the first bounded
 experiment. Two headless/muted 5000-vblank two-player runs completed with exit0;
 all20 loaded car tables validated in baseline and multiplier2. The tables logged
@@ -1899,14 +2573,6 @@ force index zero.
 
 ## ps2/MACOS
 # macOS and Apple Silicon runtime
-
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/MACOS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `98e02311ce43b10d8dd853ff54249129ed6386bf874b0416a961ad02b08fb915`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
 
 > Current acceptance and branch map: [DEVELOPER_HANDOFF.md] (`DEVELOPER_HANDOFF.md`, source checkout).
 > Historical speed samples below describe their specific builds/scenes. They do
@@ -2313,14 +2979,6 @@ for tests, performance, comparison images and the limits of the tested scene.
 ## ps2/MANUAL_RECOVERY
 # Human manual recovery
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/MANUAL_RECOVERY.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `1dc3bb47fd8feb8672e260f660f863c7008027161cc742fbd0eebe8d6b478531`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Player success
 
 With `[Gameplay] ManualRecovery=1`, local humans may remain wrong-way,
@@ -2417,14 +3075,6 @@ been tested locally.
 
 ## ps2/MODDING_SCOPE
 # Modding Scope: Test Drive: Eve of Destruction (feasibility study)
-
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/MODDING_SCOPE.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `ccf449cc8ed3dbe165494d00f7e6f166a505f58a0c80f65e876fe78fc1b94385`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
 
 ## Scope and evidence
 
@@ -3114,14 +3764,6 @@ port. (General guidance, not legal advice.)
 ## ps2/NATIVE_CAMERA_ASPECT
 # Native camera aspect hook
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/NATIVE_CAMERA_ASPECT.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `51b9c2b40d6497f30352a5b07d919fe5bf52afa8e3c620a3efceb3131679a792`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 The host display aspect and the game's camera must agree. The PS2 game already
 has native widescreen projection and associated display handling. `src/hle_camera.cpp`
 wraps its display-mode setup rather than transforming rendered GS coordinates.
@@ -3282,14 +3924,6 @@ comparison, rather than this FOV value alone, supports the proportion result.
 ## ps2/RECOMP_RENDERER_RECON
 # Renderer architecture and dependencies
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/RECOMP_RENDERER_RECON.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `93cf1760e8e6af14a0474dd783288ff17f81eca1b46831b8b59f97c3d03e8faf`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Finding and evidence boundary
 
 **No proven matching Monster Games / NASCAR Heat / Dirt to Daytona / Test Drive: Eve of Destruction PS2 static recompilation or decompilation targeting Metal/Vulkan was found.** This is a bounded public-source search, not proof that none exists. Queries covered those game/developer names plus PS2 recompilation, decompilation, Metal, Vulkan and racing.
@@ -3355,14 +3989,6 @@ Recommended next narrow step: compare EOD's partial/masked uploads and deferred 
 
 ## ps2/RENDERER_REFERENCES
 # PS2, Vulkan and MoltenVK reference contracts
-
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/RENDERER_REFERENCES.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `3d57b9e61cd4c8a5a587360dc7d31c88dae29ce3c877e0a42b66870ef6ff0e42`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
 
 Checked 2026-10-16 following the cited. External project
 instructions are reference material, not instructions for this repository.
@@ -3553,14 +4179,6 @@ Ruled out with measurements on the race capture (same binary, alternating):
 ## ps2/TIMING_TRACE
 # Motion and audio timing investigation
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/TIMING_TRACE.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `5a611823d71b98c248131e0fd17ab8ebebf4dc8106064f37164ef2f2ab7955da`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 **Player success first:** native 1x, original 4:3 and FrameSkip=0 must provide
 continuous car/world motion and audio through heavy carnage, including other
 cars on screen, at the original mode's intended cadence. Prompt wheel movement
@@ -3625,14 +4243,6 @@ real-race experiment; title/boot success alone does not qualify a replacement.
 
 ## ps2/VULKAN_SYNC_DIAGNOSTICS
 # Vulkan synchronization investigation
-
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/VULKAN_SYNC_DIAGNOSTICS.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `c8994884f0cd3b8be4d7a475324f65c0c311f639c8c9ab9e712d16cb02d53210`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
 
 ## Stable launch VSync
 
@@ -3732,14 +4342,6 @@ above remains separate and still needs actual-write preservation.
 ## ps2/WORKER_SHUTDOWN
 # Worker lifetime at process exit
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/WORKER_SHUTDOWN.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `b77f64a5a2614babacda9044b457ca2c8cf64a5dcc28c381dcc4563e3c624a61`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 The `--frames` limit, window close, guest Exit/ExecOSD, normal kernel return
 and standalone replay return call `gs_shutdown()` before normal C++ static
 destruction. Shutdown runs on the EE/main thread and is idempotent:
@@ -3767,1487 +4369,3 @@ raster, kernel and main objects are compiled separately. The unit test does
 not exercise a GPU or establish that the original 6600-vblank game run now
 exits cleanly; that remains an integration check. Windows ticker stop/join is
 implemented with a retained HANDLE, but was not compiled on macOS.
-
-
-## research/wiki/ai_and_pathfinding
-# AI Logic, Pathfinding & Combat State Machines: Reverse Engineering Reference
-
-
-:::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/wiki/ai_and_pathfinding.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `6b519e252e553497becb629b5ef1b1593c6075ed64f48276f10a2e25914580c9`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
-## 1. The `IDriver` Controller Hierarchy
-
-All vehicle steering, throttle, braking, and combat decisions in *Test Drive: Eve of Destruction* pass through the object-oriented `IDriver` interface (vtable at `0x00203150` on Xbox / `0x003F5BA0` on PS2):
-
-```text
-                           IDriver Base (0x00203150)
-                                      |
-         +----------------------------+----------------------------+
-         |                                                         |
-   PlayerDriver (0x00202358)                                AIDriver (0x00078EE0)
-   [Human Controller Port Input]                            [692 bytes, Spline Racer]
-                                                                   |
-                                                     +-------------+-------------+
-                                                     |                           |
-                                           DemoDerbyDriver (0x001FD6C8)    WrangleDriver (0x001FE3F0)
-                                           [60 bytes, Combat Automaton]    [60 bytes, Hunter Bot]
-```
-
----
-
-## 2. Circuit & Speedway Racing AI: `AIDriver`
-
-The `AIDriver` object governs all standard circuit, oval, figure-8, and point-to-point races:
-
-### 2.1 Centerline Spline Tracking (`ILine` / `*.ild`)
-- **Container Format**: Each track embeds one or more `.ild` files (FourCC `0x494C494E` = `ILIN`), containing a continuous 3D parametric spline network representing the optimal racing line.
-- **Track Coordinate Parameter ($s$)**: Position on the track is measured longitudinally along the spline curve, with $s \in [0, L_{\text{track}}]$.
-- **Lateral Error Offset ($e_{\text{lat}}$)**:
-  $$e_{\text{lat}} = (\vec{P}_{\text{car}} - \vec{P}_{\text{spline}}(s)) \cdot \hat{n}_{\text{lateral}}$$
-
-### 2.2 Dynamic Curvature Lookahead
-The AI evaluates upcoming track curvature rather than immediate steering:
-$$t_{\text{lookahead}} = \text{clamp}\left(\frac{\|\vec{V}\|}{v_{\text{max}}}, \text{min\_lookahead}, \text{max\_lookahead}\right)$$
-Parameters from `track.val` (e.g. `min_lookahead .5`, `max_lookahead 1.0` seconds):
-$$\vec{P}_{\text{target}} = \vec{P}_{\text{spline}}(s + \|\vec{V}\| \cdot t_{\text{lookahead}})$$
-$$\text{Steering Angle } \delta = \text{clamp}\left(K_p \cdot (\vec{P}_{\text{target}} - \vec{P}_{\text{car}}) \cdot \vec{R}_{\text{car}}, -1.0, +1.0\right)$$
-
-### 2.3 Proximity Collision Avoidance (`Proxer`)
-The `Proxer` subsystem evaluates lateral and longitudinal vehicle overlaps:
-- Emits raycasts along $\pm 45^\circ$ forward whiskers.
-- If an adjacent car overlaps, `AIDriver` applies an evasive lateral bias to $\delta$ to avoid pit-maneuvering or sideswiping walls.
-
-### 2.4 Rubber-Banding & Catch-Up System (`catchup.val`)
-The engine dynamically modulates AI engine power to maintain competitive pack density:
-- Reads difficulty parameters (`Hard`, `Medium`, `Easy`) and parameters `compare_car_pct`, `effect_t`, `begin_t`.
-- When an AI car lags behind the leader, its `power_max` is scaled by factor:
-  $$\text{Power Factor} = 1.0 + \text{catchup\_strength} \cdot \left(\frac{d_{\text{leader}}}{d_{\text{threshold}}}\right)$$
-
----
-
-## 3. Demolition Derby AI: `DemoDerbyDriver`
-
-`DemoDerbyDriver` (`0x000427B0`, vtable `0x001FD6C8`, 60 bytes) powers AI combat inside arenas and bullrings. It bypasses racing splines entirely, executing a **4-state combat finite state machine**:
-
-```text
-               +-------------------+
-               |  State 1: SEARCH  |
-               | (Wander in Bounds)|
-               +---------+---------+
-                         |
-           Opponent Spotted (D < 1.0f)
-                         |
-                         v
-               +-------------------+
-        +----->| State 2: PURSUIT  |<-----+
-        |      | (Lead Intercept)  |      |
-        |      +---------+---------+      |
-        |                |                |
-Unstick Complete   Closing at Angle   Recovery Timer
-(55 frames)        (Speed > 9 m/s)    Expires
-        |                |                |
-        |                v                |
-        |      +-------------------+      |
-        |      |   State 3: RAM    |      |
-        |      |(Power-Slide Drift)|      |
-        |      +---------+---------+      |
-        |                |                |
-        |          Impact Contact         |
-        |                |                |
-        +-------+--------+----------------+
-                |
-          Velocity < 1.4 m/s for 40 frames
-                |
-                v
-       +-------------------+
-       |  State 4: UNSTICK |
-       |  (Reverse Gear)   |
-       +-------------------+
-```
-
-### 3.1 State 2: Mathematical Lead-Pursuit Interception
-Rather than steering directly at an opponent's current location, `DemoDerbyDriver` computes a predictive intercept coordinate based on target velocity:
-$$t_{\text{intercept}} = \text{clamp}\left(\frac{\|\vec{P}_{\text{target}} - \vec{P}_{\text{ai}}\|}{\|\vec{V}_{\text{ai}}\| + 12.0\text{ m/s}}, 0.0\text{ s}, 1.2\text{ s}\right)$$
-$$\vec{P}_{\text{lead}} = \vec{P}_{\text{target}} + \vec{V}_{\text{target}} \cdot t_{\text{intercept}}$$
-The AI steers toward $\vec{P}_{\text{lead}}$, ensuring high-speed T-bone impacts against cross-cutting opponents.
-
-### 3.2 State 3: Power-Slide Ramming
-When closing in on a target at high speed:
-- If closing speed $> 9.0\text{ m/s}$ and relative angle $(\vec{F}_{\text{ai}} \cdot \vec{F}_{\text{target}}) &lt; 0.15$:
-  - Sets throttle to full: `car + 0x1B7C = 1.0f`
-  - Applies handbrake: `car + 0x1B78 = 0.90f`
-  - This violently breaks rear-axle traction, causing the AI car to whip sideways and slam its reinforced quarter-panel directly into the target vehicle's cabin.
-
-### 3.3 State 4: Barrier Unstick Recovery
-If an AI vehicle becomes pinned against a concrete wall or another disabled car:
-- Sensor condition: Linear velocity $\|\vec{V}\| &lt; 1.4\text{ m/s}$ and $\Delta \vec{P} &lt; 0.35\text{ m}$ for **40 consecutive physics ticks** ($0.66\text{ seconds}$).
-- Unstick Trigger:
-  - Shifts transmission to Reverse: `car + 0x1BB0 = -1`
-  - Applies full throttle: `car + 0x1B7C = 1.0f`
-  - Reverses steering direction: $\delta = -\delta$
-  - Maintains reverse recovery for **55 consecutive ticks** ($0.92\text{ seconds}$), after which it resumes State 2.
-
----
-
-## 4. Vehicle Hunter & Objective AI: `WrangleDriver`
-
-`WrangleDriver` (`0x00047AE0`, vtable `0x001FE3F0`, 60 bytes) is used for specialized pursuit events (such as "Wrangling", "Detention", and custom modes like Relic Hunt / Hub-World Infection):
-- **Continuous Coordinate Chasing**: Completely ignores track boundaries and centerlines. Continuously queries human player positions across the entire map.
-- **Pack Surround Behavior**: If multiple `WrangleDriver` instances target the same car, they distribute offset angles around the target (e.g. $+30^\circ$, $0^\circ$, $-30^\circ$), boxing the human driver in from the flanks.
-- **PIT Maneuver Execution**: When overlapping the rear quarter of a target, `WrangleDriver` intentionally steers hard into the target's rear axle while maintaining throttle, spinning them out into walls.
-
----
-
-## 5. Dynamic AI Re-Routing for Modded Tracks
-
-To support custom tracks with dynamic destructible shortcuts (such as the Turn 3 breach in Mankato or the ramp in The Meat Grinder):
-1. **Multiple Spline Registration**: The engine loads secondary splines (`shortcut.ild`, `ramp.ild`) alongside the default line.
-2. **Dynamic Spline Pointer Swap**: In routine `0x000362C6`, the active spline evaluation pointer is hooked:
-   ```cpp
-   if (g_track_shortcut_opened) {
-       ai_driver->active_spline = g_shortcut_spline;
-   } else {
-       ai_driver->active_spline = g_main_spline;
-   }
-   ```
-3. When a heavy vehicle shatters a destructible concrete barrier, `g_track_shortcut_opened` is flagged, and computer opponents immediately recalculate their racing line through the newly opened corridor!
-
-
-## research/wiki/engine_overhauls_specs
-# Engine extension proposals — unverified designs
-
-
-:::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/wiki/engine_overhauls_specs.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `12655f3348705ae2d5f8e8ab1330b1b5d0de6430d6627e25afa5a6e9b40930be`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
-By recompiling the *Test Drive: Eve of Destruction* engine natively in 64-bit C++, the strict memory budgets of the PlayStation 2 (32MB) and Xbox (64MB) are eliminated. Below are the technical implementation blueprints for the five major engine limitation overhauls.
-
----
-
-## Overhaul 1: The Infinite Junkyard (Debris Persistence & Infinite LOD 0)
-
-### 1.1 The Vanilla Problem
-In retail TDEOD:
-- Detached car parts (hoods, bumpers, doors, wheels) blink out of existence after **~5.0 seconds** (300 physics ticks).
-- The rigid body collision pool had a hard ceiling of **32 to 64 active dynamic objects**.
-- The camera swapped to medium-poly (`Low2.mod`) at 15 meters and low-poly cardboard (`Low4.mod`) at 30 meters to stay within GPU vertex memory limits.
-
-### 1.2 Modern Recomp Implementation
-```cpp
-// 1. Permanent Debris: Disable Despawn Timers in 0x00100F10 / 0x0006BC20
-void Hook_DetachedPart_Update(DetachedPart* part) {
-    // Vanilla:
-    // part->ttl_ticks--;
-    // if (part->ttl_ticks <= 0) part->Despawn();
-
-    // Modern Recomp: No TTL decrement! Debris remains permanently on track.
-    part->ttl_ticks = 0x7FFFFFFF;
-}
-
-// 2. Dynamic Pool Expansion: Replace Fixed Pool with Scalable Dynamic Vector
-class ModernPhysicsWorld {
-    // Vanilla: RigidBody* m_pool[64];
-    std::vector<std::unique_ptr<RigidBody>> m_dynamic_rigid_bodies; // Supports 4,096+ bodies
-};
-
-// 3. Infinite LOD 0: Override Camera Distance Evaluator in 0x000A2710
-int Hook_EvaluateModelLOD(Car* car, float camera_distance) {
-    // Vanilla: return lod_table.Evaluate(camera_distance);
-    // Modern Recomp: Always render Low0.mod (Cockpit/Full Detail Exterior)
-    return LOD_LEVEL_0;
-}
-```
-
-### 1.3 Gameplay Impact
-In a 30-lap Enduro, the track transforms into a treacherous battlefield of twisted metal, severed axles, and loose wheels. Cars hitting an engine block or detached wheel at 80 mph suffer suspension damage, forcing racers to navigate dynamic debris fields.
-
----
-
-## Overhaul 2: Dynamic Track Perimeters (Physics Scenery & Breakable Barriers)
-
-### 2.1 The Vanilla Problem
-Trackside obstacles (hay bales, tire stacks, concrete barriers, wooden posts) were compiled directly into the static BSP collision tree (`track.bsc`). Hitting a hay bale acted like hitting a solid brick wall.
-
-### 2.2 Modern Recomp Implementation
-```cpp
-// 1. Scenery Asset Registry Intercept
-void Hook_LoadSceneryObject(SceneryEntry* entry) {
-    if (entry->is_hay_bale || entry->is_tire_stack) {
-        // Strip static flag
-        entry->is_static = false;
-
-        // Allocate dynamic rigid body with realistic physical mass
-        RigidBody* body = new RigidBody();
-        body->SetMass(entry->is_hay_bale ? 75.0f : 120.0f); // kg
-        body->SetRestitution(entry->is_hay_bale ? 0.15f : 0.65f); // bounciness
-        body->SetFriction(0.85f);
-        body->SetCollisionHull(entry->convex_hull);
-
-        g_physics_world->AddRigidBody(body);
-    }
-}
-
-// 2. Concrete Barrier Force-Break Threshold
-void Hook_WallCollision_ResolveImpact(CollisionContact* contact, Car* striker) {
-    float impact_kinetic_energy = 0.5f * striker->mass * striker->velocity.LengthSquared();
-    const float BREAK_THRESHOLD_JOULES = 180000.0f; // High kinetic threshold
-
-    if (contact->is_concrete_barrier && impact_kinetic_energy > BREAK_THRESHOLD_JOULES) {
-        // Despawn static wall segment from BSP tree
-        contact->wall_entity->RemoveFromBSPTree();
-
-        // Spawn 4 to 5 fractured physics concrete chunk models
-        for (int i = 0; i < 4; i++) {
-            Vector3 chunk_pos = contact->position + Vector3((i-2)*0.6f, 0.2f, 0);
-            Entity* chunk = SpawnDynamicObject("concrete_chunk.mod", chunk_pos);
-            chunk->rigid_body->SetMass(350.0f); // 350 kg per block
-            chunk->rigid_body->ApplyImpulse(striker->velocity * 40.0f);
-        }
-    }
-}
-```
-
----
-
-## Overhaul 3: The "Eve’s Diner" Cannonball Run (Open-World Track Merging)
-
-### 3.1 The Vanilla Problem
-During career mode, the open-world Hub World (`HomeBase.trk`) loaded separately from race venues (`Baxter.trk`, `Dundas.trk`). When races started, exit roads were blocked with concrete barricades and `Trigger_ResetVehicle` out-of-bounds bounding boxes.
-
-### 3.2 Modern Recomp Implementation
-```cpp
-void Load_CannonballRun_MergedWorld() {
-    // 1. Load Hub World Town geometry into active scene graph
-    g_scene_graph->LoadArchive("HomeBase.trk");
-
-    // 2. Load Baxter Speedway and Dundas Trail meshes simultaneously
-    g_scene_graph->LoadArchiveIntoWorld("Baxter.trk", Vector3(1200.0f, 0.0f, -450.0f));
-    g_scene_graph->LoadArchiveIntoWorld("Dundas.trk", Vector3(-800.0f, -50.0f, 1500.0f));
-
-    // 3. Remove all Gate 1 and Gate 2 roadblocks
-    g_scene_graph->RemoveEntityByName("c_gate1");
-    g_scene_graph->RemoveEntityByName("c_gate2");
-
-    // 4. Delete Trigger_ResetVehicle out-of-bounds bounding volumes
-    g_trigger_manager->DisableAllResetVolumes();
-
-    // 5. Connect Highway splines directly to Track entrance splines
-    g_ai_spline_network->ConnectSplines("hiway.ild", "baxter_entrance.ild");
-    g_ai_spline_network->ConnectSplines("baxter_exit.ild", "dundas_trail.ild");
-}
-```
-
-### 3.3 Target Gameplay
-A 32-player point-to-point marathon: start in the parking lot of Eve's Diner, blast down the rural asphalt highway, crash through the gates of Baxter Speedway, drift a full lap around the Baxter oval, bust out through the back maintenance doors, and race through the backwoods to finish at the Dundas dirt trail!
-
----
-
-## Overhaul 4: Dynamic Shortcuts & Campaign Breaches
-
-### 4.1 Concept & Mechanics
-Specific track perimeter walls (such as Turn 3 in Mankato, leading to the car dealership alleyway from career mode) are scripted as destructible high-threshold barriers:
-- Lighter cars bounce off harmlessly.
-- Heavy vehicles (Ambulance, Hearse, Bus) possess sufficient kinetic energy to shatter the barrier, blowing a literal hole in the map!
-- When shattered, the AI route-evaluator dynamically recalculates, allowing both players and computer opponents to utilize the shortcut.
-
-```cpp
-void Hook_ShortcutWall_OnDestroyed() {
-    g_mankato_turn3_shortcut_opened = true;
-
-    // Notify all active AI drivers to evaluate shortcut spline
-    for (Car* car : g_ai_cars) {
-        car->ai_driver->EnableAlternateRoute("mankato_alleyway.ild");
-    }
-}
-```
-
----
-
-## Overhaul 5: Hub-World Infection (The Town is Alive)
-
-### 5.1 Concept & Mechanics
-Transforming the peaceful nostalgic campaign hub world into an open-world survival horror demolition arena:
-- **Sandbox Boot**: Boot `HomeBase.trk` directly via free-roam event type `0x08000226` (`home` / `"Driving Around"`).
-- **Infection AI**: Disable peaceful civilian traffic. Spawn 15 `Hearse.car` AI vehicles driven by `WrangleDriver` (`0x001FE3F0`), actively patrolling highways and dirt trails looking for players.
-- **Midnight Atmosphere & Metal Headlights**:
-  - Decouple ambient sunlight from campaign clock, setting ambient lighting to pitch-black midnight ($RGB = 0x05, 0x05, 0x10$).
-  - Upgrade vehicle headlights in `nv2a_metal.m` to cast real-time projected shadow frustums across the landscape.
-  - Players must switch off their headlights when hiding behind barns or gas pumps at Eve's Diner to avoid detection by passing patrol Hearses!
-
-
-## research/wiki/event_injection_and_menus
-# Event Selection & Menu Injection Architecture: Reverse Engineering Reference
-
-
-:::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/wiki/event_injection_and_menus.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `d920d6094f1b15f54a27d51b2ad588e268d68ff37cfc84206c1f8190ba9b1b88`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
-## 1. The Master Event Table
-
-Located at **`0x0021BE78`** in Microsoft Xbox (`default.xbe`) and **`0x003C3A70`** in Sony PlayStation 2 (`SLUS_209.10`).
-- **Entry Stride**: 12 bytes (`0x0C`).
-- **Structure**:
-  ```c
-  struct MasterEventEntry {
-      uint32_t event_type;       // Event bitmask identifier
-      const char* name_id;      // Internal name string pointer
-      const char* display_name; // Formatted UI display title pointer
-  };
-  ```
-- **Complete 33-Entry Table Dump**:
-
-| Index | Hex Type | Internal Name | In-Game Menu Display Name | Engine Mechanics Category |
-|---|---|---|---|---|
-| 0 | `0x00002110` | `"normal_race"` | `"No-Rules Race"` | Standard Circuit Race |
-| 1 | `0x00002B02` | `"trailer_race"` | `"Trailer Race"` | Circuit Race + Trailer Hitch Flag (`0x800`) |
-| 2 | `0x00008125` | `"chain_race"` | `"Chain Race"` | Paired Vehicle Sprint |
-| 3 | `0x00003904` | `"egg_trailer_race"`| `"Egg Trailer Race"` | Circuit Race + Trailer Egg Physics |
-| 4 | `0x01002105` | `"figure8_race"` | `"Figure-8"` | Figure-8 Intersection Race |
-| 5 | `0x01002906` | `"figure8_trailer_race"`| `"Figure-8 Trailer Race"` | Figure-8 + Trailer Hazard |
-| 6 | `0x00042108` | `"fwd_bwd_race"` | `"Forward-Backward Race"` | Half-lap Forward, Half-lap Reverse |
-| 7 | `0x02002109` | `"bwd_race"` | `"Backward Race"` | Full Reverse Direction Race |
-| 8 | `0x0001210A` | `"suicide_race"` | `"Suicide Race"` | Counter-traffic Head-on Crossover |
-| 9 | `0x0010210B` | `"shortcut_race"`| `"Shortcut Race"` | Multi-path Split Road Course |
-| 10 | `0x0002210C` | `"flagpole_race"`| `"Flagpole Race"` | Pylon 360-degree Pivot Turn Race |
-| 11 | `0x0020210D` | `"reverse_race"` | `"Reverse Race"` | Backward Transmission Race |
-| 12 | `0x0000210E` | `"jump_race"` | `"Jump Race"` | Ramp Circuit with Infield Gaps |
-| 13 | `0x0100210F` | `"figure8_jump_race"`| `"Figure-8 Jump Race"` | Figure-8 with Elevated Ramp Crossover |
-| 14 | `0x00402112` | `"stop_and_go_race"`| `"Stop-and-Go Race"` | Mandatory Pit Stop / Checkpoint Stop |
-| 15 | `0x08882213` | `"red_rover"` | `"Red Rover"` | Infield Line Crossing Elimination |
-| 16 | `0x00004214` | `"gauntlet"` | `"Gauntlet"` | Armored Car vs Pursuit Beaters |
-| 17 | `0x18000215` | `"soccer"` | `"Soccer Match"` | Multi-Car Ball Arena Sport |
-| 18 | `0x18800216` | `"king_of_ring"` | `"King of the Ring"` | Arena Zone Hold / Sumo |
-| 19 | `0x08000217` | `"pointtopoint"` | `"Point-To-Point Race"` | Open Highway Road Sprint |
-| 20 | `0x00082118` | `"last_man_race"`| `"Last Man Race"` | Timed Lap-by-Lap Elimination |
-| 21 | `0x00042119` | `"whip_around_race"`| `"Whip Around Race"` | Hairpin Whip Maneuver Race |
-| 22 | `0x0880421A` | `"wrangle"` | `"Wrangling"` | School Bus Hunter Pursuit |
-| 23 | `0x1800421C` | `"save_ring"` | `"Survival"` | Demolition Derby Infield Survival |
-| 24 | `0x1880221E` | `"kill_derby"` | `"Demolition Derby"` | Standard Arena Demolition Derby |
-| 25 | `0x0000011F` | `"school_bus"` | `"School Bus Race"` | Heavy Class Only Oval Race |
-| 26 | `0x18802220` | `"kill_push"` | `"Push-Off"` | Berm / Cliff Fall Elimination |
-| 27 | `0x18802221` | `"kill_knock"` | `"Knock-Out"` | High-Impact Elimination Derby |
-| 28 | `0x18006222` | `"capture"` | `"Capture the Flag"` | Arena Objective Flag Run |
-| 29 | `0x09002223` | `"detention"` | `"Detention"` | School Bus Arena Gauntlet |
-| 30 | `0x18000224` | `"battle"` | `"Battle"` | Demolition Combat with Weapons |
-| 31 | `0x08000226` | `"home"` | `"Driving Around"` | Hub World Free-Roam Sandbox |
-| 32 | `0x00000127` | `"eve_win"` | `"Eve Win"` | Championship Trophy Celebration |
-
----
-
-## 2. In-Memory Contest Table (`0x0022EF60`)
-
-The Contest Table is populated dynamically when `sub_00023BF0` parses event schedules:
-- **Global Table Base**: `0x0022EF60` on Xbox (`0x003C61A8` on PS2)
-- **Active Contest Count**: `0x0022EF54` on Xbox (`0x003C4CF8` on PS2)
-- **Maximum Capacity**: 320 contest slots
-- **Record Stride**: 40 bytes (`0x28`)
-
-### 2.1 Record Layout (`0x28` bytes)
-```c
-struct ContestRecord {
-    uint32_t global_index;       // +0x00: Global sequential index (0..num_contests-1)
-    uint32_t eve_index;          // +0x04: Index into Eve Table (which event series owns this)
-    uint32_t event_type;         // +0x08: Event type bitmask (from Master Event Table)
-    uint32_t laps;               // +0x0C: Total laps (for circuit races)
-    uint32_t max_cars;           // +0x10: Maximum participating cars (typically 4, 8, 12, 16)
-    uint32_t terrain_mask;       // +0x14: Allowed vehicle classes / terrain type
-    uint32_t rounds;             // +0x18: Total heats / rounds
-    uint32_t purse;              // +0x1C: Career prize money payout
-    uint32_t name_table_ptr;     // +0x20: Pointer to layout string (e.g. "c_battle", "c_demo_derby")
-    uint32_t enabled;            // +0x24: 1 = Active in selection carousel, 0 = Disabled
-};
-```
-
----
-
-## 3. In-Memory Eve Table (`0x002336B0`)
-
-An "Eve" represents an entire evening's racing card (e.g. "Baxter Bash", "Mankato Carnage"):
-- **Global Table Base**: `0x002336B0` on Xbox (`0x003C4D08` on PS2)
-- **Active Eve Count**: `0x0022D968` on Xbox (`0x003C4CF4` on PS2)
-- **Record Stride**: 132 bytes (`0x84`)
-
-### 3.1 Record Layout (`0x84` bytes)
-```c
-struct EveRecord {
-    int32_t  eve_index;          // +0x00: Eve ID
-    int32_t  league_index;       // +0x04: League tier (0 = Dare, 1..3 = Pro tiers)
-    char     track_name[32];     // +0x08..+0x27: Track file prefix (e.g. "Baxter", "Hastings")
-    char     display_name[64];   // +0x28..+0x67: UI Title (e.g. "Hastings Mayhem")
-    uint32_t reserved[2];        // +0x68..+0x6F: Flags
-    uint32_t num_contests;       // +0x70: Number of sequential contests in this Eve
-    uint32_t padding[4];         // +0x74..+0x83: Internal state
-};
-```
-
----
-
-## 4. Action Carousel UI Loop (`0x00154650`)
-
-When a player selects an event in Arcade or Multiplayer mode, the UI runs `sub_00154560`:
-1. It queries the global tracker at `0x002BEDB0` (`EveResultsTracker`).
-2. Calls virtual method `[+0x3C]` to retrieve `current_event_idx` and `[+0x2C]` to retrieve `total_events`.
-3. Populates the HUD string with format `"Event %d of %d"` (`0x002156A8`).
-4. Iterates through the active Eve's contests at `0x0022EF60 + c * 0x28`.
-5. Resolves the display string from the Master Event Table for each contest and renders the 3D rotating carousel cards with stride `0x80` bytes.
-
----
-
-## 5. Non-Destructive Mod Injection Blueprint
-
-To add custom races and game modes into the menus **without modifying any original disc files**:
-
-### 5.1 The Eve Loader Intercept Hook (`sub_00023BF0`)
-Place a native C++ hook inside `sub_00023BF0` right before it returns to caller:
-
-```cpp
-void Hook_EveLoader_InjectCustomModes() {
-    uint32_t* num_contests_ptr = (uint32_t*)0x0022EF54;
-    ContestRecord* contests = (ContestRecord*)0x0022EF60;
-
-    // Inject Custom Game Mode: "Patient Zero"
-    uint32_t new_idx = *num_contests_ptr;
-    contests[new_idx].global_index   = new_idx;
-    contests[new_idx].eve_index      = 0; // Available in First Tier / Arcade
-    contests[new_idx].event_type     = 0x18000224; // Battle Mode base
-    contests[new_idx].laps           = 1;
-    contests[new_idx].max_cars       = 16; // Lifted from 4 to 16
-    contests[new_idx].terrain_mask   = 0xFFFFFFFF;
-    contests[new_idx].rounds         = 1;
-    contests[new_idx].purse          = 2500;
-    contests[new_idx].name_table_ptr = (uint32_t)"c_patient_zero";
-    contests[new_idx].enabled        = 1;
-
-    (*num_contests_ptr)++;
-}
-```
-
-### 5.2 UI Carousel Registration
-Because `sub_00154560` dynamically reads `*num_contests_ptr`, incrementing the count automatically adds the new game mode card into the UI carousel! Players can cycle with D-Pad Left/Right and press A/Cross to launch immediately.
-
-
-## research/wiki/game_modes_specs
-# Custom game-mode proposals — unverified designs
-
-
-:::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/wiki/game_modes_specs.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `4e3fbf55ae64196be6915e241eb9b9ea63dac64a655970ea7a8ce36c628c9e32`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
-By porting the Test Drive: Eve of Destruction (`TDEOD`) simulation engine to a modern 64-bit C++ architecture, we bypass console memory caps and hijack internal physics, collision hooks, and state machines. Below are the complete technical implementation blueprints for all 15 custom game modes.
-
----
-
-## Mode 1: Patient Zero (Demolition Derby Infection)
-
-- **Venue**: Mankato Demolition Arena (Night environment).
-- **Roster & Spawns**: 15 players in pristine `Durand.car` / `Phantom.car` muscle cars; 1 randomly chosen player in rusted `Hearse.car` ("Patient Zero").
-- **Target Gameplay**: Demolition survival. Survivors desperately weave through a growing horde of heavy Hearses. If a Hearse touches your car, you instantly infect into a Hearse.
-- **Engine Subsystems Scoped**:
-  - Master collision resolution callback (`0x0017B708` / `f_0017B708`).
-  - Vehicle visual texture pointer (`car->mesh->material_texture`).
-  - Chassis mass factor (`car + 0x1B88`).
-  - AI controller replacement (`IDriver` swap from `PlayerDriver` / `AIDriver` to `DemoDerbyDriver`).
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_CollisionResolution(Car* striker, Car* victim) {
-      uint32_t striker_id = striker->car_index;
-      uint32_t victim_id  = victim->car_index;
-
-      if ((g_infected_mask & (1 << striker_id)) && !(g_infected_mask & (1 << victim_id))) {
-          // 1. Flip infection status bit
-          g_infected_mask |= (1 << victim_id);
-
-          // 2. Override visual texture pointer to rust asset
-          victim->mesh->textures[0] = g_hearse_rust_texture;
-
-          // 3. Boost mass and traction in real-time
-          victim->mass_factor *= 1.40f;
-          victim->tire_grip   *= 1.25f;
-
-          // 4. If AI car, repoint target search to nearest survivor
-          if (victim->is_ai) {
-              victim->driver = new DemoDerbyDriver(victim, TARGET_SURVIVORS_ONLY);
-          }
-      }
-  }
-  ```
-
----
-
-## Mode 2: Trash Compactor (Speed Halo / Fat Kid)
-
-- **Venue**: HomeBase Construction Pit / Quarry bowl (`HomeBase.trk`).
-- **Roster & Spawns**: 15 players at the quarry floor in micro compacts (`Moth.car`, `Cockroach.car`, `Digit.car`); 1 player at the quarry rim in a `Bus.car`.
-- **Target Gameplay**: Unstoppable gravitational survival. The Bus has zero engine power, but its weight is increased tenfold. It rolls down the steep dirt cliff, crushing panicked compacts against the pit floor.
-- **Engine Subsystems Scoped**:
-  - Throttle input suppression (`car + 0x1B7C = 0.0f`).
-  - Chassis mass override (`car + 0x1B88 = 50,000.0f`).
-  - Localized gravitational vector override.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_TrashCompactor_PhysicsTick(Car* car) {
-      if (car->car_index == g_fat_kid_bus_id) {
-          // Suppress engine acceleration
-          car->throttle = 0.0f;
-
-          // Set massive rigid body mass (50,000 lbs ~ 22,680 kg)
-          car->rigid_body->mass = 22680.0f;
-
-          // Apply localized downward slope gravitational pull
-          Vector3 gravity_force = { 0.0f, -35000.0f, 0.0f };
-          car->rigid_body->ApplyCentralForce(gravity_force);
-      }
-  }
-  ```
-
----
-
-## Mode 3: The Gauntlet Sniper (Horn Mortar Duck Hunt)
-
-- **Venue**: Welch Valley Figure-8.
-- **Roster & Spawns**: 15 racers racing laps on the Figure-8 track; 1 player parked on an elevated dirt berm overlooking the center crossover.
-- **Target Gameplay**: The Sniper cannot drive, but possesses unlimited access to the Horn Mortar (explosive chicken launcher) with zero cooldown, firing into the intersection to blast jumping cars out of the air.
-- **Engine Subsystems Scoped**:
-  - Vehicle velocity lock ($\vec{V} = \vec{0}$).
-  - First-person crosshair raycast camera.
-  - Projectile spawner (`0x000A76DB` / `f_0017EC58`) and 65-frame cooldown timer bypass.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_GauntletSniper_Update(Car* sniper) {
-      // 1. Lock sniper vehicle in place
-      sniper->velocity = Vector3(0.0f, 0.0f, 0.0f);
-
-      // 2. Read right-stick aiming crosshair ray
-      Vector3 aim_dir = g_camera->GetCrosshairRay();
-
-      // 3. Bypass rate limiter
-      sniper->weapon_cooldown_ticks = 0;
-
-      if (sniper->input->IsFireTriggerPressed()) {
-          // Launch Ball projectile along crosshair vector
-          Vector3 launch_vel = aim_dir * 60.0f; // 60 m/s muzzle velocity
-          SpawnProjectile_Chicken(sniper->position + Vector3(0, 1.2f, 0), launch_vel);
-      }
-  }
-  ```
-
----
-
-## Mode 4: Ice Rink Sumo (Polar Push)
-
-- **Venue**: Hastings Demolition Arena.
-- **Roster & Spawns**: 16 players in heavy `Ambulance.car` or `CopCar.car`.
-- **Target Gameplay**: Zero-friction black ice floor. Players must manage sliding momentum to knock opponents over the outer dirt berms into elimination.
-- **Engine Subsystems Scoped**:
-  - Surface material tire-slip coefficient (`car + 0x1B80 = 0.02f`).
-  - Outer arena perimeter elimination boundary ($R = 28.0\text{ meters}$).
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_IceRinkSumo_Tick(Car* car) {
-      // Force tire friction to near-zero (black ice)
-      car->tire_lateral_grip = 0.02f;
-      car->tire_longitudinal_grip = 0.04f;
-
-      // Check radial boundary elimination
-      float dist_from_center = sqrtf(car->pos_x * car->pos_x + car->pos_z * car->pos_z);
-      if (dist_from_center > 28.0f) {
-          car->damage_ratio = 1.0f; // Total vehicle
-          car->engine_running = false;
-          BroadcastElimination(car->car_index);
-      }
-  }
-  ```
-
----
-
-## Mode 5: Smokey & The Bandit (Hot Pursuit Point-to-Point)
-
-- **Venue**: Dundas Point-to-Point dirt highway.
-- **Roster & Spawns**: 4 "Robbers" in fast `Outlaw.car` muscle beaters; 4 "Cops" in sirens-blaring `CopCar.car`.
-- **Target Gameplay**: Robbers race from start to finish line. Cops must execute PIT maneuvers and pin Robbers against trees/walls for 3 seconds to eliminate them.
-- **Engine Subsystems Scoped**:
-  - Team array monitoring.
-  - Linear velocity sensor ($\|\vec{V}\| &lt; 0.44\text{ m/s}$ = 1 mph).
-  - Spatial proximity detector ($d &lt; 3.0\text{ meters}$) and 180-tick ($3.0\text{s}$) pin counter.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_SmokeyBandit_Tick(Car* robber) {
-      if (robber->team != TEAM_ROBBER || robber->is_eliminated) return;
-
-      bool is_pinned = false;
-      if (robber->velocity.Length() < 0.44f) { // Under 1 MPH
-          for (Car* cop : g_cops) {
-              if (cop->position.DistanceTo(robber->position) < 3.0f && cop->IsCollidingWith(robber)) {
-                  is_pinned = true;
-                  break;
-              }
-          }
-      }
-
-      if (is_pinned) {
-          robber->pin_tick_count++;
-          if (robber->pin_tick_count >= 180) { // 3 continuous seconds
-              robber->is_busted = true;
-              robber->engine_torque = 0.0f; // Kill engine
-              SpawnArrestEffect(robber->position);
-          }
-      } else {
-          robber->pin_tick_count = 0;
-      }
-  }
-  ```
-
----
-
-## Mode 6: The Sweeper (Twisted System Jump Challenge)
-
-- **Venue**: HomeBase Construction Pit (`HomeBase.trk`).
-- **Roster & Spawns**: 16 players in `Fly.car` compacts parked in a circle around the quarry floor. Two `Bus.car` meshes welded end-to-end rotating from a central pivot.
-- **Target Gameplay**: Throttle is disabled. Players press D-Pad Up / Cross to execute vertical jump impulses, clearing the spinning bus arm as it accelerates.
-- **Engine Subsystems Scoped**:
-  - Rigid hinge joint constraint.
-  - Continuous angular velocity integration: $\omega(t) = \omega_0 + \alpha t$.
-  - Vertical impulse injection: $\vec{J} = (0, 45000, 0)\text{ N}\cdot\text{s}$.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_TheSweeper_Tick() {
-      // Rotate the double bus sweep arm
-      g_sweep_angle += g_sweep_angular_velocity * (1.0f / 60.0f);
-      g_sweep_angular_velocity += 0.0005f; // Accelerate each frame
-
-      g_sweeper_bus->SetTransform(Matrix4::RotationY(g_sweep_angle));
-
-      // Handle player jump inputs
-      for (Car* compact : g_players) {
-          compact->throttle = 0.0f;
-          compact->steering = 0.0f;
-
-          if (compact->input->WasJumpPressed() && compact->is_on_ground) {
-              compact->rigid_body->ApplyImpulse(Vector3(0.0f, 45000.0f, 0.0f));
-          }
-      }
-  }
-  ```
-
----
-
-## Mode 7: Ejector Seat Bowling (FlatOut Ballistic Stunts)
-
-- **Venue**: Kenyon Mega Ramp & Straightaway.
-- **Roster & Spawns**: Solo/multiplayer runs down the ramp in lightweight `Bullet.car`.
-- **Target Gameplay**: Floor it down the massive ramp. Exactly at the jump apex, press Detonate to explode the undercarriage, converting the chassis into an aerodynamic free-flying missile aimed at giant scoring rings.
-- **Engine Subsystems Scoped**:
-  - Mesh-to-chassis constraint severance (`0x0006BC20`).
-  - Kinetic momentum transfer: $\vec{V}' = 1.5 \cdot \vec{V}_{\text{car}}$.
-  - Coordinate distance check on dirt landing floor.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_EjectorSeat_Detonate(Car* car) {
-      // 1. Sever suspension and frame constraints
-      car->SeverAllBoneConstraints();
-
-      // 2. Transfer 150% momentum to body shell
-      RigidBody* chassis_body = car->GetChassisRigidBody();
-      chassis_body->SetLinearVelocity(car->velocity * 1.5f);
-      chassis_body->SetAngularVelocity(Vector3(0.1f, 0.0f, 0.0f)); // Stable dart flight
-
-      // 3. Register landing callback for concentric ring scoring
-      RegisterLandingScorer(chassis_body, g_kenyon_target_center, g_scoring_rings);
-  }
-  ```
-
----
-
-## Mode 8: The Meat Grinder (Deathloop Crossover)
-
-- **Venue**: Baxter Speedway Oval.
-- **Roster & Spawns**: 16 cars split into two equal 8-car heats.
-- **Target Gameplay**: Half the pack races standard oval laps; the other half hits a steep crossover dirt ramp launching directly across the infield onto the opposite straightaway into oncoming traffic!
-- **Engine Subsystems Scoped**:
-  - External ramp mesh injection into `track.grf` and `track.bsc`.
-  - Dual AI spline assignment (`oval.ild` vs `crossover.ild`).
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Setup_MeatGrinder_Races() {
-      // Load ramp geometry into active scene graph
-      g_scene_graph->AttachModel("infield_crossover_ramp.mod", Vector3(15.0f, 0.0f, 0.0f));
-
-      for (int i = 0; i < g_num_cars; i++) {
-          if (i % 2 == 0) {
-              // Standard Clockwise Oval Line
-              g_cars[i]->ai_driver->SetCenterline("oval.ild");
-          } else {
-              // High-speed crossover jump line
-              g_cars[i]->ai_driver->SetCenterline("crossover_jump.ild");
-              g_cars[i]->ai_driver->target_speed = 38.0f; // Target launch speed 85 mph
-          }
-      }
-  }
-  ```
-
----
-
-## Mode 9: Arena Combat (CTR Battle Mode with Crates & Mines)
-
-- **Venue**: Welch Mud Arena.
-- **Roster & Spawns**: 4 to 8 players in combat derbies.
-- **Target Gameplay**: Ramming is supplemented by wooden weapon crates scattered in the mud. Smashing a crate yields a Mortar (chicken rocket) or a Mine (explosive barrel dropped from the rear bumper).
-- **Engine Subsystems Scoped**:
-  - Dynamic object pickup spawner.
-  - Active weapon inventory slot.
-  - Zero-velocity rear-bumper projectile dropper.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Deploy_RearBumper_Mine(Car* car) {
-      // Compute coordinates 2.5m directly behind rear bumper
-      Vector3 spawn_pos = car->position - (car->forward_vector * 2.5f);
-      spawn_pos.y += 0.4f;
-
-      // Spawn explosive barrel with zero linear velocity
-      Entity* mine = SpawnDynamicObject("mine_barrel.mod", spawn_pos, Quaternion::Identity);
-      mine->rigid_body->SetLinearVelocity(Vector3(0, 0, 0));
-      mine->SetCollisionCallback([] (`Entity* mine, Car* toucher`, source checkout) {
-          ExecuteExplosionShockwave(mine->position, 12.0f, 50000.0f);
-          mine->Despawn();
-      });
-  }
-  ```
-
----
-
-## Mode 10: Keanu's Revenge (Trailer Hot Potato Bomb)
-
-- **Venue**: Hastings Figure-8.
-- **Roster & Spawns**: 16 players towing heavy `Trailer.car` campers.
-- **Target Gameplay**: A 20-second timer ticks on the HUD. When it reaches zero, the player in Dead Last has their trailer violently detonate, eliminating them and leaving a burning metal hazard in the racing line.
-- **Engine Subsystems Scoped**:
-  - Trailer hitch physical constraint.
-  - Real-time race position leaderboard array (`place[16]`).
-  - Timed detonation impulse centered at hitch node.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_KeanusRevenge_TimerExpired() {
-      // Find trailing car
-      uint32_t last_place_car_idx = g_battle_master->place[g_num_active_cars - 1];
-      Car* victim = g_cars[last_place_car_idx];
-
-      // Execute explosion centered at trailer hitch node
-      Vector3 hitch_pos = victim->position - (victim->forward_vector * 1.8f);
-      ExecuteExplosionShockwave(hitch_pos, 15.0f, 65000.0f);
-
-      // Sever trailer constraint and leave burning rigid body
-      victim->SeverTrailerConstraint();
-      victim->damage_ratio = 1.0f;
-      g_num_active_cars--;
-
-      // Reset 20-second timer for next elimination round
-      g_bomb_timer_ticks = 20 * 60;
-  }
-  ```
-
----
-
-## Mode 11: Pinball Derby (Kinetic Arena Walls)
-
-- **Venue**: Mankato Demolition Arena.
-- **Roster & Spawns**: 16 demolition cars.
-- **Target Gameplay**: The arena concrete walls act like high-speed pinball bumpers. Slamming into a wall reflects your trajectory at 2.5× velocity back into the arena!
-- **Engine Subsystems Scoped**:
-  - Wall collision material restitution ($e = 2.5$).
-  - Velocity vector reflection: $\vec{V}' = (\vec{V} - 2(\vec{V}\cdot\hat{n})\hat{n}) \times 2.5$.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_PinballWallCollision(Car* car, Vector3 wall_normal) {
-      float v_dot_n = car->velocity.Dot(wall_normal);
-      if (v_dot_n < 0.0f) { // Moving toward wall
-          Vector3 reflected_vel = car->velocity - (wall_normal * (2.0f * v_dot_n));
-          car->velocity = reflected_vel * 2.5f; // Supercharged bounce
-
-          PlaySoundEffect("bumper_ping.sfx", car->position);
-          SpawnSparksParticle(car->position, wall_normal);
-      }
-  }
-  ```
-
----
-
-## Mode 12: Shackled Sprint (Co-Op Physics Spring Chain)
-
-- **Venue**: Dundas Figure-8.
-- **Roster & Spawns**: 16 players organized into 8 two-car teams.
-- **Target Gameplay**: You and your teammate are physically bound by an invisible 30-foot (9.14m) tension spring. If your teammate spins out, you get dragged to a halt!
-- **Engine Subsystems Scoped**:
-  - Multi-car spring constraint solver.
-  - Spatial separation tension: $\vec{F} = k (d - 9.14)\hat{n}$.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_ShackledSprint_Tick() {
-      const float REST_LENGTH = 9.14f; // 30 feet
-      const float SPRING_K   = 15000.0f;
-
-      for (auto& pair : g_shackled_teams) {
-          Car* carA = pair.first;
-          Car* carB = pair.second;
-
-          Vector3 delta = carB->position - carA->position;
-          float dist = delta.Length();
-          if (dist > REST_LENGTH) {
-              Vector3 dir = delta / dist;
-              float stretch = dist - REST_LENGTH;
-              Vector3 force = dir * (SPRING_K * stretch);
-
-              carA->rigid_body->ApplyCentralForce(force);
-              carB->rigid_body->ApplyCentralForce(-force);
-          }
-      }
-  }
-  ```
-
----
-
-## Mode 13: Red Light, Green Light
-
-- **Venue**: Kenyon Mega Straightaway.
-- **Roster & Spawns**: 32 cars lined up shoulder-to-shoulder.
-- **Target Gameplay**: Stop on a dime, or explode! On Green: floor it. On Red: come to a complete halt within 1.5 seconds. Any car still moving is detonated into the sky!
-- **Engine Subsystems Scoped**:
-  - Global traffic light state machine.
-  - Velocity vector magnitude sensor ($\|\vec{V}\| > 0.22\text{ m/s} = 0.5\text{ mph}$).
-  - Chassis detonation trigger.
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_RedLightGreenLight_RedCheck() {
-      for (Car* car : g_all_cars) {
-          if (!car->is_eliminated && car->velocity.Length() > 0.22f) { // Moving > 0.5 MPH
-              ExecuteExplosionShockwave(car->position, 8.0f, 60000.0f);
-              car->damage_ratio = 1.0f;
-              car->is_eliminated = true;
-          }
-      }
-  }
-  ```
-
----
-
-## Mode 14: Quarry Bowling (Gravity Strike Challenge)
-
-- **Venue**: HomeBase Construction Pit (`HomeBase.trk`).
-- **Roster & Spawns**: 10 AI `Taxi.car` parked in a 10-pin triangle at the bottom of the pit; 1 player in an `Ambulance.car` at the top rim.
-- **Target Gameplay**: Launch down the cliff, hit a natural bump, and smash into the Taxis. Points are scored for every Taxi scattered outside a painted ring!
-- **Engine Subsystems Scoped**:
-  - Inert rigid body initializer (`ParkDriver` at `0x001FC828`).
-  - Spatial radius score evaluation ($R = 15.0\text{ meters}$).
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Evaluate_QuarryBowling_Score() {
-      int knocked_out = 0;
-      for (Car* taxi : g_bowling_pins) {
-          float dist = taxi->position.DistanceTo(g_bowling_ring_center);
-          if (dist > 15.0f) {
-              knocked_out++;
-          }
-      }
-      g_player_score += (knocked_out * 100);
-      if (knocked_out == 10) g_player_score += 500; // Strike Bonus!
-  }
-  ```
-
----
-
-## Mode 15: Relic Hunt (Demolition Crystal Scramble)
-
-- **Venue**: Baxter Demolition Arena.
-- **Roster & Spawns**: 4 human players scrambling for 30 glowing tokens; 8 AI `Bus.car` opponents relentlessly patrolling the arena.
-- **Target Gameplay**: Collect the most relics before the 2-minute timer ends while evading 8 AI buses actively hunting player coordinates!
-- **Engine Subsystems Scoped**:
-  - Static spatial token triggers.
-  - Relic count inventory.
-  - `WrangleDriver` AI hunter bus controllers (`0x001FE3F0`).
-- **Mathematical & Memory Hook**:
-  ```cpp
-  void Hook_RelicTriggerOverlap(Entity* token, Car* player) {
-      if (!player->is_ai) {
-          player->relic_count++;
-          token->Despawn();
-          PlaySoundEffect("relic_pickup.sfx", player->position);
-      }
-  }
-  ```
-
-
-## research/wiki/index
-# Test Drive: Eve of Destruction — Engine Recompilation & Modding Wiki
-
-
-:::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/wiki/index.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `4896916146a7320dc8d1a70079504cd81a7736c996e94cedf9a91fb65fe10df6`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
-Welcome to the technical offline wiki and reverse-engineering reference for the **Test Drive: Eve of Destruction** (`TDEOD` / Monster Games `d2d2`) Static Recompilation and Modern Modding Engine.
-
----
-
-## 📚 Wiki Contents & Navigation
-
-1. **[Maps & Tracks Subsystem](maps_and_tracks.md)**
-   - Monster Games `0TSR` archive structure for tracks (`.trk`).
-   - Scene graph rendering meshes (`track.grf`) and Binary Space Partitioning collision trees (`track.bsc`).
-   - Spatial trees (`track.bsp`), Potentially Visible Sets (`track.bpp`), and solid placements (`track.sol`).
-   - Contest layout scripts (`*.va0`), respawn vectors, dynamic `dyno` physics entities, and boundary polygons (`bound%d`).
-   - Hub World architecture (`HomeBase.trk`), venue exit gates, and highway splines.
-
-2. **[Vehicles, Models & Damage Subsystem](vehicles_and_models.md)**
-   - Vehicle container layout (`.car`), complete 32-vehicle authentic roster + 5 trailers.
-   - 5-stage Level of Detail (LOD) mesh hierarchy (`Low0.mod` to `Low4.mod`) and distance curve (`lod.val`).
-   - Monster Games `.mod` 3D container format: header structures, submesh buffers, and vertex attributes.
-   - Skeletal deformation bones (`Bone.val`, `Bone.mvl`) and mechanical parameters (`physics.val`).
-
-3. **[Physics, Collision & Detachment Engine](physics_and_collision.md)**
-   - Dual-platform memory map correlation: Xbox (`default.xbe`) vs PS2 (`SLUS_209.10`).
-   - Vehicle rigid body data layout: position, heading, velocity, mass factor, steering, throttle, and brake floats.
-   - The hardcoded 100 mph (44.44 m/s) velocity ceiling at `0x002187D0` and how to scale it.
-   - Collision primitive hierarchy: `Ring`, `Tube`, `Box`, `Sphere`, and `Ragdoll`.
-   - Physics detachment task (`phystask`) and component/wheel severance routines (`0x00100F10`).
-
-4. **[AI Logic, Pathfinding & Combat State Machines](ai_and_pathfinding.md)**
-   - `IDriver` object-oriented hierarchy: `AIDriver`, `DemoDerbyDriver`, `WrangleDriver`, `ParkDriver`.
-   - Racing spline navigation (`ILine` / `.ild`), curvature lookahead, speed factor interpolation, and rubber-banding.
-   - Demolition Derby 4-state combat automaton: lead-pursuit interception, power-slide ramming, and barrier unstick recovery.
-   - Wrangle hunter bot logic: direct coordinate chasing, surround tactics, and pit maneuvers.
-
-5. **[Event Selection & Menu Injection](event_injection_and_menus.md)**
-   - Master Event Table at `0x0021BE78` (Xbox) / `0x003C3A70` (PS2).
-   - In-memory Contest Table (`0x0022EF60`), Eve Table (`0x002336B0`), and `EveResultsTracker` (`0x002BEDB0`).
-   - Action Carousel UI loop at `0x00154650` (`Event %d of %d`).
-   - Non-destructive injection hooks: inserting new race modes into Arcade, Multiplayer, and Career selectors.
-
-6. **[Granular Specifications: 15 Custom Game Modes](game_modes_specs.md)**
-   - **Mode 1: Patient Zero (Infection)**: Physical collision interception, rust texture swap, mass scaling, horde AI.
-   - **Mode 2: Trash Compactor (Speed Halo / Fat Kid)**: Heavy rolling bus down quarry rim, compact evasion.
-   - **Mode 3: The Gauntlet Sniper (Horn Mortar Duck Hunt)**: First-person camera crosshair, chicken mortar barrage.
-   - **Mode 4: Ice Rink Sumo (Polar Push)**: Black ice tire-slip friction override, out-of-bounds radial elimination.
-   - **Mode 5: Smokey & The Bandit (Hot Pursuit)**: Speed threshold sensors, 3-second pin detection, engine kill.
-   - **Mode 6: The Sweeper (Twisted System)**: Rotating bus hinge-joint constraint, D-pad vertical impulse jump.
-   - **Mode 7: Ejector Seat Bowling (FlatOut Stunts)**: Chassis constraint severance, free-flight ballistic scoring.
-   - **Mode 8: The Meat Grinder (Deathloop Crossover)**: Mid-air ramp injection, dual-line counter-traffic AI.
-   - **Mode 9: Arena Combat (Battle Mode Pickups)**: Dynamic crate spawning, rear-bumper mine deployment.
-   - **Mode 10: Keanu's Revenge (Trailer Hot Potato)**: Trailer hitch constraint, trailing car detonation timer.
-   - **Mode 11: Pinball Derby (Kinetic Walls)**: Restitution multiplier override ($e = 2.5$), high-speed ricochets.
-   - **Mode 12: Shackled Sprint (Physics Chain)**: Dual-car Hooke's Law spring constraint, distance tension resolution.
-   - **Mode 13: Red Light, Green Light**: Velocity vector sensor, 1.5s grace period, moving chassis explosion.
-   - **Mode 14: Quarry Bowling**: Stationary pin vehicle cluster, post-impact scatter scoring.
-   - **Mode 15: Relic Hunt (Crystal Challenge)**: Spatial trigger tokens, HUD relic counter, `WrangleDriver` buses.
-
-7. **[Granular Specifications: 5 Engine Limitation Overhauls](engine_overhauls_specs.md)**
-   - **Overhaul 1: The Infinite Junkyard**: TTL despawn timer deletion, 4,096+ rigid body pool, infinite LOD 0.
-   - **Overhaul 2: Dynamic Track Perimeters**: Scenery `IsStatic` flag removal, destructible concrete chunking.
-   - **Overhaul 3: The "Eve’s Diner" Cannonball Run**: Hub World + circuit mesh stitching, barrier deletion, continuous highway splines.
-   - **Overhaul 4: Dynamic Shortcuts & Campaign Breaches**: Kinetic wall breach triggers, runtime AI spline switching.
-   - **Overhaul 5: Hub-World Infection**: Free-roam town loading, `WrangleDriver` hearse horde, midnight headlight lighting.
-
-   - Python CLI tool specifications for `0tsr_tool.py`, `val_editor.py`, `mod_converter.py`, and `ild_editor.py`.
-
----
-
-## 🏗️ Recompilation Architecture Summary
-
-*Test Drive: Eve of Destruction* (Monster Games, 2004) was developed simultaneously for Microsoft Xbox and Sony PlayStation 2 under internal project codename `d2d2` (*Dirt to Daytona 2*).
-
-```
-                      +-----------------------------+
-                      |   TDEOD Disc Assets (0TSR)  |
-                      |  .trk  .car  .val  .mod     |
-                      +--------------+--------------+
-                                     |
-                                     v
-+-------------------------+   +--------------+   +-------------------------+
-| Native Recomp Runtime   |-->| Physical     |<--| Modern Host APIs        |
-| - Guest Lock & Memory   |   | Simulation   |   | - Metal MSL Render      |
-| - CRT memmove & SEH     |   | - Rigid Body |   | - SDL3 Audio / APU      |
-| - Master Bitmask Hook   |   | - 60Hz Tick  |   | - Virtual Gamepad / USB |
-+-------------------------+   +--------------+   +-------------------------+
-```
-
-By lifting x86 instructions into native C/C++ (Apple Silicon `arm64` and x86_64), the console limits are bypassed:
-- **System Memory**: Unlimited host 64-bit virtual memory vs Xbox 64MB / PS2 32MB.
-- **Physical Rigid Bodies**: Scalable dynamic pools ($4,096+$) vs hardcoded console pool ($32$ bodies).
-- **Debris Lifetime**: Permanent scrap and part persistence vs ~5-second despawn timers.
-- **Level of Detail**: Full highest-quality geometry (`Low0.mod`) rendered across entire venues.
-- **Display Output**: Native arbitrary aspect ratios (16:9, 21:9) and high-refresh rendering (120 FPS+).
-
-
-## research/wiki/maps_and_tracks
-# Maps & Tracks Subsystem: Reverse Engineering Reference
-
-
-:::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/wiki/maps_and_tracks.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `f010398d39629160326f0fb873213cfcfeefb47edaea247013b1ab4665f9c863`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
-## 1. Overview & Venue Directory
-
-All tracks and world environments in *Test Drive: Eve of Destruction* are packaged into proprietary Monster Games `0TSR` (`RST0`) archives in `game/data/*.trk`.
-
-### 1.1 Authentic Venue Inventory
-The retail release contains 15 primary racing and demolition venues, plus the open-world Hub World:
-
-| Venue File | Compressed Size | Venue Type | Track Layouts Available |
-|---|---|---|---|
-| `Afton.trk` | 9.5 MB | Rural Dirt Oval | Circuit, Reverse |
-| `Anoka.trk` | 11.4 MB | Dirt Short Track | Circuit, Figure-8, Jump |
-| `Baxter.trk` | 10.4 MB | Concrete Arena / Speedway | Oval, Figure-8, Demolition Arena, Battle |
-| `Bemidji.trk` | 8.7 MB | Paved Short Track | Circuit, Reverse |
-| `Dennison.trk` | 8.8 MB | Dirt Arena | Demolition Derby, Survival, Push-Off |
-| `Dundas.trk` | 11.7 MB | Rural Point-to-Point / Mud Trail | Point-to-Point, Figure-8 |
-| `Eagan.trk` | 9.8 MB | High-Banked Dirt Oval | Oval, Suicide Race |
-| `Gilroy.trk` | 11.9 MB | Fairgrounds Short Track | Circuit, Jump Race, Flagpole |
-| `Hastings.trk` | 8.1 MB | Tight Dirt Bullring / Arena | Figure-8, Demolition Derby, Battle |
-| `Kenyon.trk` | 8.8 MB | Speedway & Mega Ramp | Straightaway, Long Jump |
-| `Mankato.trk` | 11.1 MB | Urban Demolition Arena | Demo Derby, Figure-8, Arena Battle |
-| `Springfield.trk`| 9.4 MB | Paved Oval / Road Course | Circuit, Forward-Backward |
-| `Welch.trk` | 7.1 MB | Muddy Demolition Valley | Figure-8, Arena Derby |
-| `HomeBase.trk` | 12.3 MB | **Semi-Open Hub World** | Rural Town, Eve's Diner, Highways, Junkyard |
-| `EmptyTrack.trk`| 139 KB | Testbed / Benchmark Grid | Blank Flat Plane (Developer Testbed) |
-
----
-
-## 2. Container Format: Monster Games `0TSR`
-
-The `.trk`, `.car`, and `.res` files share the exact same `0TSR` container format:
-
-### 2.1 File Header (`0x00..0x20`)
-```c
-struct TSRHeader {
-    char     magic[4];       // "0TSR" or "RST0" (0x52535430)
-    uint32_t version;        // Container format version (typically 1)
-    uint32_t header_size;    // Size of master header (typically 0x20)
-    uint32_t total_size;     // Total size of container file in bytes
-    uint32_t info_offset;    // Byte offset to File Information Table
-    uint32_t file_count;     // Total number of embedded sub-files
-    uint32_t reserved[2];    // Padding / alignment
-};
-```
-
-### 2.2 File Information Entry (`68 bytes` per sub-file)
-Located starting at `info_offset`. Each entry describes one sub-file:
-```c
-struct TSREntry {
-    char     filename[32];   // Null-terminated filename (e.g. "track.bsc\0")
-    uint32_t file_type;      // FourCC asset type identifier (see table below)
-    uint32_t flags;          // Compression / streaming flags
-    uint32_t decomp_size;    // Uncompressed byte size
-    uint32_t data_offset;    // Offset relative to info_offset where payload begins
-    uint32_t padding[4];     // Reserved
-};
-```
-
----
-
-## 3. Sub-File Types Inside `.trk` Archives
-
-| FourCC | Magic String | Filename | Subsystem Function | Loader Hook in `default.xbe` |
-|---|---|---|---|---|
-| `0x47524146` | `GRAF` | `track.grf` | Scene Graph & Visual Mesh | `0x000A2980` via `call 0x000A80B0` |
-| `0x53434F4C` | `SCOL` | `track.bsc` | Binary Space Partitioning Collision Tree | `0x000A295D` via `call 0x0009D770` |
-| `0x42535054` | `BSPT` | `track.bsp` | Visual Spatial Octree / Culling Tree | `0x000A2967` via `call 0x000A9450` |
-| `0x42505054` | `BPPT` | `track.bpp` | Potentially Visible Set (PVS) Occlusion Table | `0x000A2971` via `call 0x000A7AE0` |
-| `0x534F424C` | `SOBL` | `track.sol` | Solid Scenery Placements & World Geometry | `0x0006A2AB` via `call 0x000826B0` |
-| `0x56414C54` | `VALT` | `track.val` | Global Track Tuning & Lookahead Table | `0x0006A266` via `call 0x0002E4B0` |
-| `0x494C494E` | `ILIN` | `*.ild` | AI InterLine Spline Centerlines | `0x00036D70` via `call 0x000358C0` |
-| `0x56414C54` | `VALT` | `c_*.va0` | Event-Specific Layout & Object Scripts | `0x0006A290` via `call 0x0002E4B0` |
-
-### 3.1 Binary Collision Tree (`track.bsc`)
-The physics engine tests all vehicle wheels, chassis rays, and bounding boxes against `track.bsc`:
-- **Collision Nodes**: Form a hierarchical spatial bounding hierarchy. In `Baxter.trk`, there are 5,455 leaf collision polygons.
-- **Surface Material Attributes**: Every collision face encodes a material ID defining surface friction:
-  - Material 0: Dry Asphalt ($\mu = 0.95$)
-  - Material 1: Compact Dirt / Clay ($\mu = 0.85$)
-  - Material 2: Wet Mud / Slush ($\mu = 0.55$)
-  - Material 3: Grass / Turf ($\mu = 0.65$)
-  - Material 4: Wall / Concrete Barrier (inelastic collision, high stiffness)
-
-### 3.2 Visual Scene Graph (`track.grf`)
-Contains the full 3D visual geometry rendered by NV2A/Metal:
-- Submesh groupings by material shader and texture assignment (`.tex` files from `game/data/common.res` and venue-specific textures).
-- Multi-texturing for mud splatters, skidmarks, and trackside banners.
-
----
-
-## 4. Contest Layout Configurations (`*.va0`)
-
-Each event mode loads a specific `.va0` layout file from the track archive, dynamically reconfiguring the venue geometry and entity population without changing the base track mesh.
-
-### 4.1 Sample Layout: `c_battle.va0` (Battle Mode Arena Setup)
-Extracted from `Baxter.trk`:
-```text
-respawn
-  @a $0000$a pt 54.0, 50.51 dir -.78, -.63
-  @b $0001$b pt -53.8, 57.22 dir .6, -.8
-  @c $0002$c pt -60.45, -115.34 dir .58, -.82
-  @d $0003$d pt -56.18, -53.28 dir .64, .77
-  @e $0004$e pt 36.48, -41.84 dir -.71, .7
-  @f $0005$f pt 87.27, -64.38 dir -.05, -1.0
-objects
-  @object $0006$object dyno arrow_wall unfloat_frame64 SHaap6myyd3Eof0.w,c
-```
-
-### 4.2 Sample Layout: `c_demo_derby.va0` (Boundary Polygon)
-Demolition derbies enforce strict boundary perimeters to determine ring-out penalties or contain the cars:
-```text
-ringout
-  bound0  -89.778, -41.138
-  bound1  -89.755, +0.912
-  bound2  -89.451, +47.458
-  bound3  -27.942, +46.894
-  bound4  -23.140, +42.369
-  bound5  -23.880, -36.324
-  bound6  -25.890, -41.916
-  ...
-```
-
-### 4.3 Static vs. Dynamic Entity Declaration
-- **`dyno` Prefix**: Objects instantiated with the `dyno` tag (e.g. `dyno cone`, `dyno fun_barrel`, `dyno arrow_wall`) are dynamically allocated as rigid bodies in the physical simulation world, capable of moving, tumbling, and interacting with car bumpers.
-- **Static Scenery**: Objects without the `dyno` tag (e.g. `Hay_Bale4`, tire barrier stacks, wooden fences) are compiled into the static collision tree (`track.bsc`) and do not move.
-
----
-
-## 5. Hub World Architecture (`HomeBase.trk`)
-
-The Hub World is the centerpiece of TDEOD's career mode:
-- **Scope**: Contains the rural town, Eve's diner, the junkyard repair yard, and the connecting arterial highways leading to all 15 venues.
-- **Sub-Layouts**:
-  - `c_home.va0`: Free-roam initialization, civilian car traffic density, and shop triggers.
-  - `c_gate1.val` & `c_gate2.val`: Venue access roadblocks. When a player has not unlocked a racing tier, heavy wooden/concrete barricades block the exit roads leading out of town.
-  - Highway Splines: `hiway.ild`, `malt_road.ild`, `train_road.ild` dictate civilian traffic behavior.
-- **Out-of-Bounds Reset Triggers**: `Trigger_ResetVehicle` oriented bounding boxes are placed along highway shoulders and entrance ramps. If a car's center of mass enters this volume during an unauthorized event, it is forcibly repositioned back onto the road.
-
-
-## research/wiki/physics_and_collision
-# Physics, Collision & Detachment Engine: Reverse Engineering Reference
-
-
-:::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/wiki/physics_and_collision.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `5b1e345a1b283a86b9ed0be6392c75a495b49d69de36d25d5ec6621bfd1c66b0`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
-## 1. Dual-Platform Memory Map Correlation
-
-The vehicle rigid body structures in memory are virtually identical between Microsoft Xbox (`default.xbe`) and Sony PlayStation 2 (`SLUS_209.10`), differing only by minor 4-byte padding offsets:
-
-| Attribute | Xbox Offset (`default.xbe`) | PS2 Offset (`SLUS_209.10`) | Type | Description & Value Range |
-|---|---|---|---|---|
-| Right Vector $\vec{R}$ | `car + 0x60..0x68` | `car + 0x64..0x6C` | `float[3]` | Normalized chassis lateral axis $(R_x, R_y, R_z)$ |
-| Up Normal $\vec{U}$ | `car + 0x6C..0x74` | `car + 0x70..0x78` | `float[3]` | Normalized chassis vertical axis $(U_x, U_y, U_z)$ |
-| Forward Vector $\vec{F}$| `car + 0x74..0x7C` | `car + 0x7C..0x84` | `float[3]` | Normalized chassis longitudinal axis $(F_x, F_y, F_z)$ |
-| Position Vector $\vec{P}$ | `car + 0x80..0x88` | `car + 0x88..0x90` | `float[3]` | World coordinates $(P_x, P_y, P_z)$ in meters |
-| Linear Velocity $\vec{V}$ | `car + 0x100..0x108`| `car + 0x104..0x10C`| `float[3]` | Linear velocity vector $(V_x, V_y, V_z)$ in m/s |
-| Angular Velocity $\vec{\omega}$| `car + 0x110..0x118`| `car + 0x114..0x11C`| `float[3]` | Yaw, pitch, and roll rate in rad/s |
-| Steering Ratio | `car + 0x1B6C` | `car + 0x1B6C` | `float` | Target steer angle: $[-1.0, +1.0]$ |
-| Throttle Input | `car + 0x1B7C` | `car + 0x1B70` | `float` | Accelerator pedal application: $[0.0, 1.0]$ |
-| Footbrake Input | `car + 0x1B74` | `car + 0x1B74` | `float` | 4-wheel deceleration torque: $[0.0, 1.0]$ |
-| Handbrake Input | `car + 0x1B78` | `car + 0x1B78` | `float` | Rear wheel lockup & drift trigger: $[0.0, 1.0]$ |
-| Chassis Mass Factor | `car + 0x1B88` | `car + 0x1B88` | `float` | Rigid body mass multiplier (default $1.0f$) |
-| Transmission Gear | `car + 0x1BB0` | `car + 0x1B90` | `int32_t` | `1` = Forward 1st..4th, `-1` = Reverse, `0` = Neutral |
-| AI / Human Controller Flag | `car + 0x1BDC` | `car + 0x1BDC` | `uint32_t` | `0` = Human Player, `1` = Autonomous AI Bot |
-| Structural Damage Ratio | `car + 0x1BEC` | `car + 0x1BEC` | `float` | $D \in [0.0, 1.0]$ ($1.0$ = totaled / wrecked) |
-
----
-
-## 2. Vehicle Driving Update & Top Speed Cap
-
-### 2.1 Forward Velocity Projection
-Every physics frame (60Hz fixed timestep), the engine evaluates forward speed by computing the dot product between the linear velocity vector and the forward heading vector:
-$$v_{\text{forward}} = \vec{V} \cdot \vec{F} = V_x F_x + V_y F_y + V_z F_z$$
-
-### 2.2 The Hardcoded 100 mph (44.44 m/s) Ceiling
-In the vanilla disassembly:
-- **Xbox (`0x000691F7` / `sub_00068DB0`)**:
-  ```x86
-  00069218: mov dword ptr [esp + 0x14], 0x3fc00000 ; 1.5f Force multiplier
-  ...
-  00069250: cmpss xmm0, dword ptr [0x002187D0]     ; 0x002187D0 = 44.4444427f m/s (100.0 mph)
-  00069258: jge   L_disengage_boost                ; CUT OFF BOOST IF SPEED >= 100 MPH!
-  ```
-- **PS2 (`0x0018F508` / `HumanDriver::DriveUpdate`)**:
-  ```mips
-  0018f508: lui   $at, 0x4231
-  0018f50c: ori   $at, $at, 0xC71D                 ; 0x4231C71D = 44.444447f m/s
-  0018f550: c.lt.s $f22, $f2                       ; compare forward speed ($f22) with 44.44 m/s
-  0018f558: bc1f  L_disengage_boost
-  ```
-
-### 2.3 Recomp Ceiling Expansion & Scaled Turbo
-In the modern recompiled runtime, this limit is lifted:
-$$v_{\text{cap}} = 44.444447\text{ m/s} \times \text{turbo\_scale}$$
-For `turbo_scale = 1.75f`, $v_{\text{cap}} \approx 77.78\text{ m/s}$ ($174.0\text{ mph}$), allowing high-velocity muscle cars to break free on straightaways.
-
----
-
-## 3. Collision Primitive Hierarchy
-
-Monster Games implements a hierarchical multi-primitive collision detection engine:
-
-```text
-                  Master Collision System
-                             |
-         +-------------------+-------------------+
-         |                                       |
-  Static World Polygon                    Dynamic Rigid Bodies
-   (track.bsc BSP Tree)                     (OBB & Primitives)
-                                                 |
-             +-----------+-----------+-----------+-----------+
-             |           |           |           |           |
-           Ring        Tube         Box        Sphere     Ragdoll
-         (Wheels)    (Axles)      (Body)     (Projectiles) (Drivers)
-```
-
-1. **`Box` (Oriented Bounding Box - OBB)**: Used for main car bodies, trailers, and shipping containers. Encodes center $\vec{C}$, half-extents $(e_x, e_y, e_z)$, and orientation matrix $(\vec{R}, \vec{U}, \vec{F})$.
-2. **`Ring` (Annulus Primitive)**: Used for wheels and tires to simulate ground contact, camber angles, and lateral scrub.
-3. **`Tube` (Cylindrical Capsule)**: Used for suspension arms, axles, and roll bars.
-4. **`Sphere` (Radial Bounding Sphere)**: Used for coarse broad-phase culling and projectile collision (`Ball` chicken mortar).
-5. **`Ragdoll` (Linked Jointed Bodies)**: Articulated multibody structure with joint angular limits.
-
----
-
-## 4. Detachment Mechanics & Physics Tasks (`phystask`)
-
-When a vehicle suffers a high-energy kinetic impact, the engine calculates the localized shear force:
-$$\vec{F}_{\text{impact}} = \frac{m_{\text{striker}} m_{\text{victim}}}{m_{\text{striker}} + m_{\text{victim}}} \frac{\Delta \vec{V}}{\Delta t}$$
-
-### 4.1 Detachment Pipeline
-1. If $\|\vec{F}_{\text{impact}}\| > \text{damage\_impulse}$ ($12,000\text{ N}$), the deformation bone in `Bone.val` undergoes plastic deformation, crinkling the local mesh vertices.
-2. If $\|\vec{F}_{\text{impact}}\| > \text{removal\_impulse}$ ($35,000\text{ N}$), the bone constraint is severed:
-   - Routine `0x00100F10` allocates a 68-byte detached rigid body instance.
-   - Constructor `0x000A3220` inherits the parent car's linear velocity plus an impact scatter impulse:
-     $$\vec{V}_{\text{detached}} = \vec{V}_{\text{car}} + \frac{\vec{F}_{\text{impact}}}{m_{\text{part}}} \times 0.25$$
-   - The detached part is registered into the active physical simulation pool (`0x0006BC20`: `"phystask: detaching at %d ticks!"`).
-3. **Vanilla Despawn Timer**: On Xbox/PS2, a 300-tick (~5.0 second) Time-To-Live countdown is started. When expired, the part is despawned. **In the modern recomp, this timer is completely bypassed to enable permanent debris fields.**
-
----
-
-## 5. Ballistic Projectiles & Explosive Shockwaves
-
-### 5.1 Projectile Kinematics (`Ball` Object, `0x228` bytes)
-The explosive chicken mortar ("Horn Mortar") spawns a `Ball` physical projectile with vtable at `0x003F9528`:
-$$\vec{V}_{\text{launch}} = \vec{V}_{\text{car}} + (0.707 \vec{F} + 0.495 \vec{U}) \times 24.89\text{ m/s}$$
-
-### 5.2 Radial Shockwave Detonation (`f_0017DA58`)
-Upon contact with any surface or vehicle bounding box:
-1. Detonation radius: $R_{\text{blast}} = 12.0\text{ meters}$.
-2. The engine iterates across all active cars $i \in [0, num\_cars - 1]$:
-   - Distance: $d = \|\vec{P}_{\text{car}} - \vec{P}_{\text{blast}}\|$.
-   - If $d \le R_{\text{blast}}$, attenuation factor:
-     $$\alpha = \left(1.0 - \frac{d}{R_{\text{blast}}}\right)^2$$
-   - Radial impulse vector applied at center of mass:
-     $$\vec{J}_{\text{shock}} = \alpha \times 45,000\text{ N}\cdot\text{s} \times \frac{\vec{P}_{\text{car}} - \vec{P}_{\text{blast}}}{d} + (0, 15000, 0)$$
-   - The vertical component $(0, 15000, 0)$ launches the affected vehicle into the air, initiating dynamic rolls.
-
----
-
-## 6. Physical Constraints: Springs & Hinge Joints
-
-To support custom modes (such as Shackled Sprint and The Sweeper), the engine's constraint solver resolves two primary joint types:
-
-### 6.1 Distance Spring Constraint (Hooke's Law with Damping)
-Between body A and body B with rest length $L_0$:
-$$d = \|\vec{P}_B - \vec{P}_A\|, \quad \hat{n} = \frac{\vec{P}_B - \vec{P}_A}{d}$$
-$$\vec{F}_{\text{spring}} = \begin{cases}
-k (d - L_0) \hat{n} + c ((\vec{V}_B - \vec{V}_A) \cdot \hat{n}) \hat{n} & \text{if } d > L_0 \\
-\vec{0} & \text{if } d \le L_0
-\end{cases}$$
-
-### 6.2 Angular Hinge Joint Constraint
-Constrains a body's position to pivot $(X_0, Y_0, Z_0)$ while integrating constant or accelerating angular velocity:
-$$\vec{\omega}(t) = \vec{\omega}_0 + \vec{\alpha} t$$
-$$\vec{V}_{\text{linear}} = \vec{\omega} \times (\vec{P} - \vec{P}_{\text{pivot}})$$
-This produces the continuous clock-hand sweep required for rotating obstacle hazards.
-
-
-## research/wiki/vehicles_and_models
-# Vehicles, Models & Damage Subsystem: Reverse Engineering Reference
-
-
-:::note Source and evidence
-Historical / cross-platform research. This historical / cross-platform source may mix Xbox addresses, PS2 addresses and proposed designs. It is not a verified PS2 implementation contract. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/wiki/vehicles_and_models.md` in `TDEOD RECOMP`. Repository HEAD: `7fba3ecfa0cb11ccdccd991b541bf7da03e82144`. Working-copy modifications: `no`. Source SHA-256: `81e607a906cf64dd3a99e7b74ddfac9956726a1e23bb01d9da4fa4c8ff85c993`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
-## 1. Complete Vehicle Roster
-
-*Test Drive: Eve of Destruction* features 32 distinct playable vehicles and 5 specialized trailer models, spanning lightweight compacts to heavy demolition utility vehicles:
-
-| Internal Code | Game Display Name | Vehicle Class | Vanilla Mass | Engine Type | Modding Archetype Role |
-|---|---|---|---|---|---|
-| `Algar.car` | "Algar" | Midsize Sedan | 2,800 lbs | V6 160 hp | Balanced Derby Contender |
-| `Ambulance.car`| "Ambulance" | Heavy Utility | 4,800 lbs | V8 Heavy | Ice Rink Sumo / Quarry Batter |
-| `Bat.car` | "Bat" | Compact Hatch | 1,750 lbs | Inline-4 | Agile Evasion Vehicle |
-| `Bite.car` | "Bite" | Small Coupe | 1,900 lbs | Inline-4 | Compact Agility |
-| `Boxer.car` | "Boxer" | Muscle Beater | 3,200 lbs | V8 220 hp | High Momentum Brawler |
-| `Bullet.car` | "Bullet" | Light Stocker | 2,100 lbs | Turbo I4 | Ejector Seat Bowling Dart |
-| `Bus.car` | "School Bus" | Super Heavy | 12,000 lbs| Diesel V8 | Trash Compactor Fat Kid / Sweeper Arm |
-| `Cockroach.car`| "Cockroach" | Compact | 1,600 lbs | Inline-4 | Trash Compactor Survivor |
-| `CopCar.car` | "Cop Car" | Pursuit Heavy | 3,800 lbs | Police V8 | Smokey & The Bandit Interceptor |
-| `Durand.car` | "Durand" | Classic Muscle | 3,400 lbs | Big Block V8| Patient Zero Survivor Muscle Car |
-| `Digit.car` | "Digit" | Micro Hatch | 1,500 lbs | 1.1L I4 | Lightweight Scramble |
-| `Fly.car` | "Fly" | Micro Hatch | 1,450 lbs | 1.0L I4 | The Sweeper Jumping Compact |
-| `Hearse.car` | "Hearse" | Super Heavy Wagon| 4,200 lbs | V8 High Torque| Patient Zero "Patient 0" Zombie Tank |
-| `Moth.car` | "Moth" | Compact Hatch | 1,650 lbs | 1.3L I4 | Trash Compactor Survivor |
-| `Outlaw.car` | "Outlaw" | Heavy Muscle | 3,600 lbs | Supercharged V8| Smokey & The Bandit Robber |
-| `Phantom.car` | "Phantom" | Premium Muscle | 3,500 lbs | 426 Hemi V8 | Patient Zero Muscle Survivor |
-| `Taxi.car` | "Taxi" | Yellow Cab | 3,100 lbs | V6 180 hp | Quarry Bowling Pin Vehicle |
-| `Trailer.car` | "Camp Trailer" | Towed Rigid Body| 1,800 lbs | Passive Hitch | Keanu's Revenge Hot Potato Bomb |
-| `BoatTrl.car` | "Boat Trailer" | Towed Rigid Body| 2,100 lbs | Passive Hitch | High-Speed Fishtail Hazard |
-
----
-
-## 2. Container Format: `.car` Architecture
-
-Each vehicle is packaged into an autonomous `0TSR` archive in `game/data/*.car`. Parsing `Algar.car` reveals its exact internal structure:
-
-```text
-Algar.car (0TSR Container)
-├── shadow1.mod        (3,840 bytes)  - Near-field planar shadow projection
-├── shadow2.mod        (1,824 bytes)  - Mid-field shadow polygon
-├── shadow3.mod        (420 bytes)    - Far-field low-poly shadow quad
-├── physics.val        (4,958 bytes)  - Powertrain, suspension & mechanical stats
-├── Low0.mod           (19,316 bytes) - LOD 0: High-detail cockpit & interior mesh
-├── Low1.mod           (224,376 bytes)- LOD 1: Full-detail chassis + 31 detachable parts
-├── Low2.mod           (174,852 bytes)- LOD 2: Medium-poly exterior with panel deformation
-├── Low3.mod           (46,496 bytes) - LOD 3: Low-poly body shell (23 parts)
-├── Low4.mod           (11,056 bytes) - LOD 4: Billboard/impostor distant mesh (10 parts)
-├── lod.val            (357 bytes)    - Distance thresholds for LOD mesh switching
-├── efx.val            (640 bytes)    - Particle attachment sockets (exhaust, radiator)
-├── Bone.val           (3,749 bytes)  - Skeletal deformation hierarchy bones
-└── Bone.mvl           (18,704 bytes) - Master vertex-bone binding matrix weights
-```
-
----
-
-## 3. Level of Detail (LOD) Hierarchy & Detachable Parts
-
-### 3.1 The Distance Transition Curve (`lod.val`)
-The camera evaluates Euclidean distance $d = \|\vec{P}_{\text{car}} - \vec{P}_{\text{camera}}\|$:
-```text
-low model base_tex algar.tex
-lod0  0    n   # 0 meters: Cockpit interior only (rendered in bumper/hood cam)
-lod1  10   y   # 0 - 10m: Full exterior model (31 detachable components)
-lod2  15   y   # 10 - 15m: Simplified suspension & subframes
-lod3  30   y   # 15 - 30m: Low-poly shell, non-detachable trim
-lod4  500  y   # 30 - 500m: Impostor cardboard mesh
-shadow 0 10 70 detail5 use min 1 scale 1.0 mirror 3
-```
-
-### 3.2 Detachable Component Hierarchy in `Low1.mod`
-The primary high-detail exterior model (`Low1.mod`) contains **31 independent sub-objects**, each bound to a deformation bone and physical constraint:
-- `hood` (front engine bonnet)
-- `trunk` (rear trunk lid)
-- `front_bumper` & `rear_bumper`
-- `fender_fl` & `fender_fr` (front left / right quarter panels)
-- `door_fl`, `door_fr`, `door_rl`, `door_rr` (all 4 doors)
-- `wheel_fl`, `wheel_fr`, `wheel_rl`, `wheel_rr` (all 4 wheels and hubs)
-- `radiator` (engine cooling core; detachment triggers coolant steam efx)
-- `windshield`, `rear_glass`, `side_glass_fl..rr` (breakable glass quads)
-- `exhaust_pipe` & `muffler`
-
----
-
-## 4. Mechanical Physics Parameters (`physics.val`)
-
-Each vehicle's mechanical identity is configured inside `physics.val`. These values are parsed at race launch into native memory structures:
-
-### 4.1 Chassis & Suspension
-```text
-mass 2800.0             # Mass in lbs (converted to kg: ~1,270 kg)
-grip 0.90               # Tire lateral friction coefficient mu
-damage_scale 1.0        # Multiplier on deformation strain
-width 75.0              # Track width in inches
-height 51.0             # Overall height in inches
-wheelbase 100.0         # Longitudinal wheel separation in inches
-cm_height 10.0          # Center of Mass height above axle centerline
-wheel_lock 35.0         # Maximum steering angle deflection (degrees)
-```
-
-### 4.2 Aerodynamics & Downforce
-```text
-drag 0.26               # Frontal aerodynamic drag coefficient Cd
-frontal_area 19.0       # Frontal projected area in sq ft
-lat_drag 0.90           # Lateral wind resistance (affects high-speed spins)
-vert_drag 2.0           # Vertical drag (limits jump flight times)
-fspoiler_lift 0.0       # Front downforce / lift
-rspoiler_lift 0.0       # Rear downforce / lift
-```
-
-### 4.3 Engine & Drivetrain
-```text
-power_max 160.0         # Peak horsepower
-torque_max 140.0        # Peak torque in lb-ft
-torque_rpm 4800         # RPM at which peak torque occurs
-redline 8600            # Engine rev limiter
-idle_speed 800          # Neutral idle RPM
-num_gears 4             # Forward gear count
-gear_ratios 7.00, 3.50, 2.50, 1.50, 1.00  # Transmission reduction ratios
-rear_end_ratio 3.73     # Final drive differential ratio
-clutch_torque 1600.0    # Clutch slip threshold
-```
-
-### 4.4 Impact Detachment Thresholds
-```text
-damage_impulse 12000.0  # Force in Newtons to trigger plastic bone crumple
-removal_impulse 35000.0 # Force in Newtons to sever constraint and detach part
-```
-
----
-
-## 5. Monster Games 3D Model Format (`.mod`)
-
-The `.mod` format is the native 3D mesh container used by both cars and track scenery:
-
-### 5.1 Binary Header Structure (`68 bytes`)
-```c
-struct ModHeader {
-    uint32_t num_submeshes;    // Number of independent submesh objects
-    uint32_t header_size;      // Size of header (always 68 / 0x44)
-    uint32_t format_version;   // Version (typically 1 or 5)
-    uint32_t total_data_size;  // Size of vertex, normal, and index buffers
-    float    sphere_center[3]; // Local bounding sphere center (X, Y, Z)
-    float    sphere_radius;    // Local bounding sphere radius
-    float    box_min[3];       // Axis-aligned bounding box min extents
-    float    box_max[3];       // Axis-aligned bounding box max extents
-    uint32_t reserved[4];      // Padding
-};
-```
-
-### 5.2 Submesh Vertex Stream Format
-Each submesh defines indexed triangle lists or strips:
-- **Position**: 3 × `float32` $(X, Y, Z)$
-- **Normal**: 3 × `float32` $(N_x, N_y, N_z)$ for Gouraud / normal lighting
-- **Diffuse Color**: 1 × `uint32_t` (ARGB32) used for vertex ambient occlusion
-- **UV Coordinates**: 2 × `float32` $(U, V)$ mapping into `.tex` texture sheets

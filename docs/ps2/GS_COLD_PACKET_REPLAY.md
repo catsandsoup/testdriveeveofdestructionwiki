@@ -3,14 +3,6 @@ tags: ["engine", "rendering", "ps2", "technical-reference"]
 ---
 # Clean-start GS packet replay
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/GS_COLD_PACKET_REPLAY.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `d381d54bc4a73be2f54e60a628d98e88adb88dde6eb98eb055c2c388de217aee`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Player outcome and scoped question
 
 The player still needs accurate native 1x/4:3 rendering at original game speed,

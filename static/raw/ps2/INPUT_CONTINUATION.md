@@ -1,13 +1,5 @@
 # Controller allocation and input routing
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/INPUT_CONTINUATION.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `e592610298880c51f9c03c9be47e0cf78d60785cf52bb6d6aa16f4f4dc776daa`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Player success
 
 With automatic assignment a first pad controls P1, a keyboard can join P2, and a

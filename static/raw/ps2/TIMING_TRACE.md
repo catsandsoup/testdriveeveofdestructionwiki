@@ -1,13 +1,5 @@
 # Motion and audio timing investigation
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/TIMING_TRACE.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `5a611823d71b98c248131e0fd17ab8ebebf4dc8106064f37164ef2f2ab7955da`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 **Player success first:** native 1x, original 4:3 and FrameSkip=0 must provide
 continuous car/world motion and audio through heavy carnage, including other
 cars on screen, at the original mode's intended cadence. Prompt wheel movement

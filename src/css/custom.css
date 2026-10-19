@@ -1,249 +1,207 @@
 /**
- * Test Drive: Eve of Destruction (PS2 Recomp)
- * Visual Theme: Industrial Demolition Derby, Brushed Steel, Rivets, Hazard Stripes, and DualShock 2 Accents
+ * Test Drive: Eve of Destruction — PS2 Recompilation Wiki Theme
+ * Authentic PS2 Racing & Technical Reverse-Engineering Aesthetic
+ * Dark graphite, brushed steel, deep crimson accents, and clean DualShock 2 iconography.
  */
 
 :root {
-  --ifm-color-primary: #f5a623;
-  --ifm-color-primary-dark: #e09418;
-  --ifm-color-primary-darker: #d48800;
-  --ifm-color-primary-darkest: #b36f00;
-  --ifm-color-primary-light: #f7b23e;
-  --ifm-color-primary-lighter: #f8bd58;
-  --ifm-color-primary-lightest: #fad28d;
-  --ifm-code-font-size: 92%;
+  --ifm-color-primary: #e5a93c;
+  --ifm-color-primary-dark: #cf9228;
+  --ifm-color-primary-darker: #c3871e;
+  --ifm-color-primary-darkest: #a16b0d;
+  --ifm-color-primary-light: #eac05c;
+  --ifm-color-primary-lighter: #ecc86c;
+  --ifm-color-primary-lightest: #f3dd9d;
 
-  --eod-hazard-yellow: #f5a623;
-  --eod-spray-yellow: #ffe600;
-  --eod-rust-orange: #ff5722;
-  --eod-brake-red: #d32f2f;
-  --eod-steel-border: #2e3544;
-  --eod-steel-dark: #12151b;
-  --eod-steel-plate: #181c24;
-  --eod-steel-light: #252b37;
-  --eod-asphalt-bg: #0b0d10;
-  --eod-text-bright: #f8fafc;
-  --eod-text-muted: #94a3b8;
-  --eod-glow-yellow: rgba(245, 166, 35, 0.45);
-  --eod-glow-red: rgba(211, 47, 47, 0.4);
+  --ps2-bg-darkest: #0c0e12;
+  --ps2-bg-surface: #14171e;
+  --ps2-bg-panel: #1b202a;
+  --ps2-bg-active: #222836;
+  --ps2-border: #262c38;
+  --ps2-border-light: #353e4f;
+
+  /* Authentic In-Game Menu Accents */
+  --ps2-menu-crimson: #8e1b1b;
+  --ps2-menu-crimson-hover: #a82424;
+  --ps2-gold: #e5a93c;
+  --ps2-silver: #cbd5e1;
+  --ps2-text-bright: #f1f5f9;
+  --ps2-text-muted: #8492a6;
 
   /* DualShock 2 Button Colors */
-  --ps2-cross: #5865f2;
-  --ps2-circle: #ef4444;
-  --ps2-square: #ec4899;
-  --ps2-triangle: #10b981;
+  --ps2-cross: #5c6bc0;
+  --ps2-circle: #ef5350;
+  --ps2-square: #ec407a;
+  --ps2-triangle: #26a69a;
 
-  --ifm-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --ifm-heading-font-family: 'Russo One', 'Impact', sans-serif;
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --ifm-heading-font-family: 'Russo One', -apple-system, BlinkMacSystemFont, sans-serif;
   --ifm-font-family-monospace: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --ifm-code-font-size: 88%;
 
-  /* Always dark derby theme */
-  --ifm-background-color: var(--eod-asphalt-bg);
-  --ifm-background-surface-color: var(--eod-steel-plate);
-  --ifm-navbar-background-color: var(--eod-steel-dark);
-  --ifm-footer-background-color: #07080a;
-  --ifm-font-color-base: #e2e8f0;
-  --ifm-heading-color: #f8fafc;
-  --ifm-link-color: var(--eod-hazard-yellow);
-  --ifm-link-hover-color: #ffc72c;
-  --ifm-menu-color-active: var(--eod-hazard-yellow);
-  --ifm-menu-color: #cbd5e1;
-  --ifm-hr-border-color: var(--eod-steel-border);
+  --ifm-background-color: var(--ps2-bg-darkest);
+  --ifm-background-surface-color: var(--ps2-bg-surface);
+  --ifm-navbar-background-color: #101319;
+  --ifm-footer-background-color: #080a0d;
+  --ifm-font-color-base: #d1d5db;
+  --ifm-heading-color: #f3f4f6;
+  --ifm-link-color: var(--ps2-gold);
+  --ifm-link-hover-color: #ffd24d;
+  --ifm-menu-color-active: var(--ps2-gold);
+  --ifm-menu-color: #9ca3af;
+  --ifm-hr-border-color: var(--ps2-border);
 }
 
-/* Force dark mode aesthetic across the site */
 html[data-theme='light'],
 html[data-theme='dark'] {
-  --ifm-background-color: var(--eod-asphalt-bg);
-  --ifm-background-surface-color: var(--eod-steel-plate);
-  --ifm-navbar-background-color: var(--eod-steel-dark);
-  --ifm-footer-background-color: #07080a;
-  --ifm-font-color-base: #e2e8f0;
-  --ifm-heading-color: #f8fafc;
-  --ifm-link-color: var(--eod-hazard-yellow);
-  --ifm-link-hover-color: #ffc72c;
-  background-color: var(--eod-asphalt-bg);
-  color: #e2e8f0;
+  --ifm-background-color: var(--ps2-bg-darkest);
+  --ifm-background-surface-color: var(--ps2-bg-surface);
+  --ifm-navbar-background-color: #101319;
+  --ifm-footer-background-color: #080a0d;
+  --ifm-font-color-base: #d1d5db;
+  --ifm-heading-color: #f3f4f6;
+  --ifm-link-color: var(--ps2-gold);
+  --ifm-link-hover-color: #ffd24d;
+  background-color: var(--ps2-bg-darkest);
+  color: #d1d5db;
 }
 
 body {
-  background-color: var(--eod-asphalt-bg);
-  background-image: 
-    radial-gradient(ellipse at 50% 0%, rgba(245, 166, 35, 0.06) 0%, transparent 70%),
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 100% 100%, 32px 32px, 32px 32px;
-  letter-spacing: -0.01em;
+  background-color: var(--ps2-bg-darkest);
+  color: #d1d5db;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
 /* ============================================================
-   NAVBAR: Heavy Industrial Steel Beam with Hazard Trim
+   NAVBAR: Clean PS2 Header with Dark Steel & Crimson Accent
    ============================================================ */
 .navbar {
-  background-color: var(--eod-steel-dark);
-  border-bottom: 2px solid var(--eod-steel-border);
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
-}
-
-/* Hazard diagonal stripes on bottom border of navbar */
-.navbar::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--eod-hazard-yellow),
-    var(--eod-hazard-yellow) 8px,
-    #12151b 8px,
-    #12151b 16px
-  );
-  z-index: 10;
+  background-color: #101319;
+  border-bottom: 1px solid var(--ps2-border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  padding: 0 1rem;
 }
 
 .navbar__brand {
   font-family: 'Russo One', sans-serif;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: #ffffff !important;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .navbar__title {
   color: #ffffff;
-  font-size: 1.15rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  font-size: 1.05rem;
 }
 
 .navbar__item {
-  font-family: 'Inter', sans-serif;
   font-weight: 600;
-  font-size: 0.88rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  letter-spacing: 0.3px;
+}
+
+.navbar__link {
+  color: #9ca3af;
+  transition: color 0.15s ease;
 }
 
 .navbar__link:hover,
 .navbar__link--active {
-  color: var(--eod-hazard-yellow) !important;
-  text-shadow: 0 0 10px var(--eod-glow-yellow);
+  color: #ffffff !important;
 }
 
 /* ============================================================
-   SIDEBAR: Metal Workshop Panel with Riveted Tabs
+   SIDEBAR: PS2 Menu Rail
    ============================================================ */
 .theme-doc-sidebar-container {
-  background-color: #0f1217 !important;
-  border-right: 1px solid var(--eod-steel-border) !important;
+  background-color: #0d1015 !important;
+  border-right: 1px solid var(--ps2-border) !important;
 }
 
 .menu__list {
-  padding: 12px 8px;
+  padding: 10px 6px;
 }
 
-/* Category headers */
 .menu__list-item-collapsible {
-  background: var(--eod-steel-plate);
-  border: 1px solid var(--eod-steel-border);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--ps2-border);
   border-radius: 4px;
-  margin-top: 10px;
-  margin-bottom: 4px;
-  padding: 2px 6px;
+  margin-top: 8px;
+  margin-bottom: 3px;
+  padding: 3px 8px;
   font-family: 'Russo One', sans-serif;
-  font-size: 0.82rem;
-  letter-spacing: 0.8px;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  position: relative;
-  transition: border-color 0.2s;
+  color: #94a3b8;
 }
 
 .menu__list-item-collapsible:hover {
-  border-color: var(--eod-hazard-yellow);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
 }
 
 .menu__link {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 500;
-  border-radius: 3px;
-  padding: 6px 10px;
-  margin: 2px 0;
-  color: #cbd5e1;
-  transition: all 0.15s ease;
+  border-radius: 4px;
+  padding: 5px 10px;
+  margin: 1px 0;
+  color: #9ca3af;
+  transition: all 0.12s ease;
 }
 
-/* In-game PS2 menu active button effect */
+/* Selected menu item inspired by PS2 game menu item plate */
 .menu__link--active {
-  background: linear-gradient(90deg, rgba(245, 166, 35, 0.2) 0%, rgba(245, 166, 35, 0.05) 100%) !important;
-  color: var(--eod-spray-yellow) !important;
-  font-weight: 700;
-  border-left: 3px solid var(--eod-hazard-yellow);
-  text-shadow: 0 0 8px rgba(255, 230, 0, 0.5);
-  box-shadow: inset 0 0 12px rgba(245, 166, 35, 0.1);
+  background: var(--ps2-menu-crimson) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .menu__link:hover:not(.menu__link--active) {
   background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
-  transform: translateX(3px);
 }
 
 /* ============================================================
-   TYPOGRAPHY & HEADINGS: Racing Stencil & Distressed Metals
+   TYPOGRAPHY & HEADINGS
    ============================================================ */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Russo One', 'Impact', sans-serif;
-  letter-spacing: 0.5px;
+  font-family: 'Russo One', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.3px;
   color: #f8fafc;
 }
 
 h1 {
-  font-size: 2.2rem;
-  border-bottom: 2px solid var(--eod-steel-border);
+  font-size: 2rem;
+  border-bottom: 1px solid var(--ps2-border);
   padding-bottom: 12px;
   margin-bottom: 24px;
-  position: relative;
-}
-
-h1::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 90px;
-  height: 2px;
-  background: var(--eod-hazard-yellow);
-  box-shadow: 0 0 8px var(--eod-hazard-yellow);
 }
 
 h2 {
-  font-size: 1.6rem;
-  margin-top: 36px;
-  color: var(--eod-spray-yellow);
-  text-transform: uppercase;
+  font-size: 1.45rem;
+  margin-top: 32px;
+  margin-bottom: 14px;
+  color: #f1f5f9;
 }
 
 h3 {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
+  margin-top: 24px;
   color: #e2e8f0;
 }
 
 /* ============================================================
-   CALLOUTS & ADMONITIONS: Stamped Steel & Hazard Borders
+   CALLOUTS & ADMONITIONS: Refined Technical Cards
    ============================================================ */
 .alert {
-  background-color: var(--eod-steel-plate) !important;
-  border: 1px solid var(--eod-steel-border) !important;
-  border-left: 4px solid var(--ifm-color-primary) !important;
+  background-color: var(--ps2-bg-surface) !important;
+  border: 1px solid var(--ps2-border) !important;
+  border-left: 3px solid #64748b !important;
   border-radius: 4px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-  position: relative;
+  padding: 14px 18px;
+  margin: 18px 0;
 }
 
 .alert--info {
@@ -251,263 +209,147 @@ h3 {
 }
 
 .alert--note {
-  border-left-color: var(--eod-hazard-yellow) !important;
+  border-left-color: var(--ps2-gold) !important;
 }
 
 .alert--warning,
 .alert--caution {
-  border-left-color: var(--eod-rust-orange) !important;
+  border-left-color: #f97316 !important;
 }
 
 .alert--danger {
-  border-left-color: var(--eod-brake-red) !important;
+  border-left-color: #ef4444 !important;
 }
 
 /* ============================================================
-   CODE BLOCKS: Brushed Dark Steel with PS2 Memory Feel
+   CODE BLOCKS & MONOSPACE
    ============================================================ */
 pre, .theme-code-block {
-  background-color: #080a0d !important;
-  border: 1px solid var(--eod-steel-border) !important;
-  border-radius: 6px !important;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+  background-color: #080a0e !important;
+  border: 1px solid var(--ps2-border) !important;
+  border-radius: 5px !important;
 }
 
 code {
-  background-color: #1a1e28;
-  border: 1px solid #2e3646;
-  color: var(--eod-spray-yellow);
+  background-color: #161922;
+  border: 1px solid #282f3d;
+  color: #f1f5f9;
   padding: 2px 6px;
   border-radius: 3px;
-  font-size: 88%;
+  font-size: 86%;
 }
 
 /* ============================================================
-   TABLES: Industrial Speedway Spec Sheet
+   TABLES: Clean Technical Spec Grid
    ============================================================ */
 table {
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
   width: 100%;
-  border: 1px solid var(--eod-steel-border);
-  border-radius: 6px;
-  overflow: hidden;
-  background-color: var(--eod-steel-plate);
-  margin: 20px 0;
+  border: 1px solid var(--ps2-border);
+  border-radius: 4px;
+  background-color: var(--ps2-bg-surface);
+  margin: 18px 0;
 }
 
 th {
-  background-color: #12151c;
-  color: var(--eod-hazard-yellow);
+  background-color: #0f1218;
+  color: #f8fafc;
   font-family: 'Russo One', sans-serif;
-  font-size: 0.85rem;
-  letter-spacing: 0.8px;
+  font-size: 0.82rem;
+  letter-spacing: 0.4px;
   text-transform: uppercase;
-  border-bottom: 2px solid var(--eod-steel-border);
-  padding: 12px 16px;
+  border-bottom: 1px solid var(--ps2-border-light);
+  padding: 10px 14px;
+  text-align: left;
 }
 
 td {
-  padding: 10px 16px;
-  border-bottom: 1px solid rgba(46, 53, 68, 0.6);
-  font-size: 0.92rem;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--ps2-border);
+  font-size: 0.9rem;
 }
 
 tr:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: rgba(255, 255, 255, 0.015);
 }
 
 tr:hover {
-  background-color: rgba(245, 166, 35, 0.05);
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 /* ============================================================
-   CUSTOM PS2 & DERBY COMPONENTS
+   PS2 DUALSHOCK 2 BUTTON PROMPTS
    ============================================================ */
-
-/* DualShock 2 Button Badges */
 .ps2-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: #181b22;
-  border: 2px solid #3b4252;
-  font-family: -apple-system, sans-serif;
-  font-weight: 900;
-  font-size: 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.15);
-  margin: 0 4px;
+  background: #171a22;
+  border: 1.5px solid #374151;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  margin: 0 3px;
   vertical-align: middle;
   line-height: 1;
 }
 
 .ps2-btn.cross {
   color: var(--ps2-cross);
-  border-color: rgba(88, 101, 242, 0.5);
-  text-shadow: 0 0 6px rgba(88, 101, 242, 0.7);
+  border-color: #3b4252;
 }
 
 .ps2-btn.circle {
   color: var(--ps2-circle);
-  border-color: rgba(239, 68, 68, 0.5);
-  text-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
+  border-color: #3b4252;
 }
 
 .ps2-btn.square {
   color: var(--ps2-square);
-  border-color: rgba(236, 72, 153, 0.5);
-  text-shadow: 0 0 6px rgba(236, 72, 153, 0.7);
+  border-color: #3b4252;
 }
 
 .ps2-btn.triangle {
   color: var(--ps2-triangle);
-  border-color: rgba(16, 185, 129, 0.5);
-  text-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
+  border-color: #3b4252;
 }
 
-.ps2-badge {
+/* PS2 Pill Badges */
+.ps2-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 4px;
-  background: #11141a;
-  border: 1px solid var(--eod-steel-border);
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: #12151c;
+  border: 1px solid var(--ps2-border);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-size: 0.76rem;
   color: #94a3b8;
+  font-weight: 600;
 }
 
-.ps2-badge.primary {
-  border-color: var(--eod-hazard-yellow);
-  color: var(--eod-hazard-yellow);
-  background: rgba(245, 166, 35, 0.08);
-}
-
-.ps2-badge.ps2 {
+.ps2-pill.ps2 {
+  background: rgba(0, 67, 156, 0.12);
   border-color: #00439c;
   color: #60a5fa;
-  background: rgba(0, 67, 156, 0.15);
 }
 
-/* 3D Angled Metal Action Buttons */
-.eod-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(180deg, #2b323f 0%, #171b22 100%);
-  border: 1px solid #4a5568;
-  color: #ffffff !important;
-  font-family: 'Russo One', sans-serif;
-  font-size: 0.95rem;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 10px 20px;
-  border-radius: 4px;
-  transform: skewX(-6deg);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  cursor: pointer;
-  text-decoration: none !important;
-}
-
-.eod-btn > * {
-  transform: skewX(6deg);
-}
-
-.eod-btn:hover {
-  background: linear-gradient(180deg, #f5a623 0%, #d48800 100%);
-  border-color: #ffd000;
-  color: #000000 !important;
-  box-shadow: 0 0 20px rgba(245, 166, 35, 0.5), 0 4px 12px rgba(0, 0, 0, 0.8);
-  transform: skewX(-6deg) translateY(-2px);
-}
-
-.eod-btn:active {
-  transform: skewX(-6deg) translateY(1px);
-}
-
-/* Secondary Caution-striped Button */
-.eod-btn.secondary {
-  background: #15181f;
-  border-color: var(--eod-steel-border);
-  color: var(--eod-hazard-yellow) !important;
-}
-
-.eod-btn.secondary:hover {
-  background: #1f2530;
-  border-color: var(--eod-hazard-yellow);
-  color: #ffffff !important;
+.ps2-pill.active {
+  background: rgba(229, 169, 60, 0.12);
+  border-color: var(--ps2-gold);
+  color: var(--ps2-gold);
 }
 
 /* ============================================================
-   CRT SCREEN SCANLINE FILTER (TOGGLEABLE)
-   ============================================================ */
-.crt-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 9999;
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
-  ), linear-gradient(
-    90deg,
-    rgba(255, 0, 0, 0.03),
-    rgba(0, 255, 0, 0.01),
-    rgba(0, 0, 255, 0.03)
-  );
-  background-size: 100% 4px, 6px 100%;
-  opacity: 0.75;
-}
-
-/* ============================================================
-   FOOTER: Demolition Derby Pit Lane
+   FOOTER
    ============================================================ */
 .footer {
   background-color: var(--ifm-footer-background-color) !important;
-  border-top: 2px solid var(--eod-steel-border);
-  position: relative;
-  padding: 30px 20px;
-}
-
-.footer::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: repeating-linear-gradient(
-    -45deg,
-    var(--eod-hazard-yellow),
-    var(--eod-hazard-yellow) 8px,
-    #07080a 8px,
-    #07080a 16px
-  );
-}
-
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: #0b0d10;
-}
-::-webkit-scrollbar-thumb {
-  background: #232936;
-  border: 1px solid #363f52;
-  border-radius: 2px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--eod-hazard-yellow);
+  border-top: 1px solid var(--ps2-border);
+  padding: 32px 20px;
+  font-size: 0.85rem;
 }

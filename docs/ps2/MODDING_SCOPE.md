@@ -3,14 +3,6 @@ tags: ["engine", "modding-and-formats", "ps2", "technical-reference"]
 ---
 # Modding Scope: Test Drive: Eve of Destruction (feasibility study)
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/MODDING_SCOPE.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `ccf449cc8ed3dbe165494d00f7e6f166a505f58a0c80f65e876fe78fc1b94385`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 ## Scope and evidence
 
 This page records format, data, and implementation feasibility findings for the PS2 version. Claims marked as guesses remain unverified; platform-specific evidence is identified per section.

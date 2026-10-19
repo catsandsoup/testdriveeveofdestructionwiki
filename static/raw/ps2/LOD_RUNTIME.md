@@ -1,13 +1,5 @@
 # Car LOD runtime experiment
 
-
-:::note Source and evidence
-PS2 implementation notes. Preserve each claim’s original evidence limits. Static disassembly, CPU tests, proposals and live gameplay validation are different evidence levels. See [Battle recovery](/ps2/BATTLE_RECOVERY) for the current native weapon contract.
-
-Source: `docs/LOD_RUNTIME.md` in `eod-recomp`. Repository HEAD: `ca02894975eae91f50f5f307c6af58bc4a225e87`. Working-copy modifications: `no`. Source SHA-256: `e9abdf8bf6335b07fa2f774afc76ba8aef11b7e77c67fb5c01fdb610570c1863`. Imported 2026-10-19. Addresses belong only to the platform/revision identified in the source; do not transfer Xbox addresses to PS2.
-:::
-
-
 2026-10-16. Full Mac build and runtime traces now verify the first bounded
 experiment. Two headless/muted 5000-vblank two-player runs completed with exit0;
 all20 loaded car tables validated in baseline and multiplier2. The tables logged

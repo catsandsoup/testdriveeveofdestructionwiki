@@ -101,9 +101,9 @@ module.exports = {
         {
           title: 'Machine Retrieval',
           items: [
-            { label: 'Structured Knowledge Index (JSON)', href: '/knowledge-index.json' },
-            { label: 'LLM Retrieval Entry Point', href: '/llms.txt' },
-            { label: 'Full Markdown Corpus', href: '/llms-full.txt' },
+            { label: 'Structured Knowledge Index (JSON)', href: 'pathname:///knowledge-index.json' },
+            { label: 'LLM Retrieval Entry Point', href: 'pathname:///llms.txt' },
+            { label: 'Full Markdown Corpus', href: 'pathname:///llms-full.txt' },
             { label: 'Subsystem Tags', to: '/tags' },
           ],
         },
