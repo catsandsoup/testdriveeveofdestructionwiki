@@ -44,7 +44,7 @@ for group, repo, label in [('ps2', args.ps2, 'PS2 implementation notes'), ('rese
     if not repo:
         continue
     for source in sorted((repo / 'docs').rglob('*.md')):
-        if source.name in {'CODEX_HANDOFF.md', 'STATUS.md', 'DEVELOPER_HANDOFF.md', 'PLAYER_JOURNEY.md', 'PLAYER_SUCCESS_AND_STAR.md', 'MODDING_IDEAS.md', 'mod_tools_roadmap.md', 'native-ai-research.md', 'native-weapon-tests.md'} or 'superpowers' in source.parts:
+        if source.name in {'ASSET_PIPELINE_RECOVERY.md', 'CODEX_HANDOFF.md', 'STATUS.md', 'DEVELOPER_HANDOFF.md', 'PLAYER_JOURNEY.md', 'PLAYER_SUCCESS_AND_STAR.md', 'MODDING_IDEAS.md', 'mod_tools_roadmap.md', 'native-ai-research.md', 'native-weapon-tests.md'} or 'superpowers' in source.parts:
             continue
         entries.append((source, root / 'docs' / group / source.relative_to(repo / 'docs'), repo, label))
 def sanitize(text, source):

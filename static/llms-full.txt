@@ -1,3 +1,52 @@
+## ps2/AUDIO_FORMAT_NOTES
+# PSS audio framing and codec evidence
+
+Player success: exported movie WAVs retain the source channel order, sample
+values and duration, and play clearly. Byte/format checks establish the first
+three properties; listening against the original remains a separate acceptance.
+
+The old extractor treated all movie sound as ADPCM and retained the repeated
+four-byte private-stream header after the first PES. Retail DERBBA, COMPACT and
+CHAIN use standard Sony SShd codec **1 (PCM16LE)**, not ADPCM: 48,000 Hz, two
+channels, 512-byte channel interleave. Every observed private PES begins
+`ff a0 00 00`, which is transport framing, not an audio sample.
+
+Reuse/format reference: vgmstream `src/meta/sshd.c`, revision
+[`f7f764155b227f683adbab25402fe8f2be0b2ec2`](https://github.com/vgmstream/vgmstream/blob/f7f764155b227f683adbab25402fe8f2be0b2ec2/src/meta/sshd.c)
+identifies standard codec 1 as PCM16LE and codec 0x10 as PS-ADPCM. Its interleave
+layout and sample-count treatment corroborate the native AutoDMA reader in
+`runtime/iop/spu2.cpp`. This tool retains the existing ADPCM decoder for 0x10 and
+adds direct PCM handling, rather than applying ADPCM to unknown bytes. Context7
+was consulted for FFmpeg demux information; its results did not establish this
+Sony substream's codec mapping, so the actual format-specific source above and
+retail headers are the decisive evidence.
+
+The bounded supported scope is MPEG-2 PES, the observed four-byte private
+substream framing, standard 24-byte SShd header plus SSbd, mono/stereo,
+PCM16LE or PS-ADPCM, and complete channel-interleave blocks. Other codec/header
+variants, truncated packets and inconsistent declared extents fail explicitly.
+Packet boundaries may split Sony headers or channel data. The demuxer skips
+whole non-audio PES payloads, preventing embedded start-code bytes in video
+from being mistaken for audio packets. No media bytes are stored in Git.
+
+On 2026-10-20, all six audio tests passed with the optional owner-supplied DERBBA
+fixture enabled. Synthetic tests cover exact signed PCM values and channel
+order across PES boundaries, mono WAV metadata, exact simple ADPCM samples,
+unsupported codecs and malformed/truncated extents. Retail in-memory decoding
+produced these declared PCM byte counts (all 48 kHz stereo):
+
+| Source | PCM bytes | Stereo frames |
+| --- | ---: | ---: |
+| DERBBA.PSS | 12,024,832 | 3,006,208 |
+| COMPACT.PSS | 11,672,576 | 2,918,144 |
+| CHAIN.PSS | 12,205,056 | 3,051,264 |
+
+Run portable tests with `python3 -m unittest tools.tests.test_audio -v`. Enable
+`EOD_TEST_RETAIL_AUDIO=1` to check the owner's DERBBA file; `EOD_DISC_DATA` may
+select a separate DATA directory. Tests run on the CPU, without playing sound
+or launching the game. They do not establish every PSS variant or audible parity.
+
+
 ## ps2/BATTLE_NAVIGATION
 # Experimental Battle navigation
 
@@ -485,6 +534,17 @@ masks; the adjacent bytes must remain unchanged. The full career cheat
 `0x002B6DB8` is not called because it also changes money, vehicles and
 career state. With `UnlockAll=false`, these fields are left to native progression.
 
+**October 20 correction:** prize/feat masks alone do not open the separate
+points-gated track roster. A rendered Welch probe remained padlocked with all
+seven prize bytes set. Native `0x0012CC40` checks points or an explicit row flag
+in the roster at `0x003CBF48`; `0x0012CAB8` sets the flag at
+`0x003CBF58 + index*0x10`, and loader `0x0012C940` caps the roster at 32.
+Default `UnlockAll=1` now mirrors those native bounded flags every vblank too,
+for ordinary launches and optional catalogs. Names, points thresholds, adjacent
+fields, money and season state remain intact. `UnlockAll=0` preserves the loaded
+flags. See [optional gameplay recovery](OPTIONAL_GAMEPLAY_MODS.md) for regression
+and live acceptance evidence.
+
 Home's `hidden=until_career_done` gate uses
 `0x002C71B0 → 0x002E0AF8 → 0x00205368(7)` and the feat masks. Home has a
 native multiplayer Battle descriptor in `homebase_eves.val`,
@@ -682,116 +742,163 @@ on Home/Woodly and full mixed/solo matches after such a change.
 
 
 ## ps2/CUSTOM_VEHICLE_PIPELINE
-# Custom Vehicle Decompilation, Recompilation & Injection Pipeline
+# Custom vehicle and asset tools
 
-This document describes the complete reverse-engineered pipeline used to decompile, modify, recompile, and inject custom vehicles into **Test Drive: Eve of Destruction** (NTSC-U, `SLUS_209.10`), including custom 3D model bindings, high-resolution textures, physics attributes, career dealership availability, and AI driver rosters.
+## Player acceptance, defined before this recovery
 
----
+The player can select a renamed, retextured car with changed specs in Arcade and
+Career in its chosen native class (Midsize by default), navigate other classes
+without a panic, and race against AI
+using that chassis. Required evidence is the built resource tables plus a current
+headless startup/selection/race test and visible, hands-on menu/driving checks.
+Asset tests alone do not establish this experience. Original retail assets remain
 
-## 1. Pipeline Architecture & Tooling
 
-The native vehicle toolchain operates across four asset layers:
+## Supported workflow
 
-```mermaid
-flowchart TD
-    A["Original Disc / ISO"] -->|rst0.py| B["0TSR Archives (.car, .res, .trk)"]
-    B -->|valt.py| C["VALT Binary Tables (.val, .va0, .mvl)"]
-    B -->|tex.py| D["PS2 GS Textures (.tex, .tm0)"]
-    B -->|modl.py| E["MODL 3D Meshes (.mod)"]
-
-    C -->|Custom Specs| F["Custom Car Package (PHANTOM.CAR)"]
-    D -->|Custom Livery| F
-    E -->|Retextured LODs| F
-
-    F -->|VFS Mod Overlay| G["Game Engine Runtime (eod)"]
-    C -->|Roster & Dealer Injection| H["COMMON.RES, CT.RES, UICAR.RES"]
-    H -->|VFS Mod Overlay| G
+```sh
+python3 tools/create_custom_car.py \
+  --disc-data "$HOME/Library/Application Support/TDEODRecomp/disc/DATA" \
+  --output mods/phantom --name Phantom --base Algar --class midsize
+EOD_MOD_DIR="$PWD/mods/phantom" ./build-mac/eod \
+  --data "$HOME/Library/Application Support/TDEODRecomp/disc"
 ```
 
-### 1.1 Archive Container: `0TSR` (`tools/rst0.py`)
-* **Format:** Container format used for `.car`, `.res`, and `.trk` archives.
-* **Header Structure (0x28 bytes):**
-  * Magic: `0TSR`
-  * Version: `6` (PS2 retail)
-  * Directory Offset: `0x80`
-  * Header CRC: Computed via native polynomial `0x04C11DB7` (table at `0x003F2598` in `SLUS_209.10` / `f_00135FC8`).
-* **Alignment Rule:** Entries are aligned to `0x80` byte boundaries (`cur_offset + ((sz + 0x80) & ~0x7F)`).
-* **FourCC Byte Order:** Padded with trailing space before little-endian reversal (`b' XET'` $\rightarrow$ `0x54455820` for `TEX`).
+`EOD_MOD_DIR` explicitly selects a single overlay. Only enable it when testing the
+package; normal native baseline testing should leave it unset. Do not combine
+independently generated COMMON.RES overlays: each replaces the entire archive.
 
-### 1.2 Table Compiler: `VALT` (`tools/valt.py`)
-* **Format:** Hierarchical key/value string dictionary format (`.val`, `.va0`, `.mvl`, `.pln`).
-* **Structure:** Header specifying section counts, section descriptors (with name offset, parent offset, and pair count), pair key/value string offsets, followed by the null-terminated string pool.
-* **Bi-directional Support:** Compiles between raw binary and human-editable JSON/INI formats with 100% logical equivalence.
+The native chassis-class lookup `f_00164218` tests Compact, then Midsize,
+Muscle and Special; each successful membership branches directly to its return
+(`gen/rec_016.c`, native returns 0/1/2/3). Registering one chassis name in three
+lists therefore silently makes it Compact. The builder now accepts **exactly
+one class**, defaults to Midsize to address the original P0 carousel request,
+and the GUI uses a single class choice. To target other classes, generate a
+separate uniquely named chassis variant with `--class compact` or `--class muscle`
+and select its overlay independently. Independently built COMMON.RES files
+cannot be combined by copying over one another. Supporting all three classes
+simultaneously would require one coordinated overlay containing distinct chassis
+identities; that broader multi-variant workflow is not implemented.
 
-### 1.3 Texture Converter: `TEX` (`tools/tex.py`)
-* **Format:** PS2 GS-swizzled palettized textures (`PSMT8` 8-bit index + 256-color RGBA palette).
-* **Swizzling Algorithm:** Implements the PS2 Graphics Synthesizer page/block/column address translation tables (`blockTable8[4][8]` and `columnTable8[16][16]`).
-* **Conversion:** Bidirectional conversion between standard RGBA PNGs and PS2 `.tex` / `.tm0` files.
+The builder clones the retail chassis geometry, generates a procedural livery,
+rebinds its verified retail body texture identifiers, changes physics, adds class/stats/dealer/AI records, and
+packages PHANTOM.CAR, COMMON.RES, CT.RES and UICAR.RES. It builds in a temporary
+directory before copying a successful package into the selected output directory.
+It checks racing-number collisions against retail drivers/dealer entries; the
+selected number and the adjacent dealer number must both be free. Default racer
+number is 777 and dealer number 778. Body/thumbnail resource IDs follow the chosen
+racer number. Existing AI racers retain their own unique racing numbers.
+The paint carousel previews use each actual driver/dealer number (for the
+default package, 199, 296, 777 and 778); all receive custom UICAR previews.
+The preview is a procedural number-card placeholder with the custom livery
+colors and number, not an authored car cutout or rendered model thumbnail.
+The Basher field in the selection screen is the player nickname, independent
+of chassis and paint selection.
 
-### 1.4 Model Retexturer & Geometry Tool: `MODL` (`tools/modl.py`)
-* **Format:** 3D model container holding PS2 VU1 / `SPS4` VIF packet geometry, collision bounding boxes, and material definitions.
-* **Retexturing:** Scans material header records and safely updates string table references to bind mesh parts to new texture identifiers (e.g. `Algar.tex` $\rightarrow$ `Phantom.tex`) across all LOD levels (`Low0.mod` to `Low4.mod`).
-* **OBJ / JSON Export:** Exports geometry part bounding envelopes, transforms, and hierarchy into standard Wavefront `.obj` and `.json` for DCC inspection.
+`python3 tools/eod_mod_gui.py` exposes name, base chassis, class selection,
+performance, body color, stripe style, price, and description. The body-material
+map is checked against actual Low1.mod fields (for example Ocelot uses ocey.tex),
+with cockpit/engine/detail textures preserved. Exterior Low1–Low4 require actual
+replacements; cockpit-only Low0 models can remain unchanged. All actual Low*.mod
+files are examined; Prince distant Low5/Low6 use the verified arrow.tex body alias. It requires a Python
+installation with Tk. UI worker results return through a main-thread queue.
+The Gameplay tab writes recognized runtime keys to the native macOS configuration,
+`~/Library/Application Support/TDEODRecomp/eod.ini` (or `build-mac/eod.ini` on other
+platforms). It displays that path; changes apply on the next launch. The Career money action asks the player to choose a save and close the game.
+It calls the existing native `--save-edit` CLI on a disposable copy, verifies
+checksum and career presence, edits money, independently reloads and verifies
+the result, then keeps an original backup and atomically replaces the selected
+save. Invalid/missing-career inputs or failed verification preserve the original.
+Barrier removal/reload-delay controls remain disabled.
+The GUI has import/config smoke coverage, but this recovery has not visually
+validated the native Tk window or its complete interaction flow.
 
-### 1.5 Audio & Music Toolchain (`tools/audio.py`)
-* **Sound Effects (`SFX0`):** Decompiles and compiles `.sfx` sound effect banks to/from standard 16-bit mono PCM WAV files. Encodes/decodes SPU2 ADPCM blocks (16 bytes per block, 28 samples, hardware linear predictor filters).
-* **Speech Banks (`SPEECH.BNK`):** Unpacks and repacks indexed voice line sound banks with 0x800-byte (2048-byte) sector alignment and JSON cue manifests.
-* **Music Streams (`.pss`):** Demuxes MPEG-2 Program Stream audio from Private Stream `0xBD` (`SShd`/`SSbd` headers) with 512-byte channel interleave, converting 48kHz stereo ADPCM directly into standard `.wav` audio.
+## Format coverage and limits
 
-### 1.6 Track & AI Spline Toolchain (`tools/trk.py`)
-* **Container:** Track archives (`.trk`) use the `0TSR` container format holding meshes (`track.grf`), collision solids (`track.sol`), and AI racing splines (`*.ild`).
-* **AI Racing Lines (`ILIN` / `*.ild`):** Decompiles native 3D spline waypoint arrays (node coordinates, velocity limits, left/right track boundary widths, banking angles) into editable JSON and 3D Wavefront OBJ ribbon meshes. Compiles edited JSON back into binary `.ild` files for custom AI racing behaviors.
-* **Track Solid Collision (`SOBL` / `track.sol`):** Decompiles oriented bounding box collision primitives into JSON and OBJ wireframes for collision inspection and tuning.
-* **Track Retexturing:** Retextures track scenery `.mod` models and `.grf` resources for custom track visuals.
+| Tool | Verified scope | Limit |
+| --- | --- | --- |
+| `rst0.py` | EOD 0TSR v6 archive extraction/packing; CRC; safe resized-entry layout | Unedited v6 roundtrip preserves original non-payload bytes in manifest `original_layout` and can be byte exact. Edited archives are re-laid out; v2 packing is explicitly unsupported. |
+| `valt.py` | EOD v11 section/key/value parsing and compilation | Logical equivalence, not byte-exact string-pool layout. v6 parsing exists; v6 compilation rejects explicitly. |
+| `tex.py` | Indexed PS2 compact-upload textures with native linear small-mip tails; RGBA PNG conversion | Dimensions must be powers of two from 16 to 1024, with height≤2×width; taller shapes reject as unverified. PNG input must be noninterlaced 8-bit RGBA. Compilation quantizes to 256 colors, regenerates mips; it is not a lossless general texture compiler. Visual retail parity remains unverified. |
+| `modl.py` | MODL metadata, bounded texture-field edits, JSON export, bounds OBJ | OBJ contains one bounding box, not decoded VIF mesh geometry. No arbitrary mesh importer/compiler exists. |
+| `audio.py` | Mono SFX/WAV, SPU2 ADPCM codec, speech bank interfaces, stereo PSS extractor | ADPCM is lossy. Rate conversion is rejected; resample externally. Speech compilation requires mono 22050-Hz cues. General PSS demux parity is not established. |
+| `trk.py` | EOD ILIN lines and SOBL collision inspection; see NASCAR handoff | No full track geometry compiler or proven cross-game geometry/physics conversion. |
 
----
+See TEXTURE_FORMAT_NOTES.md for the repaired native upload contract, retail
+header/reference-pixel evidence, and independent CPU GS oracle.
 
-## 2. In-Game Integration & Registration
+The tools preserve existing SPS4/VIF geometry bytes when retexturing. They do
+**not** satisfy the original request for a general, 1:1 mesh decompiler/compiler.
+A bounds OBJ must never be presented as the game's actual exported mesh.
 
-To make a custom vehicle fully playable and driven by AI racers, five resource tables in `COMMON.RES` and two UI bundles must be updated:
+The original package draft incorrectly described `catalog.val` as a vehicle
+name/biography catalog. Inspection of the retail table finds nine upgrade
+sections (engine, suspension, exhaust across three classes), with no per-car
+identity schema. The supported vehicle identity and dealer biography are the
+existing `chassis` and `desc` fields of `buycar.val` car records; the builder writes
+them and regression tests assert their contents. LOCALE.RES contains no Algar
+name mapping. Custom chassis names are limited to eight characters for native
+ISO lookup; long retail base names use the native six-character `_1` mapping.
+Full visible menu display and AI behavior still require runtime evidence.
 
-| Resource Table | Target Section | Effect / Integration Contract |
-| :--- | :--- | :--- |
-| **`carclass.val`** | `$0000$chassis`, `$0001$chassis`, `$0002$chassis` | Registers chassis name into tournament tiers (Compact, Midsize, Muscle). |
-| **`car_stats.val`** | `carstats` | Sets showroom radar attributes (durability, handling, speed). |
-| **`buycar.val`** | `car` & `vehicle` | Adds car to Career Mode dealership with price, description, and livery number. |
-| **`dirt.val`** | `Driver` | Assigns custom chassis to AI competitors (e.g. Dale Jefferson, Sam Tallman). |
-| **`catalog.val`** | `catalog` | Sets display name string ("Phantom #77") and biography. |
-| **`CT.RES`** | `77.tex` / `77.tm0` | Custom car number / livery graphic loaded during car selection. |
-| **`UICAR.RES`** | `uicar_77.tex` / `uicar_77.tm0` | In-game HUD vehicle selection thumbnail. |
+## Reuse references
 
----
+The recovery retains the existing reverse-engineered tools rather than introducing
+an unrelated asset pipeline. SPU2 filter coefficients match
+`runtime/iop/spu2.cpp` (`kFilter`). Upstream
+[RoadTripAdventure-recomp](https://github.com/silentsudin/RoadTripAdventure-recomp)
+was inspected at `0f6d3613e8e32ccda5305227a578b1fb659983a8`: its texture-pack
+interfaces do not implement EOD's MGI/0TSR format or virtual disc registration.
+Context7/recovery and renderer references are recorded in RENDERER_REFERENCES.md.
 
-## 3. Live Mod Overlay & Virtual Disc Mounting
+## STAR recovery handoff — 2026-10-20
 
-The port runtime supports non-destructive mod loading via the `EOD_MOD_DIR` environment variable or local `mods/` directory.
+**Situation.** The recovered documentation process work contained usable parsers and a
+custom-car draft, but it overstated geometry support. The packer reused stale
+entry offsets after resize, and the GUI ignored its custom settings, imported
+nonexistent track functions, reported a fake save edit, and wrote unknown INI keys.
 
-When launched with `EOD_MOD_DIR=mods/phantom`:
-1. The virtual ISO driver scans `mods/phantom/DATA/`.
-2. New files (`mods/phantom/DATA/CAR/PHANTOM.CAR`) are dynamically injected into the ISO TOC and assigned unique LSN sector ranges.
-3. Modified archives (`COMMON.RES`, `CT.RES`, `UICAR.RES`) override the original disc versions on demand without touching retail files.
-4. The native game engine reads `PHANTOM.CAR` seamlessly during event setup and spawns the vehicle with its custom physics and livery.
+**Task.** Make the existing asset workflow reproducible and honest, retain source
+assets locally, and leave concrete player acceptance separate from parser tests.
 
----
+**Action.** Recompute edited archive offsets; preserve unchanged v6 layout; reject
+unsupported versions/invalid names; validate image/audio input; fix tall texture
+swizzling; parameterize and stage custom builds; fix GUI API calls and thread use;
+wire recognized configuration keys, reuse the native save editor for career
+money, and disable unsupported actions. Tests generate
+ Synthetic
+regressions run even when no retail disc is present.
 
-## 4. Reverse-Engineered Engine Invariants & Gotchas
+**Result.** CPU checks cover archive entry growth, exact unchanged ALGAR.CAR
+roundtrip, logical VALT roundtrip, texture pixel preservation, model texture
+bindings, generated physics/classes/stats/dealer/AI tables, bounds export, real
+start.sfx conversion, and track inspection. Run:
 
-### 4.1 VALT v11 Accessible Section Count (`unk1`)
-* In the binary table loader (`f_0012C5D8`), section traversal calls `table->GetSection(index)` (`f_00134E78`).
-* `GetSection` enforces a hard bounds check: `if (index >= MEM_LW(table + 8)) return NULL;`.
-* Header offset `+0x08` (`unk1`) represents the accessible / root section count (`c2`). If `c2 < c1` (total sections), sections appended past `c2` become completely invisible to the game engine, causing fatal panics such as:
-  `FATAL: game panic: CarStatsLookup: no such car as Phantom, AFAIK`.
-* Compilers must set `c2 = c1` for flat or appended tables to ensure newly injected sections are reachable.
+```sh
+python3 -m unittest tools.tests.test_custom_car -v
+```
 
-### 4.2 Racing Number Uniqueness Invariant
-* The engine performs a global cross-validation of vehicle numbers across both `dirt.val` (`Driver` entries) and `buycar.val` (`vehicle` entries).
-* If any driver or dealership vehicle shares an identical integer number (e.g. both using 77), the engine triggers an immediate startup panic:
-  `driver: Drivers Josh Black and Phantom Racer have the same number (77)` or `driver: two vehicles (Phantom and Phantom) have the same number (777)`.
-* Every driver and dealership vehicle entry must possess a strictly unique integer racing number.
+Two game workloads require explicit `EOD_RUN_GAME_TESTS=1`; they run headless and
+muted and must be coordinated with other game/build/GPU work. The asset recovery
+itself does not claim a new full-game or visual acceptance result. The next
+decisive test is a current generated package reaching the Midsize carousel and a selected-Phantom
+race in Arcade/Career, followed by visible selection and driving/AI verification.
 
-### 4.3 Multi-Class Chassis Registration
-* When entering vehicle selection menus across different modes (Arcade, Career, Demolition), the carousel filters vehicles by category sub-tables in `carclass.val` (`$0000$chassis` for Compact, `$0001$chassis` for Midsize, `$0002$chassis` for Muscle).
-* Adding the custom car to each relevant class sub-table ensures seamless availability across all race configurations.
+## Rendered checkpoint — 2026-10-20
+
+A freshly generated Midsize package using the repaired TEX encoder passed the
+6,000-vblank normal-input selection/race journey in 100.321 seconds. Rendered
+frame 3,000 shows MIDSIZE / PHANTOM, stats 9/8/8, and the clean custom 777
+number-card preview. Frames 4,950 and 6,000 show the selected native-chassis
+player car with the generated black/white livery in a 14-car race. The game
+loaded Phantom.car and logged the expected mass 3200; no missing-car or duplicate
+number panic occurred. The automated route is in test_08; its resource assertions
+alone do not distinguish a player from AI, so the menu and race images were
+inspected separately. These local captures are not committed.
+
+This bounded result establishes selection, race startup and visible custom
+textures. It does not establish a complete race, driving feel, every LOD distance,
+Career purchase/save/reload, every class or every mode.
 
 
 ## ps2/DETAIL_PRESETS
@@ -920,7 +1027,7 @@ This section provides an immediate, evidence-backed reference for human modders 
 | **Single Player Battle Mode** | **Completed & Verified** | `src/battle_events.cpp:f_001244A8` appends native Battle contest records (`0x18000224`, 10 words) into the 320-contest table (`0x003C61A8`) for 8 spare Eve slots in solo Action & Career. | `[Cheats] SinglePlayerBattle=true` |
 | **Battle Bots (AI Opponents)** | **Completed & Verified (Experimental Navigation)** | `f_0012C158` fills roster to 4 cars; `f_0020FD48` invokes `f_00227EE8` to build weapon scenes for AI (`0x51`); `battle_driver.cpp` intercepts `AICar` update `f_001A2D20` to inject controls (`+0x1B6C` steer, `+0x1B70` gas, `+0x1B74` brake, `+0x1B78` clutch=1.0f). | `[Cheats] BattleBots=true` |
 | **Course Waypoint Tracking** | **Completed & Verified** | `src/battle_navigation.cpp` reads loaded primary course cache at `0x003CD190` (tag `0x104F128B`, 60-byte nodes). Follows track waypoint tangents; falls back to direct pursuit when unsupported. | Built into bot driver |
-| **Unlock All Out of the Box** | **Completed & Verified** | `game_patches_vblank()` sets feats `0x003D18E0 = 0xFFFFFFFF`, cheat prizes `0x003D18E4 = 0xFFFFFFFF`, writes 7 prize bytes at `0x004A8AF8`, and sets event override `0x003D8180 = 1`. | `[Cheats] UnlockAll=true` |
+| **Unlock All Out of the Box** | **Default enabled; CPU contracts verified, rendered selection retested separately** | `game_patches_vblank()` sets feat/prize masks, event override `0x003D8180=1`, and each loaded native points-roster unlock flag at `0x003CBF58 + 16*i` (count at `0x003CBF48`, bounded to 32). Prize masks alone left tracks locked. | `[Cheats] UnlockAll=true` |
 | **Career Mode Cheat Bypass** | **Completed & Verified** | `game_patches_vblank()` asserts `cheats \|= 0x1` every vblank, neutralizing Career mode's lockout at `0x002C1224` (`andi $v0, $v1, 0xFFFE`). | `[Cheats] CareerCheats=true` |
 | **Human Manual Recovery** | **Completed & Verified** | `src/hle_recovery.cpp:f_001B8370` gates `00485098`, suppresses 3-second auto-reset for local humans (`car+480 == 0x50`), keeps AI auto-recovery intact (`0x51`), and retains manual SELECT countdown `timer[68]+timer[72]`. | `[Gameplay] ManualRecovery=1` / In-game F1 menu |
 | **Car LOD Detail Presets** | **Completed & Verified** | `src/hle_lod.cpp:f_0021ABF8` intercepts car tables: `original` (1.0x), `high` (3.0x), `maximum` ($\ge 1{,}000{,}000$ locking `Low1.mod`). | `[Video] Detail=maximum` / `EOD_CAR_LOD_MULTIPLIER` |
@@ -1037,6 +1144,15 @@ The master gameplay bitmask is evaluated at runtime during vehicle physics ticks
 | **7** | `0x080` | `raining_chickens` (`hack=7`) | Explosive chickens drop from high altitude directly above all active vehicles. | `0x0017E228`, `0x0017E6CC`, `0x0017F2E0` |
 | **8** | `0x100` | `one_hit_kills` (`hack=8`) | Any collision impact exceeding threshold instantly totals vehicle (`damage = 1.0f`). | `0x0018D7D4`, `0x00204A40` |
 | **9** | `0x200` | `sepia` (`hack=9`) | Vintage sepia visual post-processing color grading filter. | `0x0017868C`, `0x002378F4`, `0x00268930` |
+
+#### Separate track/car points unlock roster
+
+The track picker `0x0012CC40` checks the native roster loaded by `0x0012C940`,
+not just the feat/prize bytes. `0x0012CAB8` sets each loaded row's unlocked
+flag. The October 20 correction mirrors those flags with the native 32-row
+bound, leaving type, name, points thresholds and unused rows intact. When
+`UnlockAll=false`, it does not write these flags. Unlocks are reapplied after
+profile loads; this does not call the full Career cheat that changes money/cars.
 
 #### Feat Unlock Memory Registers
 - `0x003D18E0` (`uint32_t`): Bitmask of career-completed feats (`0..7`).
@@ -3976,6 +4092,155 @@ port. (General guidance, not legal advice.)
     views (MP3b)?
 
 
+## ps2/MOD_CAPABILITY_ACCEPTANCE
+# Mod capability acceptance — 2026-10-20
+
+## Player success
+
+An added asset must appear correctly in selection, load with its own identity,
+render correctly at each supported distance, behave correctly in play, survive
+normal mode transitions and save/reload where relevant, and preserve the native
+baseline when the overlay is disabled. More participants must complete a match
+with correct scoring and lifecycle, not merely avoid a startup crash.
+
+ It is an acceptance backlog,
+not a statement that every capability is implemented. NASCAR remains paused.
+
+| Capability | Evidence/status | Next decisive acceptance |
+| --- | --- | --- |
+| Additional native-chassis car | Package, roster, AI load and bounded selected-player race verified | Career buy/save/reload and complete race |
+| Expanded Career/Arcade roster | One additional identity registered | Multiple added cars, scrolling, capacity boundaries and persistent ownership |
+| Custom body and menu textures | Native GS oracle plus rendered menu/player livery verified | Other artwork, all LOD distances and modes |
+| Arbitrary custom car mesh | Unsupported; current MODL OBJ is bounds only | Actual mesh decode, encode, render and collision/attachment validation |
+| Custom performance | Native parameter edits and runtime mass load | Handling, damage, upgrades and AI comparisons |
+| Career description | Native buycar.val desc field written and regression checked | Read description in dealer UI, purchase and reload |
+| Custom AI by mode | Registration and a bounded AI resource load | Career, Arcade, 2P and Dare journeys with custom AI participation |
+| Higher quality/extended LOD | Existing native LOD textures rebound; new geometry unsupported | Authored LOD meshes, transition and performance evidence |
+| Fully supported custom driver | Driver records/numbers supported | Portrait, speech, selection and all-mode lifecycle |
+| Arbitrary custom track geometry | Unsupported | Geometry, collision, terrain/material and streaming compiler |
+| Racing lines/splines | Native ILIN inspection and roundtrip | Edited line with native-quality AI navigation and recovery |
+| Native track modifications | Event/layout edits and selected dynamic-reference removal | Targeted rendered acceptance, including drivable ground/collision |
+| Compatible-game track conversion | Research candidate only; paused | Proven per-format geometry, collision, materials, LOD and gameplay conversion |
+| Native gates/checkpoints/grids/finish/spawns | Existing native contracts retained; Welch Battle spawn samples verified | Every authored/imported layout and complete event lifecycle |
+| Universal pretested modes, Battle first | Fourteen-map catalog built; bounded Welch solo and 2P verified | Complete matches on every map, 3P and 4P included |
+| Expanded Battle population | Current generator caps at four; BattleBots fills to four | Establish safe capacity, then 1 human + 15 AI and extra-AI multiplayer scoring/respawns |
+| Real-time invincibility | Toggle and damage wrappers regression checked | Rendered on/off collisions and timed damage in every relevant mode |
+| Arbitrary real-time turbo multiplier | Launch-time multiplier and live enable toggle only | Live numeric adjustment, validation and all-mode behavior |
+| GUI for all supported operations | Car/config/save-edit implementation and smoke checks | Visual full-flow acceptance; unsupported operations must stay explicit |
+| Regression and E2E coverage | CPU regressions and opt-in bounded game journeys | Assertions for identity, visuals, lifecycle and persistence; clean exit alone is insufficient |
+
+Optional generated placeholder artwork is authorized through imagegen when an
+asset needs it. Artwork does not establish geometry/compiler or gameplay support.
+
+
+## ps2/NASCAR_IMPORT_JTBD
+# NASCAR import: player success and evidence
+
+## Player success, before implementation
+
+“As a player using my own NASCAR: Dirt to Daytona and Test Drive: Eve of
+Destruction discs, I can select an imported car, see its materials correctly,
+complete a race with responsive handling and working damage, and purchase/save
+it in Career. AI competitors use the same cars without missing assets or crashes.”
+
+That requires visible original-reference comparisons, real driving and collision
+checks, dealer purchase/save/reload, AI races and solo/local multiplayer checks.
+An extracted archive, converted table, mesh bounds OBJ or clean startup alone
+cannot prove those outcomes. Faithful native EOD rendering/timing remains the
+repository priority; this overlay is an opt-in experiment.
+
+## Supported tool scope
+
+`tools/import_nascar.py` constructs six candidate CAR archives (stock, truck,
+modified, dirt, hobby, pace car), synthetic liveries/thumbnails, and edited
+COMMON/CT/UICAR resource overlays from owner-supplied inputs. Prices, menu stats,
+driver names and liveries are mod choices, not an authenticated reproduction.
+Source VALT values are preserved during conversion; previous guessed physics
+key overrides were removed because cross-game units and key compatibility are
+unverified. Retexturing targets body references while preserving cockpit/detail
+materials. Model geometry and deformation remain in the source representation;
+this tool does not implement VIF mesh compilation or prove EOD compatibility.
+
+The importer checks required inputs and rejects overlapping source/output trees
+before writing. It uses isolated temporary work directories and publishes a
+complete candidate only after packaging succeeds. Choose a new or empty output
+directory so older overlays cannot be mistaken for the new result.
+
+```sh
+python3 tools/import_nascar.py \
+  --nascar-data /Volumes/SLUS_20441/DATA \
+  --eod-data "$HOME/Library/Application Support/TDEODRecomp/disc/DATA" \
+  --output mods/nascar-candidate
+```
+
+Track import is **not implemented**. The optional `--export-research-spline`
+attempts to serialize a 19-to-15-float candidate into `research/`, outside the
+mounted DATA tree; actual Daytona data currently fails the strict layout check. NASCAR field meanings, pointers, units and EOD compatibility remain
+unverified. The importer no longer inserts a Daytona line into unrelated Afton
+geometry. Existing older `mods/nascar/DATA/TRACKS/AFTON.TRK` files were not rebuilt
+or validated by this change; use a fresh output directory.
+
+`tools/trk.py` preserves unchanged EOD ILIN node bytes, including packed pointer
+bits, and rejects malformed offsets/node sizes. OBJ export uses the EOD planar
+X/Z coordinates at offsets +0/+4, with elevation left at zero; next-pointer data
+at +20 is not a coordinate. This agrees with the native reader documented in
+`src/battle_navigation.cpp`. Collision SOL records remain an experimental view,
+not verified surfaces. Track retexturing edits typed MODL texture fields only;
+opaque GRF files are not byte-patched.
+
+## Verification and STAR handoff — 2026-10-20
+
+**Situation:** the recovered documentation process conversation reported six vehicles and
+track portability, but its checklist did not establish visible player acceptance.
+An ignored candidate package and extraction workspace already existed locally.
+The NASCAR source disc was initially unmounted; the owner mounted it during
+the audit, allowing archive, table and model metadata checks to run.
+
+**Task:** finish reproducible tooling, remove unsupported production claims, and
+separate binary/package evidence from the unproven gameplay outcome.
+
+**Action:** added portable preflight/livery/ILIN regression tests, explicit CLI
+paths, isolated build workspaces and publication, preserved source physics,
+limited material rebinding and made spline export opt-in research. Runtime tests
+require `EOD_RUN_NASCAR_GAME=1`, use headless/muted execution and isolated memory
+cards, and must be coordinated with other GPU workloads.
+
+```sh
+python3 -m unittest tools.tests.test_nascar_import -v
+```
+
+`NASCAR_DISC_DATA`, `EOD_DISC_DATA` and `NASCAR_MOD_DIR` can select fixtures.
+Missing retail fixtures skip their own tests; they no longer suppress portable
+checks. The real Daytona record extent is rejected because the old guessed
+layout leaves 68 unaccounted bytes; this is a guard, not a conversion success. Existing package inspection checks six archive files, class membership,
+section counts, unique vehicle numbers and generated texture entries. Package presence alone does not establish a rebuild or playable result.
+
+**Result:** a fresh mounted-disc build succeeded at
+`work/nascar-candidate-20261020`; its full suite ran 17 tests in 12.495 seconds
+and passed with only the explicitly disabled runtime smoke test skipped. The
+existing ignored package also passed structural inspection. Source STOCK table
+names/pairs survive explicit conversion unchanged; conversion leaves the source
+model untouched. Eight
+retail EOD Afton ILIN files independently round-tripped byte for byte; synthetic
+checks cover mixed pointer/NaN bits and position export. No native game or C++ build workload
+was run by the NASCAR audit. Vehicle appearance, mesh/VIF compatibility, deformation,
+physics fidelity, Career persistence, AI driving and playable NASCAR circuits
+remain unverified. Generated retail-derived archives, extractions and binaries
+are deliberately excluded from Git.
+
+**Open questions:** are the two games' model VIF packets, damage skeletons and
+physics schemas compatible without semantic translation? Which NASCAR ILIN
+fields are pointers, coordinates and event metadata? Does every imported chassis
+have all dependencies expected by EOD's loader?
+
+**Next decisive test:** inspect all six fresh archive dependencies, then run a coordinated
+headless/muted overlay smoke test. Compare one car's visible materials and damage
+against both originals, complete a real race and Career purchase/save/reload,
+and only then expand acceptance across all types and multiplayer. A playable
+track requires matching geometry/collision/event data and a verified semantic
+spline translation; truncating float records is not that translation.
+
+
 ## ps2/NATIVE_CAMERA_ASPECT
 # Native camera aspect hook
 
@@ -4134,6 +4399,272 @@ setup with mode=1, xScale=base=5/6 and input FOV approximately 82.5 degrees
 (native adjustment approximately 92.9235 degrees). This establishes that the
 race recomputes projection after the scoped aspect switch. The rendered
 comparison, rather than this FOV value alone, supports the proportion result.
+
+
+## ps2/OPTIONAL_GAMEPLAY_MODS
+# Optional gameplay recovery — player success and STAR handoff
+
+## Player success, defined before live acceptance
+
+With an explicitly selected local mod root, a player can select any of the
+fourteen named tracks in Action or 2–4-player Battle and enter a match with
+valid ground-level respawns, working chickens, independent human controls,
+optional AI and correct scores. Bounded Welch Battle startup, scoring and a participant respawn are verified
+below in solo and two-player runs. The next decisive test is a complete match
+and lifecycle coverage on every map, including three and four human players. Archive construction and
+synthetic tests establish neither safe terrain nor complete player success.
+
+For optional invincibility, a fresh vehicle takes no new mechanical or panel
+damage while collisions and chicken knockback continue. With the option off,
+the native damage callbacks run. Existing wrecks and detached panels do not
+repair when it is enabled mid-event. Protection applies to AI too; consequently
+damage-based Battle kills cannot work normally while every car is invincible.
+Disable it for ordinary Battle scoring.
+
+For the boundary work, the intended player outcome remains driving through
+Dennison's highway access gap and clearing visible fences without invisible
+collision. The implemented tool removes only explicitly selected **dynamic
+object references** from authored layouts. The exact highway objects, static
+SOL/BPP fence geometry and off-track ground have not been verified in play.
+There is no claim that boundary acceptance is complete.
+
+## Use
+
+Build a separate, local optional overlay from the installed disc:
+
+```sh
+python3 tools/build_gameplay_mod.py \
+  --disc "$HOME/Library/Application Support/TDEODRecomp/disc" \
+  --output work/battle-catalog --battle-catalog
+EOD_MOD_DIR="$PWD/work/battle-catalog" EOD_HEADLESS=1 EOD_MUTE=1 \
+  build-mac/eod --headless
+```
+
+Use the actual built executable path if it differs. The output directory must
+be new and separate from the disc. Its generated `DATA/RES/COMMON.RES` and track
+archives are local disc-derived assets; do not commit them. Omit `EOD_MOD_DIR`
+to return to the ordinary installation.
+
+This overlay intentionally provides **Action catalogs with one native race followed by Battle, and Battle-only
+multiplayer catalogs**. The solo loader requires its first contest to be a race
+(`0x00124154`–`0x00124194`), so Action uses 28 contests across fourteen maps. Appending fourteen more contests to the
+observed 312-contest Action catalog would exceed the native capacity of 320.
+It retains the existing Career/challenge Eve sections and dependencies; no
+Career season playthrough has verified that preservation. It preserves native
+Battle terrain overrides (including HomeBase) and sets the native maximum to
+four cars. The existing `BattleBots` option fills remaining slots up to four.
+`UnlockAll=1` remains useful for native track progression gates.
+
+For an explicitly selected dynamic-object experiment, add one or more
+`--remove-dennison-dyno NAME` arguments. The native Dennison `c_battle.va0`
+contains object references to `Semi_Trailer` and `wall2`; these names are
+verified asset data. This switch removes matching references from **every**
+Dennison `c_*.va0` layout, so review `gameplay-mod-report.json` and visually
+inspect the intended event before describing it as highway access. It also
+removes the selected objects' visible instances. No inferred primitive index,
+world coordinate, collision extent or fence height is patched.
+
+Enable invincibility with `EOD_INVINCIBLE=1`, `--invincible`, or `[Cheats]`
+`Invincible=1` in the ordinary configuration. `GodMode`, `EOD_GODMODE` and
+`--godmode` are aliases. `EOD_GODMODE`, when present, overrides
+`EOD_INVINCIBLE`; configuration is parsed once at launch. Zero and false values
+are respected. L1+R1+Square toggles protection live, once per press, with banner
+and button suppression. Configuration saves include the option. It defaults off.
+
+## Situation
+
+The recovered documentation process session promised universal Battle, open boundaries
+and invincibility. The remaining files did not establish those outcomes:
+`EOD_INVINCIBLE=0` activated the draft cheat by variable presence; the cheat
+only intercepted an orphan scalar setter, reset one health field every frame,
+was not saved, and omitted the tracked HLE registration. Assertions about
+Dennison primitive indices were not backed by the recovered survey artifacts.
+
+## Task
+
+Finish reviewable, opt-in implementations using verified native contracts;
+keep disc originals intact and separate verified outcomes from remaining
+player acceptance. The user's renewed gameplay request authorizes these mods
+alongside the repository's native baseline priority.
+
+## Action and native evidence
+
+The existing archive/VALT/ILIN wheel is reused rather than introducing another
+asset stack. The repository's existing `src/battle_navigation.cpp` and native
+`0x0013AF20` establish native course position X/Z at node +0/+4 and tangent at
++8/+12, with primary node count in the high halfword of header +0x1C. They do
+not establish XYZ at the first three floats. The builder validates finite
+positions, nonzero tangents and minimum planar separation, samples eight
+primary course points, and writes native `pt`/`dir` layout sections for missing
+Battle layouts. `0x00167A88` reads those sections and requires at least four;
+its call to `0x001D8F58` performs native ground placement. The builder does not
+invent Y or bypass a native spawn panic. The bounded Welch runs below verify observed grounded cars and one participant
+respawn each; they do not cover all eight generated spawn candidates.
+
+An audit of local retail `COMMON.RES` found native Battle descriptors in
+thirteen of fourteen `*_eves.val` resources; Welch alone lacked one.
+`eves.val` already includes all fourteen resources and `tracks.val` already
+contains their metadata, so gratuitous changes to those tables are unnecessary.
+Springfield's actual disc archive is `SPRING_1.TRK`. Native Battle layouts are
+retained; only a missing one is derived. The builder records source archive
+SHA-256 values and what it changed in a local JSON report.
+
+Invincibility wraps native `0x0018AD20` and `0x0018CA98`. The first adds/clamps
+the accumulated damage at car+7148. The second performs panel deformation,
+damage state changes and destruction after the collision response caller
+(`0x00189CD8` return site). Suppressing the damage callbacks leaves the caller's
+physical response in place; this source evidence still needs rendered
+collision/chicken comparisons. The callbacks delegate directly when disabled;
+there are no per-frame health writes or silent weak native fallbacks.
+The native world update `0x001B5840` also writes damage inline for the
+master+`0x40` timed-damage feat. A third wrapper temporarily clears only that
+bit during the complete native update, then restores just that bit while
+retaining unrelated native flag changes. Initialization and respawn health
+stores (`0x00187248`, `0x0018D878`) remain native.
+`config/hle.txt` registers all three hooks so generated code is reproducible.
+
+The earlier `track.sol` fixed-stride exporter does **not** establish a safe
+editable SOBL schema. It is insufficient evidence to delete guessed records or
+clamp heights. Authored VAL layout references are the verified modification
+surface used here. The upstream-reference and Context7 review for this recovery
+is recorded in `RENDERER_REFERENCES.md`; those generic recomp references do not
+supply game-specific EOD collision IDs or damage contracts.
+
+## Result and remaining acceptance
+
+Focused `LiveCheats` testing covers native delegation when disabled, explicit
+environment zero, protection callback suppression, no invented pre-existing
+damage repairs, unchanged unrelated physics memory, chord press edges/button
+suppression, timed-damage gate restoration and configuration persistence,
+including environment options on first launch without a configuration file. Synthetic gameplay builder tests
+cover bounded Action/multiplayer catalogs, native first-race ordering and VAL root
+counts, retained Career Eve definitions,
+actual primary X/Z+tangent mapping, invalid points and selective dynamic-object
+references. These are CPU contract tests with native/platform calls stubbed;
+they do not prove damage-free driving, rendered collision response or matches.
+
+The optional Battle builder supplies a concrete all-track catalog and a Welch
+layout exercised in the bounded live runs below. Full lifecycle coverage for
+all fourteen maps and three/four human players remains outstanding. Invincibility needs fresh-event wall, car and
+chicken impacts on/off, including impulses. Boundary work still needs actual
+highway object identification and a decoded static collision schema before
+fence changes; off-track ground cannot be guaranteed by removing a barrier.
+
+Live investigation found and corrected two additional native VAL contracts:
+new Eve root sections must precede child sections and remain within the header
+root count; child contest types must use the canonical `$NNNN$contest` naming
+convention. `compile_binary_valt` now accepts explicit validated `root_count`
+metadata for generated hierarchies. The optional builder sets it directly,
+including one root for the generated Welch respawn layout. Tests assert the
+serialized header, rather than only inspecting a Python dictionary.
+
+## Default track locks — recovered native gate
+
+A rendered Welch menu probe exposed a real pre-existing `UnlockAll` bug: the
+seven prize-mask bytes and feat unlocks were all set, yet Welch still showed a
+padlock and normal confirmation could not launch it. The separate native
+points unlock roster at `0x003CBF48` contained sixteen locked rows. Welch's
+`TRACK` row required 70,000 points and its unlocked flag remained zero.
+
+Native `0x0012CC40`, called by the track picker at `0x002C7610`, accepts a
+matching track when native points reach its threshold **or** its row's explicit
+unlock flag is set. `0x0012CAB8` sets exactly that flag at
+`0x003CBF58 + index*0x10`. `0x0012C940` limits the roster to 32 entries.
+`UnlockAll=1` (already the default) now mirrors that native flag operation for
+the bounded loaded roster every vblank, alongside the existing prizes/feats.
+It applies to ordinary launches and optional catalogs, including the native
+points-gated cars. It preserves names, types, thresholds, adjacent rows, money
+and season state. `UnlockAll=0` does not write these flags. As with other native
+unlock cheats, flags already set are not relocked by disabling the option.
+
+The regression first failed on missing default roster flags, then passed after
+the change. It covers both loaded rows, unrelated fields, the unused next row,
+native profile resets, disabled preservation and rejection of a count above 32.
+Rendered verification and its limits are recorded in the final result below.
+
+## Reproduce the bounded Welch journey
+
+After building a fresh optional catalog, run each probe separately:
+
+```sh
+tools/test_gameplay_catalog.sh \
+  "$HOME/Library/Application Support/TDEODRecomp/disc" \
+  work/battle-catalog single work/welch-single 9000
+tools/test_gameplay_catalog.sh \
+  "$HOME/Library/Application Support/TDEODRecomp/disc" \
+  work/battle-catalog mixed work/welch-mixed 9000
+```
+
+The helper uses normal controller input, a private card/config, native 1x/4:3,
+headless/muted rendering, screenshots every sixty vblanks, a final RAM dump and
+Battle traces. It requires the actual `Welch.trk` load and active Battle phase,
+so a mislabeled output directory cannot pass. Its fixed menu timeline is a
+bounded retail journey, not a general menu automation API. Inspect screenshots
+for correct map, controls and gameplay. It does not assert match completion.
+
+
+## Final bounded live result — October 20
+
+**Situation/task:** the original Welch map was absent from Battle. A new catalog
+must be reachable through normal menus, obey native loader bounds and place
+vehicles on real terrain. The separate default map padlock bug also needed an
+ordinary runtime fix.
+
+**Action:** first rendered probes caught and corrected root ordering/count,
+canonical child-type names and the solo first-race requirement. The final
+optional catalog retains native Eve display metadata, including movie names
+such as Woodly/Hampton, and resolves terrain fields through native contest
+inheritance. No native panic or track-selection state was patched. The normal
+input route selects Welch with five LEFT presses from Dennison, then selects
+Battle. Both runs use native 1x/4:3, muted/headless Vulkan, private cards and
+configuration, screenshots every sixty vblanks and native Battle telemetry.
+
+**Verified result:**
+
+- Solo, 9,000 vblanks, exit 0: the actual `Welch.trk` resource loaded; active
+  Battle reported one human and four cars. Inspected images show an unlocked
+  Welch menu, then a grounded player car on the Welch course with native
+  SCORE/DAMAGE and chicken HUD. The player reached score 1; another participant
+  reached score 1 and completed one sampled dead-to-alive respawn.
+- Two players, 9,000 vblanks, exit 0: the final v5 archive loaded Welch into
+  native Battle (`0x18000224`) with two humans/four cars. Inspected images show
+  two separate grounded cars, split-screen views, native HUDs and minimaps.
+  Eleven native blast events were recorded; one participant reached score 1
+  and another completed one sampled dead-to-alive respawn. Sampled car Y
+  coordinates ranged from -9.649 to 5.355, consistent with observed terrain.
+- Final RAM in both runs contained all sixteen loaded native points-roster
+  unlock flags set to 1. The pre-fix rendered Welch padlock disappeared and
+  normal confirmation launched Battle after the fix.
+- Native solo RAM contained all fourteen requested maps, each with race+Battle,
+  plus the original hidden EmptyTrack test entry (15 Eves/29 contests). The
+  optional generator's final compiled Eve bytes for all fourteen maps were
+  compared against the actual final v5 packed archive and matched exactly.
+  This includes the terrain-fallback guard added after inspection; retail
+  Welch has no explicit terrain mask in its Eve/race/default tables.
+- Eight synthetic gameplay tests now cover root headers, first-race ordering,
+  canonical contest type, native display names, direct/inherited terrain masks,
+  invalid respawn candidates and selective dynamic references. The tracked
+  reproduction shell script passes syntax validation. Focused LiveCheats
+  tests pass with the default points-roster unlock regression.
+
+**Limits:** neither run reached the match-complete phase 2. Scores and one
+sampled participant respawn per run establish bounded lifecycle evidence, not
+all player/bot journeys. Three/four human players, every track, all generated
+spawn candidates and complete match/restart/exit still require acceptance.
+Some weapon-body telemetry appears below the world; those records are not car
+positions and a nonzero flight flag alone is not evidence of a fired shot.
+Only actual native blasts and score/state transitions were counted as combat
+evidence here. Idle/projectile-body lifecycle beyond these observations is
+not established. Invincibility was off for these Battle runs; its physical
+response and damage-free player acceptance still needs a dedicated rendered
+on/off comparison. Highway/fence collision and off-track ground acceptance
+remain open as described above.
+
+Local evidence is ignored under `work/gameplay-live/welch-single-unlocked/`
+and `work/gameplay-live/welch-mixed-unlocked/`, with exact controller scripts,
+configuration, screenshots, logs and RAM. Solo used the v4 catalog before the
+native preview-name preservation; two-player used the final v5 output.
+Generated disc-derived archives and captures are not committed.
 
 
 ## ps2/RECOMP_RENDERER_RECON
@@ -4389,6 +4920,128 @@ Ruled out with measurements on the race capture (same binary, alternating):
   command buffer costs a ~0.2–0.3 ms round trip on this M2 Pro. Not shipped.
 - `EOD_GPU_UPLOADS=1` reduces readbacks 19 to 7 but not wait time (bigger
   batches per sync); see `GS_CPU_WRITE_PRESERVATION.md`.
+
+## NASCAR: Dirt to Daytona format investigation — scope and limits
+
+
+Daytona* (`SLUS-20441`) assets and created an ignored candidate EOD overlay.
+Its broad cross-engine compatibility claims are not established by the evidence.
+
+- `tools/rst0.py` supports the observed 0TSR v2 container layout for extraction
+
+  table and model metadata checks; these do not establish runtime compatibility.
+- `tools/valt.py` reads the observed legacy section/string encoding and serializes
+  table models into EOD's format. This is structural conversion, not proof of
+  identical physics units, schema semantics, inheritance or deformation links.
+  The importer preserves source physics values rather than inserting guessed
+  horsepower/weight keys.
+- `tools/modl.py` inspects headers, part metadata and fixed texture fields. Its
+  OBJ export contains model bounds, not decoded VIF/SPS4 vehicle meshes.
+  Source geometry, panel damage and skeleton compatibility remain unverified.
+- `tools/trk.py` exposes a candidate 76-byte NASCAR record layout. Truncating
+  19 floats to 15 does not establish semantic ILIN translation: fields include
+  packed pointers/metadata, and NASCAR meanings/units remain unverified. This
+  converter is research-only and opt-in; actual Daytona data fails the strict
+  extent check (68 unaccounted bytes). Any candidate output is outside DATA.
+  The importer does not insert a Daytona line into unrelated Afton geometry.
+- EOD ILIN positions are planar X/Z at record offsets +0/+4; +20 is a next
+  pointer, as documented by `src/battle_navigation.cpp`. Eight retail Afton
+  ILIN files round-tripped byte for byte during this audit. Unchanged mixed
+  pointer/float records retain raw bits, including NaN payloads.
+
+See `NASCAR_IMPORT_JTBD.md` for player acceptance, reproducible commands, actual
+package/fixture evidence and the next decisive tests. No retail assets or
+candidate binaries are committed. The reuse review below explains why the
+existing EOD archive/streamer interface is extended rather than substituting a
+renderer texture-pack loader; it does not prove cross-game asset compatibility.
+
+## Mod overlay reuse check — 2026-10-20
+
+Checked [RoadTripAdventure-recomp](https://github.com/silentsudin/RoadTripAdventure-recomp)
+`main` revision `0f6d3613e8e32ccda5305227a578b1fb659983a8` for an existing asset
+modding wheel. Its texture-pack feature supplies renderer textures, whereas EOD
+loads named 0TSR car/resource archives through both FILEIO paths and an MGI
+streamer sector TOC. A texture-pack loader does not register new filenames or
+assign sectors in that TOC. This change therefore extends EOD's existing
+`scan`/`assign`/`platform_find_file` implementation rather than importing another
+renderer subsystem. An explicit `EOD_MOD_DIR` selects one read-only overlay;
+without it staged mods are inactive. The selected overlay merges before sector
+assignment, so replacement sizes and newly named cars are reflected consistently
+in FILEIO and streaming reads. Disposable-file tests cover both paths.
+
+
+## ps2/TEXTURE_FORMAT_NOTES
+# Native EOD PS2 texture contract
+
+Player acceptance is recognizable custom livery and preview artwork in the
+actual renderer. A compiler/decompiler self-roundtrip is insufficient: the old
+pair agreed on an incorrect raw GS VRAM ordering and produced checker corruption
+in the rendered Phantom selection preview.
+
+## Verified retail layout
+
+TEX v10 starts with a 0x80-byte header. Width, height and mip count are at offsets
+0, 4 and 8. The tested 8-bit assets use format 0x201 at +0x0C and flags 0x320600
+at +0x10. Preserve +0x14 as an auxiliary word: observed CT body textures use
+0x100 and UICAR previews use zero. Palette offset +0x18 is 0x80; each of 256
+palette entries is ARGB with 0–255 alpha. Native loading converts palette alpha
+and palette order for GS use; input files must not perform that permutation.
+Mip offsets start at +0x1C. Retail headers have a **zero sentinel** after the last
+mip offset. Native `f_003521E8` relocates count+1 slots, explicitly skipping zero
+entries. That loop does not mean the sentinel must contain the file-end address.
+
+| Retail reference | Dimensions | Mip count | File bytes |
+| --- | --- | --- | --- |
+| UICAR.RES/uicar_296.tex | 16×16 | 4 | 1,668 |
+| UICAR.RES/uicar_296.tm0 | 256×256 | 8 | 88,708 |
+| CT.RES/20.tex | 256×128 | 7 | 44,936 |
+| CT.RES/20.tm0 | 512×256 | 8 | 176,008 |
+
+The observed mip chain stops when its smaller dimension reaches 2. Mips before
+the last occupy at least 128 bytes. Full indexed payloads otherwise occupy
+width×height bytes; the last 2×2 or 4×2 tail occupies 4 or 8 bytes.
+
+## Upload order, distinct from absolute GS memory order
+
+Native `f_0035EE38` computes mip dimensions, then tests whether **mip height is
+less than 32** and branches to its direct linear upload path (`0x0035F140`).
+Larger mips contain the compact byte ordering needed for a PSMCT32 upload whose
+GS memory is subsequently sampled as PSMT8. Absolute `gs_addr8` addresses index
+VRAM, and must not index a compact TEX payload.
+
+For large mips the compiler uses `upload_addr8`. Small mip tails use linear
+indices. The regression oracle independently uploads the compiled bytes using
+PSMCT32 block/column tables from `runtime/gs/gs_mem.cpp`, then samples the VRAM
+using that file's separate PSMT8 tables. It recovers every source pixel without
+calling the compiler's upload addressing function.
+
+A retail `uicar_296.tm0` was decoded and visually inspected as the recognizable
+orange/teal number-296 car. Its decoded RGBA SHA-256 is:
+
+`25ed48fa7b205ce45cb12972b9354bc8ef4fdc3e72df027c87827e29c03add31`
+
+The retail resource is read locally for this regression and is not committed.
+The old incorrect decoder fails this reference. Retail CT/20 small mips provide
+additional evidence: 32×16 and 16×8 tails decode coherently as linear pixels,
+consistent with the native height branch. The UICAR high-resolution reference
+contains mostly empty lower mips, so it alone cannot establish their layout.
+
+## Limits and next decisive test
+
+The compiler regenerates nearest-neighbor mipmaps and quantizes to 256 colors;
+it does not preserve arbitrary retail mip artwork or support PSMT4. Narrow-tall
+textures with height greater than twice width are rejected explicitly: their
+narrow large-height mip upload layout remains unverified. Header and
+CPU GS equivalence establish the repaired format contract. They do not establish
+rendered livery appearance, artistic quality, or full original visual parity.
+Regenerate the package, inspect the Midsize Phantom carousel preview, and drive
+the selected Phantom in the actual renderer to finish that acceptance.
+
+The regenerated package subsequently reached rendered Midsize Phantom selection
+and a selected-player race. The procedural 777 menu card is clean and the
+black/white native-chassis body livery is visible. The bounded 6,000-vblank
+journey passed; arbitrary artwork quality, every LOD and full native visual
+parity remain outside that evidence.
 
 
 ## ps2/TIMING_TRACE

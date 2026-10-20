@@ -24,7 +24,8 @@ module.exports = {
           "label": "modding-and-formats",
           "items": [
             "ps2/GAMEPLAY_MODS_RE",
-            "ps2/MODDING_SCOPE"
+            "ps2/MODDING_SCOPE",
+            "ps2/OPTIONAL_GAMEPLAY_MODS"
           ]
         },
         {
@@ -47,9 +48,13 @@ module.exports = {
           "type": "category",
           "label": "runtime-and-platform",
           "items": [
+            "ps2/AUDIO_FORMAT_NOTES",
             "ps2/CUSTOM_VEHICLE_PIPELINE",
             "ps2/MACOS",
             "ps2/MANUAL_RECOVERY",
+            "ps2/MOD_CAPABILITY_ACCEPTANCE",
+            "ps2/NASCAR_IMPORT_JTBD",
+            "ps2/TEXTURE_FORMAT_NOTES",
             "ps2/TIMING_TRACE",
             "ps2/WORKER_SHUTDOWN"
           ]

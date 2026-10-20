@@ -1,9 +1,17 @@
 [
   {
+    "page": "docs/ps2/AUDIO_FORMAT_NOTES.md",
+    "source_repository": "eod-recomp",
+    "source_path": "docs/AUDIO_FORMAT_NOTES.md",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
+    "working_copy_modified": false,
+    "source_sha256": "5a9d859bcfe31beb167bc625ab7ea1d563d85c1aa9b7c901324d07befd009291"
+  },
+  {
     "page": "docs/ps2/BATTLE_NAVIGATION.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/BATTLE_NAVIGATION.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "695e3dd0427379bd36dc326e606e4156191860e2302e24cfff516985c8b6a519"
   },
@@ -11,23 +19,23 @@
     "page": "docs/ps2/BATTLE_RECOVERY.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/BATTLE_RECOVERY.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
-    "source_sha256": "61e540efb47a10a4ab014fc759cff3baecd02ae707241d0c0a685f13dc7fe2b3"
+    "source_sha256": "a2548c56cfbb6c0f8583a950e5ffacef85ca7760d992d845a4fe90e48a50b880"
   },
   {
     "page": "docs/ps2/CUSTOM_VEHICLE_PIPELINE.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/CUSTOM_VEHICLE_PIPELINE.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
-    "working_copy_modified": true,
-    "source_sha256": "aa988fa10ad3b9dde30dc29ac0c5470f06f3c95adfdcb48f046e169e652761b1"
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
+    "working_copy_modified": false,
+    "source_sha256": "9d7c0865827d5ebb9d508af1cf8f3767fffb8d9e6f4cff7a7c439dab7be1f18b"
   },
   {
     "page": "docs/ps2/DETAIL_PRESETS.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/DETAIL_PRESETS.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "d975750da76c55fc7f71684d29e5ea2a106060d3b6b5b7845a2f3ebfe09b4e75"
   },
@@ -35,15 +43,15 @@
     "page": "docs/ps2/GAMEPLAY_MODS_RE.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/GAMEPLAY_MODS_RE.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
-    "source_sha256": "086ed3715dc992ef7e2c0eb2129178cf1e36d0c9dfcb262888748a6b06feaf42"
+    "source_sha256": "3a9cbab257ec9569372c3de3d88b072cda6df58c7385d881ab8259335ceb4a43"
   },
   {
     "page": "docs/ps2/GS_ALPHA_ORDER.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/GS_ALPHA_ORDER.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "5cbd14a2ce484f633fb78ffbefae74815159a14ada1e33ca57a793645d5a41a4"
   },
@@ -51,7 +59,7 @@
     "page": "docs/ps2/GS_COLD_PACKET_REPLAY.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/GS_COLD_PACKET_REPLAY.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "d381d54bc4a73be2f54e60a628d98e88adb88dde6eb98eb055c2c388de217aee"
   },
@@ -59,7 +67,7 @@
     "page": "docs/ps2/GS_CPU_WRITE_PRESERVATION.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/GS_CPU_WRITE_PRESERVATION.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "6bd890197ca5ff79be32c95fc606e8f9e886b386f6a8b421678a10d95adf1476"
   },
@@ -67,7 +75,7 @@
     "page": "docs/ps2/HUD_EDGE_ANCHORS.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/HUD_EDGE_ANCHORS.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "ce1dabd4b1c1452e28dbf648c7627280a83046bf744660e352644ebc7e16e729"
   },
@@ -75,7 +83,7 @@
     "page": "docs/ps2/INPUT_CONTINUATION.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/INPUT_CONTINUATION.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "e592610298880c51f9c03c9be47e0cf78d60785cf52bb6d6aa16f4f4dc776daa"
   },
@@ -83,7 +91,7 @@
     "page": "docs/ps2/KEYBOARD_CONTEXT.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/KEYBOARD_CONTEXT.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "45f219d5aee2a77c8677b6010fb8cba2440a591d269e011f337749c0235c3515"
   },
@@ -91,7 +99,7 @@
     "page": "docs/ps2/LOD_CULLING_INVESTIGATION.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/LOD_CULLING_INVESTIGATION.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "2f8c470f7c44eb07ad2ef858f5dde9217d72f19202c2b770d66f5c4f85961134"
   },
@@ -99,7 +107,7 @@
     "page": "docs/ps2/LOD_RUNTIME.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/LOD_RUNTIME.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "e9abdf8bf6335b07fa2f774afc76ba8aef11b7e77c67fb5c01fdb610570c1863"
   },
@@ -107,7 +115,7 @@
     "page": "docs/ps2/MACOS.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/MACOS.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "98e02311ce43b10d8dd853ff54249129ed6386bf874b0416a961ad02b08fb915"
   },
@@ -115,7 +123,7 @@
     "page": "docs/ps2/MANUAL_RECOVERY.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/MANUAL_RECOVERY.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "1dc3bb47fd8feb8672e260f660f863c7008027161cc742fbd0eebe8d6b478531"
   },
@@ -123,23 +131,47 @@
     "page": "docs/ps2/MODDING_SCOPE.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/MODDING_SCOPE.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "ccf449cc8ed3dbe165494d00f7e6f166a505f58a0c80f65e876fe78fc1b94385"
+  },
+  {
+    "page": "docs/ps2/MOD_CAPABILITY_ACCEPTANCE.md",
+    "source_repository": "eod-recomp",
+    "source_path": "docs/MOD_CAPABILITY_ACCEPTANCE.md",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
+    "working_copy_modified": false,
+    "source_sha256": "69fb35a920347fe133b93d06a017ea3e67ee9f2aec2b20334def336c78e5fbb3"
+  },
+  {
+    "page": "docs/ps2/NASCAR_IMPORT_JTBD.md",
+    "source_repository": "eod-recomp",
+    "source_path": "docs/NASCAR_IMPORT_JTBD.md",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
+    "working_copy_modified": false,
+    "source_sha256": "064d78acb6f61843e4cd9da04921f4ebc02f196316443a6cda8018d1403f8058"
   },
   {
     "page": "docs/ps2/NATIVE_CAMERA_ASPECT.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/NATIVE_CAMERA_ASPECT.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "51b9c2b40d6497f30352a5b07d919fe5bf52afa8e3c620a3efceb3131679a792"
+  },
+  {
+    "page": "docs/ps2/OPTIONAL_GAMEPLAY_MODS.md",
+    "source_repository": "eod-recomp",
+    "source_path": "docs/OPTIONAL_GAMEPLAY_MODS.md",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
+    "working_copy_modified": false,
+    "source_sha256": "0e717b87e5d8e85147ec32155e9da2fe6ed1b809cdafa09fa539ae1823d36f5b"
   },
   {
     "page": "docs/ps2/RECOMP_RENDERER_RECON.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/RECOMP_RENDERER_RECON.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "93cf1760e8e6af14a0474dd783288ff17f81eca1b46831b8b59f97c3d03e8faf"
   },
@@ -147,15 +179,23 @@
     "page": "docs/ps2/RENDERER_REFERENCES.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/RENDERER_REFERENCES.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
-    "source_sha256": "3d57b9e61cd4c8a5a587360dc7d31c88dae29ce3c877e0a42b66870ef6ff0e42"
+    "source_sha256": "608a1f7494083baa00ac46ad21d2255053177c1d1835472d4fe97afbf5218462"
+  },
+  {
+    "page": "docs/ps2/TEXTURE_FORMAT_NOTES.md",
+    "source_repository": "eod-recomp",
+    "source_path": "docs/TEXTURE_FORMAT_NOTES.md",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
+    "working_copy_modified": false,
+    "source_sha256": "aeea2303e52f8de98c79febb2b22b5d792e1b6bc6332ad20d04db21b56a44e36"
   },
   {
     "page": "docs/ps2/TIMING_TRACE.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/TIMING_TRACE.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "5a611823d71b98c248131e0fd17ab8ebebf4dc8106064f37164ef2f2ab7955da"
   },
@@ -163,7 +203,7 @@
     "page": "docs/ps2/VULKAN_SYNC_DIAGNOSTICS.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/VULKAN_SYNC_DIAGNOSTICS.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "c8994884f0cd3b8be4d7a475324f65c0c311f639c8c9ab9e712d16cb02d53210"
   },
@@ -171,7 +211,7 @@
     "page": "docs/ps2/WORKER_SHUTDOWN.md",
     "source_repository": "eod-recomp",
     "source_path": "docs/WORKER_SHUTDOWN.md",
-    "repository_head": "5900a5e38b85641eb7f94281d38fa845fbe56123",
+    "repository_head": "32f274c4bc1c126d7cc2ba95113e6317deba46f9",
     "working_copy_modified": false,
     "source_sha256": "b77f64a5a2614babacda9044b457ca2c8cf64a5dcc28c381dcc4563e3c624a61"
   }
