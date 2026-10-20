@@ -49,6 +49,7 @@ module.exports = {
           "label": "runtime-and-platform",
           "items": [
             "ps2/AUDIO_FORMAT_NOTES",
+            "ps2/COLLISION_PERFORMANCE",
             "ps2/CUSTOM_VEHICLE_PIPELINE",
             "ps2/MACOS",
             "ps2/MANUAL_RECOVERY",
