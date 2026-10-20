@@ -892,9 +892,13 @@ frame 3,000 shows MIDSIZE / PHANTOM, stats 9/8/8, and the clean custom 777
 number-card preview. Frames 4,950 and 6,000 show the selected native-chassis
 player car with the generated black/white livery in a 14-car race. The game
 loaded Phantom.car and logged the expected mass 3200; no missing-car or duplicate
-number panic occurred. The automated route is in test_08; its resource assertions
-alone do not distinguish a player from AI, so the menu and race images were
-inspected separately. These local captures are not committed.
+number panic occurred. The automated route is in test_08. A subsequent 6,000-vblank run passed in
+100.227 seconds with an additional RAM assertion: exactly one human-controlled
+car (type 0x50) has chassis Phantom at car+0x224, matching its parameter name
+at u32[car+8]+0xAC. The assertion iterates the native world roster rather than
+assuming the human occupies slot zero. This distinguishes player selection
+from merely loading a Phantom AI. Menu and race images were inspected
+separately; these local captures and RAM are not committed.
 
 This bounded result establishes selection, race startup and visible custom
 textures. It does not establish a complete race, driving feel, every LOD distance,
@@ -4123,7 +4127,7 @@ not a statement that every capability is implemented. NASCAR remains paused.
 | Compatible-game track conversion | Research candidate only; paused | Proven per-format geometry, collision, materials, LOD and gameplay conversion |
 | Native gates/checkpoints/grids/finish/spawns | Existing native contracts retained; Welch Battle spawn samples verified | Every authored/imported layout and complete event lifecycle |
 | Universal pretested modes, Battle first | Fourteen-map catalog built; bounded Welch solo and 2P verified | Complete matches on every map, 3P and 4P included |
-| Expanded Battle population | Current generator caps at four; BattleBots fills to four | Establish safe capacity, then 1 human + 15 AI and extra-AI multiplayer scoring/respawns |
+| Expanded Battle population | Native four-record state overlaps ranks/count at participant five; generator caps at four | Relocate/audit participant and rank storage, then expanded scoring/respawn/HUD/match tests |
 | Real-time invincibility | Toggle and damage wrappers regression checked | Rendered on/off collisions and timed damage in every relevant mode |
 | Arbitrary real-time turbo multiplier | Launch-time multiplier and live enable toggle only | Live numeric adjustment, validation and all-mode behavior |
 | GUI for all supported operations | Car/config/save-edit implementation and smoke checks | Visual full-flow acceptance; unsupported operations must stay explicit |
@@ -4665,6 +4669,26 @@ and `work/gameplay-live/welch-mixed-unlocked/`, with exact controller scripts,
 configuration, screenshots, logs and RAM. Solo used the v4 catalog before the
 native preview-name preservation; two-player used the final v5 output.
 Generated disc-derived archives and captures are not committed.
+
+## Expanded Battle participant capacity — static analysis
+
+Increasing maxcars beyond four is unsafe with the current native Battle state.
+The factory at 0x00167F30 allocates 0x5AC bytes (0x00167F48/4C). Constructor
+0x00166C60 initializes only four records, at master+0x46C, +0x4BC, +0x50C and
++0x55C, through 0x00167F20. Loader 0x001678A8 copies the description's count
+(+0x98C) to master+0x5A8 and indexes participants at +0x454+0x50*i without
+a greater-than-four guard. Participant five starts at +0x594, overlapping rank
+zero. During update, 0x00166DA0 calls 0x00167908 per participant; the fifth
+record's clears at +0x0C/+0x10/+0x14 reach master+0x5A0, +0x5A4 (spawn index)
+and +0x5A8 (participant count). Ranking 0x00167658 uses +0x594+4*i, likewise
+overlapping spawn/count with larger populations; finish 0x00167D58 consumes the
+same layout.
+
+These are source/disassembly findings, not a >4-car live test. A safe expansion
+needs coordinated participant/rank storage, construction/allocation and every
+native access (including finish and HUD) audited and adapted, followed by
+complete scoring/respawn/match tests. Neither ordinary 14-car racing nor changing
+one Battle catalog field establishes this. The generator retains maxcars=4.
 
 
 ## ps2/RECOMP_RENDERER_RECON
